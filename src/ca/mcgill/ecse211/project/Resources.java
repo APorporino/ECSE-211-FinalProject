@@ -1,5 +1,14 @@
 package ca.mcgill.ecse211.project;
 
+import lejos.hardware.ev3.LocalEV3;
+import lejos.hardware.lcd.TextLCD;
+import lejos.hardware.motor.EV3LargeRegulatedMotor;
+import lejos.hardware.port.MotorPort;
+import lejos.hardware.port.SensorPort;
+import lejos.hardware.sensor.EV3GyroSensor;
+import lejos.hardware.sensor.EV3UltrasonicSensor;
+import lejos.hardware.sensor.EV3ColorSensor;
+
 /**
  * This class is used to define static resources in one place for easy access and to avoid
  * cluttering the rest of the codebase. All resources can be imported at once like this:
@@ -7,5 +16,159 @@ package ca.mcgill.ecse211.project;
  * <p>{@code import static ca.mcgill.ecse211.lab3.Resources.*;}
  */
 public class Resources {
+  
+  /**
+   * List of coordinates for 4 x 4 grid Map1
+   */
+  public static final int[][] MAP0 = {{2,2},{2,1}};
+  
+  /**
+   * List of coordinates for 4 x 4 grid Map1
+   */
+  public static final int[][] MAP1 = {{1,3},{2,2},{3,3},{3,2},{2,1}};
+  
+  /**
+   * List of coordinates for 4 x 4 grid Map2
+   */
+  public static final int[][] MAP2 = {{2,2},{1,3},{3,3},{3,2},{2,1}};
+  
+  /**
+   * List of coordinates for 4 x 4 grid Map3
+   */
+  public static final int[][] MAP3 = {{2,1},{3,2},{3,3},{1,3},{2,2}};
+  
+  /**
+   * List of coordinates for 4 x 4 grid Map4
+   */
+  public static final int[][] MAP4 = {{1,2},{2,3},{2,1},{3,2},{3,3}};
+  
+  
+  
+  /**
+   * List of coordinates for 7 x 7 grid Map1
+   */
+  public static final int[][] MAP1_7 = {{1,7},{4,4},{7,7},{7,4},{4,1}};
+  
+  /**
+   * List of coordinates for 7 x 7 grid Map2
+   */
+  public static final int[][] MAP2_7 = {{4,4},{1,7},{7,7},{7,4},{4,1}};
+  
+  /**
+   * List of coordinates for 7 x 7 grid Map3
+   */
+  public static final int[][] MAP3_7 = {{4,1},{7,4},{7,7},{1,7},{4,4}};
+  
+  /**
+   * List of coordinates for 7 x 7 grid Map4
+   */
+  public static final int[][] MAP4_7 = {{1,4},{4,7},{4,1},{7,4},{7,7}};
+  
+  /**
+   * Variable for the threshold to determine if robot is traveling in straight line. Base = 0 or Height = 0.
+   */
+  public static final double STRAIGHT_LINE = 2.5;
+  
+  /**
+   * The value used to rotate the robot in a full circle.
+   */
+  public static final int FULL_SPIN_DEG = 360;
+  
+  /**
+   * The value used as max reading of US sensor.
+   */
+  public static final int FILTER_MAX = 255;
+  
+  
+  /**
+   * The speed at which the robot will rotate in degrees per second.
+   */
+  public static final int ROTATION_SPEED = 200;
+  
+  /**
+   * The distance from the sensor to the center of rotation in cm.
+   */
+  public static final double SENSOR_TO_CENTER = 10.5;
+  
+  /**
+   * The motor acceleration in degrees per second squared.
+   */
+  public static final int ACCELERATION = 3000;
+  
+  /**
+   * Wait time before positioning at min after finding the min distance.
+   */
+  public static final int WAIT_TIME = 5000;
+  
+  /**
+   * Sleep time of 3 seconds to pause before functionality.
+   */
+  public static final int PAUSE_TIME = 3000;
+  
+  /**
+   * The tile size in centimeters. Note that 30.48 cm = 1 ft.
+   */
+  public static final double TILE_SIZE = 30.48;
+  
+  /**
+   * The tile size in centimeters. Note that 30.48 cm = 1 ft.
+   */
+  public static final double BOARD_SIZE = 4*30.48;
+  
+  /**
+   * Sleep time for display.
+   */
+  public static final long SLEEP_TIME = 200;
+  
+  /**
+   * The wheel radius in centimeters.
+   */
+  public static final double WHEEL_RAD = 2.133;
+  
+  /**
+   * The robot width in centimeters. 11.1155
+   */
+  public static final double BASE_WIDTH = 11.8;
+  
+  /**
+   * The limit of invalid samples that we read from the US sensor before assuming no obstacle. Originally 20
+   */
+  public static final int INVALID_SAMPLE_LIMIT = 20;
+  
+  /**
+   * The ultrasonic sensor.
+   */
+  public static final EV3UltrasonicSensor usSensor = new EV3UltrasonicSensor(SensorPort.S4);
+  
+  /**
+   * The light sensor.
+   */
+  public static final EV3ColorSensor COLOUR_SENSOR = new EV3ColorSensor(SensorPort.S1);
+  
+  /**
+   * The left motor.
+   */
+  public static final EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(MotorPort.D);
+
+  /**
+   * The right motor.
+   */
+  public static final EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(MotorPort.A);
+  
+  /**
+   * The LCD.
+   */
+  public static final TextLCD TEXT_LCD = LocalEV3.get().getTextLCD();
+  
+  /**
+   * The Ultrasonic Localizer.
+   */
+  public static UltrasonicLocalizer ultrasonicLocalizer = UltrasonicLocalizer.getUltrasonicLocalizer();
+  
+  
+  /**
+   * The Odometer.
+   */
+  public static Odometer odo = Odometer.getOdometer();
   
 }
