@@ -56,6 +56,7 @@ public class UltrasonicLocalizer implements Runnable{
         
         while(true) {
           currentDistance = readUsDistance();
+          Display.showText("Dist: " + currentDistance );
           if (currentDistance < minDistance) {
             minDistance = currentDistance;
           }
@@ -76,10 +77,10 @@ public class UltrasonicLocalizer implements Runnable{
         
         sleepFor(PAUSE_TIME);
         //get accurate x position
-        Navigation.turnBy(FULL_SPIN_DEG / 2);
+        Driver.turnBy(FULL_SPIN_DEG / 2);
         double yPos = getAccurateReading();
         //get accurate y position
-        Navigation.turnBy(FULL_SPIN_DEG / 4);
+        Driver.turnBy(FULL_SPIN_DEG / 4);
         double xPos = getAccurateReading();
         
         //reset odometer values to known x, y and theta values.

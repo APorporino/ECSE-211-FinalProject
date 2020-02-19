@@ -23,46 +23,24 @@ public class Resources {
   public static final int[][] MAP0 = {{2,2},{2,1}};
   
   /**
-   * List of coordinates for 4 x 4 grid Map1
+   * List of coordinates for 8 x 8 grid Map1.
    */
-  public static final int[][] MAP1 = {{1,3},{2,2},{3,3},{3,2},{2,1}};
+  public static final int[][] MAP1 = {{1,7},{3,4},{7,7},{7,4},{4,1}};
   
   /**
-   * List of coordinates for 4 x 4 grid Map2
+   * List of coordinates for 8 x 8 grid Map2.
    */
-  public static final int[][] MAP2 = {{2,2},{1,3},{3,3},{3,2},{2,1}};
+  public static final int[][] MAP2 = {{5,4},{1,7},{7,7},{7,4},{4,1}};
   
   /**
-   * List of coordinates for 4 x 4 grid Map3
+   * List of coordinates for 8 x 8 grid Map3.
    */
-  public static final int[][] MAP3 = {{2,1},{3,2},{3,3},{1,3},{2,2}};
+  public static final int[][] MAP3 = {{3,1},{7,4},{7,7},{1,7},{1,4}};
   
   /**
-   * List of coordinates for 4 x 4 grid Map4
+   * List of coordinates for 8 x 8 grid Map4.
    */
-  public static final int[][] MAP4 = {{1,2},{2,3},{2,1},{3,2},{3,3}};
-  
-  
-  
-  /**
-   * List of coordinates for 7 x 7 grid Map1
-   */
-  public static final int[][] MAP1_7 = {{1,7},{4,4},{7,7},{7,4},{4,1}};
-  
-  /**
-   * List of coordinates for 7 x 7 grid Map2
-   */
-  public static final int[][] MAP2_7 = {{4,4},{1,7},{7,7},{7,4},{4,1}};
-  
-  /**
-   * List of coordinates for 7 x 7 grid Map3
-   */
-  public static final int[][] MAP3_7 = {{4,1},{7,4},{7,7},{1,7},{4,4}};
-  
-  /**
-   * List of coordinates for 7 x 7 grid Map4
-   */
-  public static final int[][] MAP4_7 = {{1,4},{4,7},{4,1},{7,4},{7,7}};
+  public static final int[][] MAP4 = {{1,4},{3,7},{3,1},{7,4},{7,7}};
   
   /**
    * Variable for the threshold to determine if robot is traveling in straight line. Base = 0 or Height = 0.
@@ -141,9 +119,19 @@ public class Resources {
   public static final EV3UltrasonicSensor usSensor = new EV3UltrasonicSensor(SensorPort.S4);
   
   /**
-   * The light sensor.
+   * The left light sensor.
    */
-  public static final EV3ColorSensor COLOUR_SENSOR = new EV3ColorSensor(SensorPort.S1);
+  public static final EV3ColorSensor LEFT_COL_SENSOR = new EV3ColorSensor(SensorPort.S2);
+  
+  /**
+   * The right light sensor.
+   */
+  public static final EV3ColorSensor RIGHT_COL_SENSOR = new EV3ColorSensor(SensorPort.S3);
+  
+  /**
+   * The front light sensor.
+   */
+  public static final EV3ColorSensor FRONT_COL_SENSOR = new EV3ColorSensor(SensorPort.S1);
   
   /**
    * The left motor.
@@ -154,6 +142,16 @@ public class Resources {
    * The right motor.
    */
   public static final EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(MotorPort.A);
+  
+  /**
+   * The colorDetector.
+   */
+  public static ColourDetecter colorDetector = new ColourDetecter();
+  
+  /**
+   * The colorDetector.
+   */
+  public static LightLocalizer lightLocalizer = new LightLocalizer();
   
   /**
    * The LCD.
@@ -170,5 +168,6 @@ public class Resources {
    * The Odometer.
    */
   public static Odometer odo = Odometer.getOdometer();
+  
   
 }

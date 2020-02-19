@@ -34,7 +34,7 @@ public class Navigation {
             
             turnTo(angleAndDistance[1]);
             
-            moveStraightFor(angleAndDistance[0]);
+            Driver.moveStraightFor(angleAndDistance[0]);
       }
       
       /**
@@ -46,7 +46,7 @@ public class Navigation {
      public static double[] getAngleAndDistance(int x, int y) {
           double[] positions = odo.getXyt();
           double[] returnValue = new double[2];
-          double angleToTurnBy;
+          double angleToTurnTo;
           double base = x*TILE_SIZE - positions[0];   
           double height = y*TILE_SIZE - positions[1];
           double hypotenus = Math.pow((Math.pow(base, 2) + Math.pow(height, 2)), .5);
@@ -55,42 +55,42 @@ public class Navigation {
           //if its traveling in a straight line
           if (base >= -STRAIGHT_LINE && base <= STRAIGHT_LINE) {
                 if (height > 0) {
-                  angleToTurnBy =0;
+                  angleToTurnTo =0;
                 }else {
-                  angleToTurnBy = FULL_SPIN_DEG / 2;
+                  angleToTurnTo = FULL_SPIN_DEG / 2;
                 }
           } else if (height >= -STRAIGHT_LINE && height <= STRAIGHT_LINE) {
                 if (base > 0) {
-                  angleToTurnBy = FULL_SPIN_DEG / 4;
+                  angleToTurnTo = FULL_SPIN_DEG / 4;
                 }
                 else {
-                  angleToTurnBy = FULL_SPIN_DEG * 3/4;
+                  angleToTurnTo = FULL_SPIN_DEG * 3/4;
                 }
           }//not straight line
           else{
-                    angleToTurnBy = Math.atan(Math.abs(height/base));
-                    angleToTurnBy = Math.abs(Math.toDegrees(angleToTurnBy));
+            angleToTurnTo = Math.atan(Math.abs(height/base));
+            angleToTurnTo = Math.abs(Math.toDegrees(angleToTurnTo));
                     
                     //logic to figure out which angle we want to turn by
                     if (height < 0 && base < 0) {
                       //Quadrant 3
-                      angleToTurnBy = FULL_SPIN_DEG * 3/4 - angleToTurnBy;
+                      angleToTurnTo = FULL_SPIN_DEG * 3/4 - angleToTurnTo;
                       
                     }
                     else if (height < 0) {
                       //Quadrant 4
-                      angleToTurnBy = FULL_SPIN_DEG / 4 + angleToTurnBy;
+                      angleToTurnTo = FULL_SPIN_DEG / 4 + angleToTurnTo;
                       
                     }else if (base < 0) {
                       //Quadrant 2
-                      angleToTurnBy = FULL_SPIN_DEG * 3/4 + angleToTurnBy;
+                      angleToTurnTo = FULL_SPIN_DEG * 3/4 + angleToTurnTo;
                       
                     }else {
                       //Quadrant 1
-                      angleToTurnBy = FULL_SPIN_DEG / 4 - angleToTurnBy;
+                      angleToTurnTo = FULL_SPIN_DEG / 4 - angleToTurnTo;
                     }
           }
-          returnValue[1] = angleToTurnBy;
+          returnValue[1] = angleToTurnTo;
           return returnValue;
       }
       
@@ -106,98 +106,15 @@ public class Navigation {
              if (Math.abs(difference) > FULL_SPIN_DEG / 2) {
                if (difference < 0) {
                  difference = FULL_SPIN_DEG  + difference;
-                 turnBy(difference);
+                 Driver.turnBy(difference);
                }else {
                  difference = difference - FULL_SPIN_DEG;
-                 turnBy(difference);
+                 Driver.turnBy(difference);
                }
              }else {
-              turnBy(difference);
+                 Driver.turnBy(difference);
              }
         
       }
-      
-      /**
-       * Turns the robot by a specified angle. Note that this method is different from
-       * {@code Navigation.turnTo()}. For example, if the robot is facing 90 degrees, calling
-       * {@code turnBy(90)} will make the robot turn to 180 degrees, but calling
-       * {@code Navigation.turnTo(90)} should do nothing (since the robot is already at 90 degrees).
-       * 
-       * @param angle the angle by which to turn, in degrees
-       */
-      public static void turnBy(double angle) {
-        leftMotor.rotate(convertAngle(angle), true);
-        rightMotor.rotate(-convertAngle(angle), false);
-      }
-     
-      /**
-       * Moves the robot straight for the given distance.
-       * 
-       * @param distance in feet (tile sizes), may be negative
-       */
-      public static void moveStraightFor(double distance) {
-        leftMotor.rotate(convertDistance(distance), true);
-        rightMotor.rotate(convertDistance(distance), false);
-      }
-      
-      /**
-       * Converts input distance to the total rotation of each wheel needed to cover that distance.
-       * 
-       * @param distance the input distance
-       * @return the wheel rotations necessary to cover the distance
-       */
-      public static int convertDistance(double distance) {
-        return (int) ((FULL_SPIN_DEG / 2 * distance) / (Math.PI * WHEEL_RAD));
-      }
-      
-      /**
-       * Converts input angle to the total rotation of each wheel needed to rotate the robot by that
-       * angle.
-       * 
-       * @param angle the input angle
-       * @return the wheel rotations necessary to rotate the robot by the angle
-       */
-      public static int convertAngle(double angle) {
-        return convertDistance(Math.PI * BASE_WIDTH * angle / FULL_SPIN_DEG);
-      }
-      
-      /**
-       * Stops both motors.
-       */
-      public static void stopMotors() {
-        leftMotor.stop();
-        rightMotor.stop();
-      }
-      
-      /**
-       * Sets the speed of both motors to the same values.
-       * 
-       * @param speed the speed in degrees per second
-       */
-      public static void setSpeed(int speed) {
-        setSpeeds(speed, speed);
-      }
-      
-      /**
-       * Sets the speed of both motors to different values.
-       * 
-       * @param leftSpeed the speed of the left motor in degrees per second
-       * @param rightSpeed the speed of the right motor in degrees per second
-       */
-      public static void setSpeeds(int leftSpeed, int rightSpeed) {
-        leftMotor.setSpeed(leftSpeed);
-        rightMotor.setSpeed(rightSpeed);
-      }
-      
-      /**
-       * Sets the acceleration of both motors.
-       * 
-       * @param acceleration the acceleration in degrees per second squared
-       */
-      public static void setAcceleration(int acceleration) {
-        leftMotor.setAcceleration(acceleration);
-        rightMotor.setAcceleration(acceleration);
-      }
-      
       
 }

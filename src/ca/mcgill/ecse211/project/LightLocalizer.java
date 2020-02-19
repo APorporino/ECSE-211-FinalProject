@@ -1,114 +1,95 @@
 package ca.mcgill.ecse211.project;
 
+import static ca.mcgill.ecse211.project.Main.sleepFor;
+//static import to avoid duplicating variables and make the code easier to read
 import static ca.mcgill.ecse211.project.Resources.*;
-import java.text.DecimalFormat;
 
-public class LightLocalizer implements Runnable{
-      
-  
-        public static boolean goingStraight = true;
-        
-        private static final long COLOUR_PERIOD = 300;
-        private long timeout = Long.MAX_VALUE;
-        long updateStart;
-        long updateEnd;
-      
-        long startTime = System.currentTimeMillis();
-                
-  
-        public static int currentReading;
-        /**
-         * Buffer (array) to store US samples. Declared as an instance variable to avoid creating a new
-         * array each time {@code readUsSample()} is called.
-         */
-        private float[] lightData = new float[COLOUR_SENSOR.sampleSize()];
-        
-        //private SampleProvider lightValue = LIGHT_SENSOR.getRedMode();         // provides samples from this instance
-        
-        
-        
-        private static LightLocalizer lightLoc; // Returned as singleton
-        
-        /**
-         * Constructor.
-         */
-        private LightLocalizer(){
-        }
-        
-        /**
-         * This method will either return the single instance of the class
-         * Or make a new instance.
-         * @return Instance of UltrasonicLocalizer
-         */
-        public static synchronized LightLocalizer getLightLocalizer() {
-          if (lightLoc == null) {
-            lightLoc = new LightLocalizer();
-          }
-          return lightLoc;
-        }
-        
-        
-        
-        @Override
-        public void run() {
-          if (goingStraight) {
-               while (currentReading < 755) {
-                  Navigation.turnBy(turnBySmallAmount());
-                }
-          }
-          
-        }
-        
-        public void reposition() {
-            int count = 1;
-            while ((currentReading < 755)&&count<20) {
-              currentReading = readLightData();
-              Navigation.turnBy(turnBySmallAmount());
-              count++;
-            }
-        }
-        
-        /**
-         * 
-         */
-        public static double turnBySmallAmount() {
-            int tmp = (int) ( Math.random() * 2 + 1); // will return either 1 or 2
-            if (tmp == 1) {
-              return 2;
-            }else {
-              return -2;
-            }
-        }
-        
-        
-        
-        
-        /**
-         * Returns the filtered distance between the US sensor and an obstacle in cm.
-         * 
-         * @return the filtered distance between the US sensor and an obstacle in cm
-         */
-        public int readLightData() {
-          COLOUR_SENSOR.fetchSample(lightData, 0);
-          // extract from buffer, convert to cm, cast to int, and filter
-          return (int) (lightData[0] * 100.0);
-        }
-        
-        /**
-         * Rudimentary filter - toss out invalid samples corresponding to null signal.
-         * 
-         * @param distance raw distance measured by the sensor in cm
-         * @return the filtered distance in cm
-         */
-        int filter(int distance) {
-          if(distance >= FILTER_MAX) {
-            return FILTER_MAX;
-          }
-          return distance;
-        }
+import lejos.robotics.SampleProvider;
 
-        public static void setGoingStraight(boolean b) {
-              goingStraight = b;
-          
-        }
+public class LightLocalizer {
+  
+      private static final long COLOUR_PERIOD = 3000;
+  
+      private static float colourIDLeft;
+      private static float colourIDRight;
+      static SampleProvider colourValueLeft = LEFT_COL_SENSOR.getMode("Red"); 
+      static SampleProvider colourValueRight = RIGHT_COL_SENSOR.getMode("Red"); 
+      static float[] colourDataLeft = new float[colourValueLeft.sampleSize()];
+      static float[] colourDataRight = new float[colourValueRight.sampleSize()];
+    
+      /**
+       * Get the colorID from the left color sensor.
+       * @return colorIDLeft  variable
+       */
+      public static float getColourIDLeft() {
+        return colourIDLeft;
+      }
+      
+      /**
+       * Get the colorID from the right color sensor.
+       * @return colorIDLeft  variable
+       */
+      public static float getColourIDRight() {
+        return colourIDRight;
+      }
+    
+      /**
+       * This method will localize the robot using light sensor, start the thread.
+       */
+      public void testing() {
+        (new Thread() {
+          public void run() {
+            
+            long updateStart;
+            long updateDuration;
+            updateStart = System.currentTimeMillis();
+            while (true) {
+              LEFT_COL_SENSOR.getMode("Red").fetchSample(colourDataLeft, 0);
+              colourIDLeft = colourDataLeft[0] * 100;
+              
+              RIGHT_COL_SENSOR.getMode("Red").fetchSample(colourDataRight, 0);
+              colourIDRight = colourDataRight[0] * 100;
+              
+              Display.showText("Left: " + colourIDLeft, "Right: " + colourIDRight);
+              // this ensures that the light sensor runs once every 3 ms.
+              updateDuration = System.currentTimeMillis() - updateStart;
+              if (updateDuration < COLOUR_PERIOD) {
+                sleepFor(COLOUR_PERIOD - updateDuration);
+              }
+              
+            }
+          }
+        }).start();
+      }
+    
+      /**
+       * This method move the robot to find the line.
+       * The robot moves forward until it detect a line, then it turns to another direction and repeat.
+       */
+//      public static void movement() {
+//        Driver.setSpeed(FORWARD_SPEED);
+//        (new Thread() {
+//          public void run() {
+//            while (true) {
+//              while ((getcolorID() < colorID_constant)) {
+//                leftMotor.forward();
+//                rightMotor.forward();
+//              }
+//              Driver.turnBy(90.0);
+//    
+//              while ((getcolorID() < colorID_constant)) {
+//                leftMotor.forward();
+//                rightMotor.forward();
+//              }
+//              // corrections for light sensor to make sure it orientated itself perfectly
+//              leftMotor.rotate(Driver.convertDistance(3), true);
+//              rightMotor.rotate(Driver.convertDistance(3), false);
+//              Driver.turnBy(-88);
+//              leftMotor.rotate(Driver.convertDistance(8), true);
+//              rightMotor.rotate(Driver.convertDistance(8), false);
+//              break;
+//            }
+//          }
+//        }).start();
+//      }
 }

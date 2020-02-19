@@ -6,7 +6,7 @@ import static ca.mcgill.ecse211.project.Resources.*;
 /**
  * This class is used to control the robots movement.
  */
-public class SpinDriver {
+public class Driver {
 
   /**
    * Rotates the robot once.

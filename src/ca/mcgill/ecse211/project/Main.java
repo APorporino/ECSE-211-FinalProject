@@ -3,6 +3,7 @@ package ca.mcgill.ecse211.project;
 //static import to avoid duplicating variables and make the code easier to read
 import static ca.mcgill.ecse211.project.Resources.*;
 import lejos.hardware.Button;
+import lejos.hardware.Sound;
 
 /**
  * The main driver class for the lab.
@@ -18,7 +19,10 @@ public class Main {
   //Assuming we start somewhere on 45 degree line in the first square
   //--------------------------------------
     
+    
     localizeToStartingPosition();       //Get to point (1,1)
+    
+    //
     
    //--------------------------------------
     
@@ -31,6 +35,11 @@ public class Main {
     } else if (buttonChoice == Button.ID_RIGHT) {
       Navigation.drive(MAP2);           
     }
+    
+    Display.showText("WELCOME");
+//    Button.waitForAnyPress();
+//    lightLocalizer.testing();
+    Sound.beep();
     
     //--------------------------------------
     
@@ -57,14 +66,14 @@ public class Main {
         }
 
         //Distance from center of robot to position (1,1)
-        double distanceFromPoint = calculateDistanceFromPosition(positions[0], positions[1]);
-        
-        Button.waitForAnyPress();   //wait for press so TA has time to measure the angle
-        
-        //Move to position (1,1)
-        Navigation.turnBy(FULL_SPIN_DEG / 8);
-        Navigation.moveStraightFor(distanceFromPoint);
-        Navigation.turnBy(-(FULL_SPIN_DEG / 8));
+//        double distanceFromPoint = calculateDistanceFromPosition(positions[0], positions[1]);
+//        
+//        Button.waitForAnyPress();   //wait for press so TA has time to measure the angle
+//        
+//        //Move to position (1,1)
+//        Navigation.turnBy(FULL_SPIN_DEG / 8);
+//        Navigation.moveStraightFor(distanceFromPoint);
+//        Navigation.turnBy(-(FULL_SPIN_DEG / 8));
   }
   
   /**
@@ -78,31 +87,33 @@ public class Main {
     int[] positions = new int[2];
     
     //make the robot rotate 360 degrees once. Thread
-    SpinDriver.rotate();
+    Driver.rotate();
     //continuously locate the current position of robot and store minimum position. Thread 
     new Thread(ultrasonicLocalizer).start(); 
     
     sleepFor(WAIT_TIME);    //Must sleep to give it time to do a full circle
     
     //Now it will position itself at the minimum distance
-      SpinDriver.rotate();
-      while (true) {
-        if (ultrasonicLocalizer.currentDistance <= ultrasonicLocalizer.minDistance) {
-          SpinDriver.stopMotorsInstantaneously();
-          positions[0] = ultrasonicLocalizer.minDistance; //store minimum distance. Either x (height) or y (length)
-          break;
-        }
+        Driver.rotate();
+        while (true) {
+          Display.showText(": " + ultrasonicLocalizer.currentDistance);
+          if (ultrasonicLocalizer.currentDistance <= ultrasonicLocalizer.minDistance) {
+            Driver.stopMotorsInstantaneously();
+            positions[0] = ultrasonicLocalizer.minDistance; //store minimum distance. Either x (height) or y (length)
+            
+            break;
+          }
     }
       
      //We are now pointing at the closest wall.
-     SpinDriver.turnBy(FULL_SPIN_DEG / 4);
+      Driver.turnBy(FULL_SPIN_DEG / 4);
      if (ultrasonicLocalizer.currentDistance <= TILE_SIZE) {   //still facing a wall
        positions[1] = ultrasonicLocalizer.currentDistance;  //record distance x (length) from side wall
-       SpinDriver.turnBy(FULL_SPIN_DEG / 4);   //face the 0 degree direction
+       Driver.turnBy(FULL_SPIN_DEG / 4);   //face the 0 degree direction
      }else {    //facing 0 degree direction
-       SpinDriver.turnBy(FULL_SPIN_DEG / 2);  
+       Driver.turnBy(FULL_SPIN_DEG / 2);  
        positions[1] = ultrasonicLocalizer.currentDistance;  //record distance y (height) from bottom wall
-       SpinDriver.turnBy(FULL_SPIN_DEG / 2);  //face 0 degrees again
+       Driver.turnBy(FULL_SPIN_DEG / 2);  //face 0 degrees again
      }
      return positions;
   }
@@ -126,23 +137,23 @@ public class Main {
   public static void goToZero() {
     ultrasonicLocalizer.minDistance = 1500;         //reset the min value
    
-    SpinDriver.rotate();   //make the robot rotate 360 degrees once. 
+    Driver.rotate();   //make the robot rotate 360 degrees once. 
     // it will continuously locate the current position of robot and store minimum position. 
  
     sleepFor(WAIT_TIME);    //Must sleep to give it time to do a full circle
     
-      SpinDriver.rotate();
+    Driver.rotate();
       while (true) {
         if (ultrasonicLocalizer.currentDistance <= ultrasonicLocalizer.minDistance) {
-          SpinDriver.stopMotorsInstantaneously();
+          Driver.stopMotorsInstantaneously();
           break;
         }
       }
       
       //now facing minimum distance to a wall
-      SpinDriver.turnBy(FULL_SPIN_DEG / 4);
+      Driver.turnBy(FULL_SPIN_DEG / 4);
       if (ultrasonicLocalizer.currentDistance <= BOARD_SIZE) {   //still facing a wall
-        SpinDriver.turnBy(FULL_SPIN_DEG / 4);   //face the 0 degree direction
+        Driver.turnBy(FULL_SPIN_DEG / 4);   //face the 0 degree direction
       }
       
     }
