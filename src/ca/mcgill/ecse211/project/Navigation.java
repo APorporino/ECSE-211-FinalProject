@@ -38,19 +38,23 @@ public class Navigation {
             
             turnTo(angleAndDistance[1]);
             
-            double countCm = angleAndDistance[0];
+            Driver.setSpeeds(ROTATION_SPEED, ROTATION_SPEED);
+            Thread ringThread = new Thread(RING_ODO);
+            ringThread.start();
+            leftMotor.forward();
+            rightMotor.forward();
+            boolean farFromRing = true;
             
-            
-            while (ultrasonicLocalizer.currentDistance > RING_THRESHOLD) {
-                Driver.moveStraightFor(1);
-                countCm++;
+            while (farFromRing) {
+               if (ultrasonicLocalizer.currentDistance <= RING_THRESHOLD) {
+                   Driver.stopMotorsInstantaneously();
+                   farFromRing = false;
+                   Sound.twoBeeps();
+                   Button.waitForAnyPress();
+               }
             }
-            Driver.stopMotorsInstantaneously();
-            Sound.twoBeeps();
-            Button.waitForAnyPress();
-            double value = angleAndDistance[0] - countCm;
-            System.out.println("DIstance: " + value);
-            Driver.moveStraightFor(-(angleAndDistance[0] - countCm));
+            Driver.moveStraightFor(angleAndDistance[0] - RING_ODO.getXyt()[1] );
+            ringThread.interrupt();
       }
       
       /**

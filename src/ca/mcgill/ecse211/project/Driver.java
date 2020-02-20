@@ -25,6 +25,23 @@ public class Driver {
     }).start();
   }
   
+  /**
+   * Drives robot straight.
+   */
+  public static void driveStraight() {
+    // spawn a new Thread to avoid this method blocking
+    (new Thread() {
+      public void run() {
+        
+         // reset the motors
+         stopMotorsInstantaneously();
+         setSpeeds(ROTATION_SPEED,ROTATION_SPEED);
+         turnBy(FULL_SPIN_DEG);
+      
+      }
+    }).start();
+  }
+  
   public static void drive() {
     stopMotors();
     setSpeeds(LINE_DETECTION_SPEED,LINE_DETECTION_SPEED);
