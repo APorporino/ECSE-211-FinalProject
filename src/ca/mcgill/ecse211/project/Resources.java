@@ -194,10 +194,5 @@ public class Resources {
    */
   public static Odometer odo = new Odometer();
   
-  /**
-   * The Odometer used for the rings.
-   */
-  public static Odometer RING_ODO = new Odometer();
-  
   
 }

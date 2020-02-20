@@ -18,12 +18,27 @@ public class Navigation {
                   travelTo(elem[0], elem[1]);
                   
                   sleepFor(PAUSE_TIME);
+                  
+                  localizeToPoint(elem[0], elem[1]);
+                  //ultrasonicLocalizer.localizeToPoint(elem[0], elem[1]);
                 }
-                int lastElement = map.length -1;
+               // int lastElement = map.length -1;
                
-                ultrasonicLocalizer.localizeToPoint(map[lastElement][0], map[lastElement][1]);      //localize at the last point
+               // ultrasonicLocalizer.localizeToPoint(map[lastElement][0], map[lastElement][1]);      //localize at the last point
           }
         }).start();
+      }
+      
+      /**
+       * 
+       */
+      public static void localizeToPoint(int x, int y) {
+        double currentAngle = odo.getXyt()[2];
+        turnTo(90);
+        Driver.moveStraightFor(-2*LIGHT_TO_CENTER);
+        Main.localizeToOneOne();
+        turnTo(currentAngle);
+        
       }
       
       /**
@@ -38,15 +53,12 @@ public class Navigation {
             
             turnTo(angleAndDistance[1]);
             
+            double[] odoValuesBefore = odo.getXyt();
+            
             Driver.setSpeeds(ROTATION_SPEED, ROTATION_SPEED);
-            RING_ODO.setXyt(0, 0, 0);
-            Thread ringThread = new Thread(RING_ODO);
-            ringThread.start();
             leftMotor.forward();
             rightMotor.forward();
             boolean farFromRing = true;
-            
-           
             
             while (farFromRing) {
                if (ultrasonicLocalizer.currentDistance <= RING_THRESHOLD) {
@@ -58,14 +70,19 @@ public class Navigation {
                    topMotor.rotate(-180);
                }
             }
+            
+            double[] odoValuesAfter = odo.getXyt();
+            
+            double deltaX = Math.pow((odoValuesBefore[0] - odoValuesAfter[0]),2);      
+            double deltaY = Math.pow((odoValuesBefore[1] - odoValuesAfter[1]),2);
+            double distanceTravelled = Math.pow(deltaX+deltaY, .5);
+            
             TEXT_LCD.clear();
             TEXT_LCD.drawString("Angle" + angleAndDistance[1],0,1);
             TEXT_LCD.drawString("Distance" + angleAndDistance[0],0,2);
-            TEXT_LCD.drawString("ODO Y" + RING_ODO.getXyt()[1],0,3);
-            TEXT_LCD.drawString("ODO X" + RING_ODO.getXyt()[0],0,4);
+            TEXT_LCD.drawString("Travlled" + distanceTravelled,0,2);
             Button.waitForAnyPress();
-            Driver.moveStraightFor(angleAndDistance[0] - RING_ODO.getXyt()[1]);
-            ringThread.interrupt();
+            Driver.moveStraightFor(angleAndDistance[0] - distanceTravelled);
       }
       
       /**
