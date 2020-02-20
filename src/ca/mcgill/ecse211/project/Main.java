@@ -22,7 +22,9 @@ public class Main {
    
     
     //Driver.drive();
-    new Thread(new Display()).start();
+    //new Thread(new Display()).start();
+    new Thread(ultrasonicLocalizer).start(); 
+    
     localizeToStartingPosition();       //Get to point (1,1)
     
     new Thread(odo).start();
@@ -73,7 +75,7 @@ public class Main {
         
        
         lightLocalizer.readLightData();
-        sleepFor(3000);
+        sleepFor(500);
         localizeToOneOne();
         Driver.moveStraightFor(LIGHT_TO_CENTER);
         Driver.turnBy(90);
@@ -100,6 +102,44 @@ public class Main {
 //        sleepFor(3000);
 //        Driver.moveStraightFor(-3*LIGHT_TO_CENTER);
 //        localizeToOneOne();
+  }
+  
+  /**
+   * This method will position the robot at 0 degrees.
+   * 
+   * @return int[] Integer array containing the x and y position of the robot from the two walls.
+   * 
+   */
+  public static int[] localizeToZeroDeg() {
+    ultrasonicLocalizer.minDistance = 1500;
+    int[] positions = new int[2];
+    
+    //make the robot rotate 360 degrees once. Thread
+    Driver.rotate();
+    //continuously locate the current position of robot and store minimum position. Thread 
+    
+    
+    sleepFor(WAIT_TIME);    //Must sleep to give it time to do a full circle
+    
+    //Now it will position itself at the minimum distance
+        Driver.rotate();
+        while (true) {
+          if (ultrasonicLocalizer.currentDistance <= ultrasonicLocalizer.minDistance) {
+            Driver.stopMotorsInstantaneously();
+            positions[0] = ultrasonicLocalizer.minDistance; //store minimum distance. Either x (height) or y (length)
+            
+            break;
+          }
+    }
+      
+     //We are now pointing at the closest wall.
+     Driver.turnBy(FULL_SPIN_DEG / 4);
+     if (ultrasonicLocalizer.currentDistance <= TILE_SIZE) {   //still facing a wall
+       positions[1] = ultrasonicLocalizer.currentDistance;  //record distance x (length) from side wall
+       Driver.turnBy(FULL_SPIN_DEG / 4);   //face the 0 degree direction
+     }
+     
+     return positions;
   }
   
   /**
@@ -146,48 +186,6 @@ public class Main {
       }
      Driver.setSpeeds(ROTATION_SPEED, ROTATION_SPEED);
     
-  }
-  
-  /**
-   * This method will position the robot at 0 degrees.
-   * 
-   * @return int[] Integer array containing the x and y position of the robot from the two walls.
-   * 
-   */
-  public static int[] localizeToZeroDeg() {
-    ultrasonicLocalizer.minDistance = 1500;
-    int[] positions = new int[2];
-    
-    //make the robot rotate 360 degrees once. Thread
-    Driver.rotate();
-    //continuously locate the current position of robot and store minimum position. Thread 
-    new Thread(ultrasonicLocalizer).start(); 
-    
-    sleepFor(WAIT_TIME);    //Must sleep to give it time to do a full circle
-    
-    //Now it will position itself at the minimum distance
-        Driver.rotate();
-        while (true) {
-          if (ultrasonicLocalizer.currentDistance <= ultrasonicLocalizer.minDistance) {
-            Driver.stopMotorsInstantaneously();
-            positions[0] = ultrasonicLocalizer.minDistance; //store minimum distance. Either x (height) or y (length)
-            
-            break;
-          }
-    }
-      
-     //We are now pointing at the closest wall.
-     Driver.turnBy(FULL_SPIN_DEG / 4);
-     if (ultrasonicLocalizer.currentDistance <= TILE_SIZE) {   //still facing a wall
-       positions[1] = ultrasonicLocalizer.currentDistance;  //record distance x (length) from side wall
-       Driver.turnBy(FULL_SPIN_DEG / 4);   //face the 0 degree direction
-     }
-//     }else {    //facing 0 degree direction
-//       Driver.turnBy(FULL_SPIN_DEG / 2);  
-//       positions[1] = ultrasonicLocalizer.currentDistance;  //record distance y (height) from bottom wall
-//       Driver.turnBy(FULL_SPIN_DEG / 2);  //face 0 degrees again
-//     }
-     return positions;
   }
   
   /**

@@ -20,7 +20,7 @@ public class Resources {
   /**
    * List of coordinates for 4 x 4 grid Map1
    */
-  public static final int[][] MAP0 = {{3,3}};
+  public static final int[][] MAP0 = {{3,3}, {3,1}, {1,3}} ;
   
   /**
    * List of coordinates for 8 x 8 grid Map1.
@@ -162,6 +162,11 @@ public class Resources {
    * The right motor.
    */
   public static final EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(MotorPort.A);
+  
+  /**
+   * The top motor which is used to lower the colour sensor to 1 cm above the ring.
+   */
+  public static final EV3LargeRegulatedMotor topMotor = new EV3LargeRegulatedMotor(MotorPort.B);
   
   /**
    * The colorDetector.

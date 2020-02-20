@@ -85,7 +85,7 @@ public class UltrasonicLocalizer implements Runnable{
       public void localizeToPoint(int x, int y) {
         double currentAngle = odo.getXyt()[2];
         
-        Main.goToZero();    //position robot at zero degrees.
+        Main.localizeToZeroDeg();    //position robot at zero degrees.
         
         sleepFor(PAUSE_TIME);
         //get accurate x position

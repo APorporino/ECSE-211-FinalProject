@@ -21,7 +21,7 @@ public class Navigation {
                 }
                 int lastElement = map.length -1;
                
-                //ultrasonicLocalizer.localizeToPoint(map[lastElement][0], map[lastElement][1]);      //localize at the last point
+                ultrasonicLocalizer.localizeToPoint(map[lastElement][0], map[lastElement][1]);      //localize at the last point
           }
         }).start();
       }
@@ -39,21 +39,32 @@ public class Navigation {
             turnTo(angleAndDistance[1]);
             
             Driver.setSpeeds(ROTATION_SPEED, ROTATION_SPEED);
+            RING_ODO.setXyt(0, 0, 0);
             Thread ringThread = new Thread(RING_ODO);
             ringThread.start();
             leftMotor.forward();
             rightMotor.forward();
             boolean farFromRing = true;
             
+           
+            
             while (farFromRing) {
                if (ultrasonicLocalizer.currentDistance <= RING_THRESHOLD) {
                    Driver.stopMotorsInstantaneously();
                    farFromRing = false;
                    Sound.twoBeeps();
+                   topMotor.rotate(180);
                    Button.waitForAnyPress();
+                   topMotor.rotate(-180);
                }
             }
-            Driver.moveStraightFor(angleAndDistance[0] - RING_ODO.getXyt()[1] );
+            TEXT_LCD.clear();
+            TEXT_LCD.drawString("Angle" + angleAndDistance[1],0,1);
+            TEXT_LCD.drawString("Distance" + angleAndDistance[0],0,2);
+            TEXT_LCD.drawString("ODO Y" + RING_ODO.getXyt()[1],0,3);
+            TEXT_LCD.drawString("ODO X" + RING_ODO.getXyt()[0],0,4);
+            Button.waitForAnyPress();
+            Driver.moveStraightFor(angleAndDistance[0] - RING_ODO.getXyt()[1]);
             ringThread.interrupt();
       }
       
