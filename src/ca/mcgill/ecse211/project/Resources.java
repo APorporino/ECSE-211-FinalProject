@@ -20,7 +20,7 @@ public class Resources {
   /**
    * List of coordinates for 4 x 4 grid Map1
    */
-  public static final int[][] MAP0 = {{2,2},{2,1}};
+  public static final int[][] MAP0 = {{3,3}};
   
   /**
    * List of coordinates for 8 x 8 grid Map1.
@@ -81,7 +81,7 @@ public class Resources {
   /**
    * The motor acceleration in degrees per second squared.
    */
-  public static final int ACCELERATION = 3000;
+  public static final int ACCELERATION = 300;
   
   /**
    * Wait time before positioning at min after finding the min distance.
@@ -127,6 +127,11 @@ public class Resources {
    * This constant will be used to determine if the light is on top of a black line.
    */
   public static final int BLACK_LINE_THRESHOLD = 40;
+  
+  /**
+   * 
+   */
+  public static final int RING_THRESHOLD = 5;
   
   /**
    * The ultrasonic sensor.

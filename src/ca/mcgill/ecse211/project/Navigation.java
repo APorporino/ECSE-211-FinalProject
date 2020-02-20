@@ -1,6 +1,8 @@
 package ca.mcgill.ecse211.project;
 
 import static ca.mcgill.ecse211.project.Resources.*;
+import lejos.hardware.Button;
+import lejos.hardware.Sound;
 import static ca.mcgill.ecse211.project.Main.sleepFor;
 
 
@@ -14,11 +16,12 @@ public class Navigation {
           public void run() {
                 for (int[] elem: map) {
                   travelTo(elem[0], elem[1]);
+                  
                   sleepFor(PAUSE_TIME);
                 }
                 int lastElement = map.length -1;
                
-                ultrasonicLocalizer.localizeToPoint(map[lastElement][0], map[lastElement][1]);      //localize at the last point
+                //ultrasonicLocalizer.localizeToPoint(map[lastElement][0], map[lastElement][1]);      //localize at the last point
           }
         }).start();
       }
@@ -29,12 +32,25 @@ public class Navigation {
        * @param y
        */
       public static void travelTo(int x, int y) {
+              
             //Distance from center of robot to position (1,1)
             double[] angleAndDistance = getAngleAndDistance(x, y);
             
             turnTo(angleAndDistance[1]);
             
-            Driver.moveStraightFor(angleAndDistance[0]);
+            double countCm = angleAndDistance[0];
+            
+            
+            while (ultrasonicLocalizer.currentDistance > RING_THRESHOLD) {
+                Driver.moveStraightFor(1);
+                countCm++;
+            }
+            Driver.stopMotorsInstantaneously();
+            Sound.twoBeeps();
+            Button.waitForAnyPress();
+            double value = angleAndDistance[0] - countCm;
+            System.out.println("DIstance: " + value);
+            Driver.moveStraightFor(-(angleAndDistance[0] - countCm));
       }
       
       /**

@@ -25,6 +25,8 @@ public class Main {
     new Thread(new Display()).start();
     localizeToStartingPosition();       //Get to point (1,1)
     
+    new Thread(odo).start();
+    Navigation.drive(MAP0);
     //
     
    //--------------------------------------
