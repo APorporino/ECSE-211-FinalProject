@@ -17,7 +17,7 @@ public class Driver {
       public void run() {
         
          // reset the motors
-         stopMotors();
+         stopMotorsInstantaneously();
          setSpeeds(ROTATION_SPEED,ROTATION_SPEED);
          turnBy(FULL_SPIN_DEG);
       
@@ -27,7 +27,7 @@ public class Driver {
   
   public static void drive() {
     stopMotors();
-    setSpeeds(ROTATION_SPEED,ROTATION_SPEED);
+    setSpeeds(LINE_DETECTION_SPEED,LINE_DETECTION_SPEED);
     leftMotor.forward();
     rightMotor.forward();
   }
@@ -63,6 +63,28 @@ public class Driver {
     int speedR = rightMotor.getSpeed();
     setSpeeds(0,0);
     leftMotor.stop();
+    rightMotor.stop();
+    setSpeeds(speedL, speedR);
+  }
+  
+  /**
+   * Stops the left motor instantaneously.
+   */
+  public static void leftMotorStop() {
+    int speedL = leftMotor.getSpeed();
+    int speedR = rightMotor.getSpeed();
+    setSpeeds(0,speedR);
+    leftMotor.stop();
+    setSpeeds(speedL, speedR);
+  }
+  
+  /**
+   * Stops the right motor instantaneously.
+   */
+  public static void rightMotorStop() {
+    int speedL = leftMotor.getSpeed();
+    int speedR = rightMotor.getSpeed();
+    setSpeeds(speedL,0);
     rightMotor.stop();
     setSpeeds(speedL, speedR);
   }

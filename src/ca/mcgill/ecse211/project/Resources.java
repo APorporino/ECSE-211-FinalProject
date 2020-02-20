@@ -64,9 +64,19 @@ public class Resources {
   public static final int ROTATION_SPEED = 200;
   
   /**
+   * The speed at which the robot will rotate in degrees per second.
+   */
+  public static final int LINE_DETECTION_SPEED = 100;
+  
+  /**
    * The distance from the sensor to the center of rotation in cm.
    */
   public static final double SENSOR_TO_CENTER = 10.5;
+  
+  /**
+   * Distance from light to center of rotation in cm.
+   */
+  public static final double LIGHT_TO_CENTER = 4;
   
   /**
    * The motor acceleration in degrees per second squared.
@@ -106,12 +116,17 @@ public class Resources {
   /**
    * The robot width in centimeters. 11.1155
    */
-  public static final double BASE_WIDTH = 11.8;
+  public static final double BASE_WIDTH = 12.2;
   
   /**
    * The limit of invalid samples that we read from the US sensor before assuming no obstacle. Originally 20
    */
   public static final int INVALID_SAMPLE_LIMIT = 20;
+  
+  /**
+   * This constant will be used to determine if the light is on top of a black line.
+   */
+  public static final int BLACK_LINE_THRESHOLD = 40;
   
   /**
    * The ultrasonic sensor.

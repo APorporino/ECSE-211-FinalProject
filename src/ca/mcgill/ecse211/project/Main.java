@@ -19,27 +19,30 @@ public class Main {
   //Assuming we start somewhere on 45 degree line in the first square
   //--------------------------------------
     
+   
     
+    //Driver.drive();
+    new Thread(new Display()).start();
     localizeToStartingPosition();       //Get to point (1,1)
     
     //
     
    //--------------------------------------
     
-    int buttonChoice = chooseMap();
-
-    new Thread(odo).start();
-    new Thread(new Display()).start();
-    if (buttonChoice == Button.ID_LEFT) {
-      Navigation.drive(MAP1);            //call Navigation.drive to run through specific map
-    } else if (buttonChoice == Button.ID_RIGHT) {
-      Navigation.drive(MAP2);           
-    }
-    
-    Display.showText("WELCOME");
-//    Button.waitForAnyPress();
-//    lightLocalizer.testing();
-    Sound.beep();
+//    int buttonChoice = chooseMap();
+//
+//    new Thread(odo).start();
+//    new Thread(new Display()).start();
+//    if (buttonChoice == Button.ID_LEFT) {
+//      Navigation.drive(MAP1);            //call Navigation.drive to run through specific map
+//    } else if (buttonChoice == Button.ID_RIGHT) {
+//      Navigation.drive(MAP2);           
+//    }
+//    
+//    Display.showText("WELCOME");
+////    Button.waitForAnyPress();
+////    lightLocalizer.testing();
+//    Sound.beep();
     
     //--------------------------------------
     
@@ -60,20 +63,87 @@ public class Main {
         
         //--------------------------------------
         buttonChoice = chooseLocalize();
+        
         if (buttonChoice == Button.ID_LEFT | buttonChoice == Button.ID_RIGHT) {
           positions = localizeToZeroDeg();  //Position of robot now stored
          
         }
-
-        //Distance from center of robot to position (1,1)
+        
+       
+        lightLocalizer.readLightData();
+        sleepFor(3000);
+        localizeToOneOne();
+        Driver.moveStraightFor(LIGHT_TO_CENTER);
+        Driver.turnBy(90);
+        localizeToOneOne();
+        Driver.moveStraightFor(LIGHT_TO_CENTER);
+        Driver.turnBy(-90);
+        
+     
+        Driver.moveStraightFor(-2*LIGHT_TO_CENTER);
+        localizeToOneOne();
+        Driver.moveStraightFor(LIGHT_TO_CENTER);
+      
+//        //Distance from center of robot to position (1,1)
 //        double distanceFromPoint = calculateDistanceFromPosition(positions[0], positions[1]);
 //        
 //        Button.waitForAnyPress();   //wait for press so TA has time to measure the angle
 //        
 //        //Move to position (1,1)
-//        Navigation.turnBy(FULL_SPIN_DEG / 8);
-//        Navigation.moveStraightFor(distanceFromPoint);
-//        Navigation.turnBy(-(FULL_SPIN_DEG / 8));
+//        Driver.turnBy(FULL_SPIN_DEG / 8);
+//        Driver.moveStraightFor(distanceFromPoint);
+//        Driver.turnBy(-(FULL_SPIN_DEG / 8));
+//        
+//        lightLocalizer.testing();
+//        sleepFor(3000);
+//        Driver.moveStraightFor(-3*LIGHT_TO_CENTER);
+//        localizeToOneOne();
+  }
+  
+  /**
+   * This method will move the robot to point 1, 1.
+   * Assumptions are it is facing zero degrees somewhere in the first grid (0,0).
+   */
+  public static void localizeToOneOne() {
+    boolean leftLineNotDetected = true;
+    boolean rightLineNotDetected = true;
+    
+    //Drive robot straight
+    Driver.drive();
+    while (leftLineNotDetected & rightLineNotDetected) {
+        
+        if (lightLocalizer.colourIDLeft < BLACK_LINE_THRESHOLD) {
+          Driver.stopMotorsInstantaneously();
+           leftLineNotDetected = false;
+        }
+        
+        if (lightLocalizer.colourIDRight < BLACK_LINE_THRESHOLD) {
+          Driver.stopMotorsInstantaneously();
+          rightLineNotDetected = false;
+       }
+    }
+    
+      if (rightLineNotDetected) {
+        Driver.setSpeeds(0, 20);
+        rightMotor.forward();
+        while (rightLineNotDetected) {
+            if (lightLocalizer.colourIDRight < BLACK_LINE_THRESHOLD) {
+              Driver.stopMotorsInstantaneously();
+              rightLineNotDetected = false;
+           }
+        }
+      }else {
+        Driver.setSpeeds(20, 0);
+        leftMotor.forward();
+        while (leftLineNotDetected) {
+            if (lightLocalizer.colourIDLeft < BLACK_LINE_THRESHOLD) {
+              Driver.stopMotorsInstantaneously();
+              leftLineNotDetected = false;
+           }
+        }
+      }
+     Driver.setSpeeds(ROTATION_SPEED, ROTATION_SPEED);
+    
   }
   
   /**
@@ -96,7 +166,6 @@ public class Main {
     //Now it will position itself at the minimum distance
         Driver.rotate();
         while (true) {
-          Display.showText(": " + ultrasonicLocalizer.currentDistance);
           if (ultrasonicLocalizer.currentDistance <= ultrasonicLocalizer.minDistance) {
             Driver.stopMotorsInstantaneously();
             positions[0] = ultrasonicLocalizer.minDistance; //store minimum distance. Either x (height) or y (length)
@@ -106,15 +175,16 @@ public class Main {
     }
       
      //We are now pointing at the closest wall.
-      Driver.turnBy(FULL_SPIN_DEG / 4);
+     Driver.turnBy(FULL_SPIN_DEG / 4);
      if (ultrasonicLocalizer.currentDistance <= TILE_SIZE) {   //still facing a wall
        positions[1] = ultrasonicLocalizer.currentDistance;  //record distance x (length) from side wall
        Driver.turnBy(FULL_SPIN_DEG / 4);   //face the 0 degree direction
-     }else {    //facing 0 degree direction
-       Driver.turnBy(FULL_SPIN_DEG / 2);  
-       positions[1] = ultrasonicLocalizer.currentDistance;  //record distance y (height) from bottom wall
-       Driver.turnBy(FULL_SPIN_DEG / 2);  //face 0 degrees again
      }
+//     }else {    //facing 0 degree direction
+//       Driver.turnBy(FULL_SPIN_DEG / 2);  
+//       positions[1] = ultrasonicLocalizer.currentDistance;  //record distance y (height) from bottom wall
+//       Driver.turnBy(FULL_SPIN_DEG / 2);  //face 0 degrees again
+//     }
      return positions;
   }
   

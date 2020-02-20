@@ -10,6 +10,11 @@ import static ca.mcgill.ecse211.project.Main.sleepFor;
  *
  */
 public class UltrasonicLocalizer implements Runnable{
+  
+      /**
+       * Period for ultrasonic reading.
+       */
+      private static final long PERIOD = 300;
       
       /**
        * The distance remembered by the {@code filter()} method.
@@ -55,10 +60,17 @@ public class UltrasonicLocalizer implements Runnable{
       public void run() {
         
         while(true) {
+          long updateStart;
+          long updateDuration;
+          updateStart = System.currentTimeMillis();
+          
           currentDistance = readUsDistance();
-          Display.showText("Dist: " + currentDistance );
           if (currentDistance < minDistance) {
             minDistance = currentDistance;
+          }
+          updateDuration = System.currentTimeMillis() - updateStart;
+          if (updateDuration < PERIOD) {
+            sleepFor(PERIOD - updateDuration);
           }
           
         }   

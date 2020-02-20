@@ -10,7 +10,7 @@ import java.text.DecimalFormat;
 public class Display implements Runnable {
 
   private double[] position;
-  private static final long DISPLAY_PERIOD = 5;
+  private static final long DISPLAY_PERIOD = 30;
   private long timeout = Long.MAX_VALUE;
   
   /**
@@ -19,11 +19,13 @@ public class Display implements Runnable {
   public void run() {
     while (true) { // operates continuously
       TEXT_LCD.clear();
-      TEXT_LCD.drawString("Distance from wall... ", 0, 0);
+      //TEXT_LCD.drawString("Distance from wall... ", 0, 0);
       
       // print last US reading
-      TEXT_LCD.drawString("US Distance: " + ultrasonicLocalizer.readUsDistance(), 0, 1);
-      TEXT_LCD.drawString("Min Distance: " + ultrasonicLocalizer.minDistance, 0, 2);
+//      TEXT_LCD.drawString("LEFT ID: " + lightLocalizer.colourIDLeft,0,0);
+//      TEXT_LCD.drawString("RIGHT ID: " + lightLocalizer.colourIDRight,0,2);
+      TEXT_LCD.drawString("US Distance: " + ultrasonicLocalizer.readUsDistance(), 0, 5);
+      TEXT_LCD.drawString("Min Distance: " + ultrasonicLocalizer.minDistance, 0, 6);
       Main.sleepFor(SLEEP_TIME);
     }
   }

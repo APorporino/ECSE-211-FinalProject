@@ -8,10 +8,10 @@ import lejos.robotics.SampleProvider;
 
 public class LightLocalizer {
   
-      private static final long COLOUR_PERIOD = 3000;
+      private static final long COLOUR_PERIOD = 100;
   
-      private static float colourIDLeft;
-      private static float colourIDRight;
+      public static float colourIDLeft;
+      public static float colourIDRight;
       static SampleProvider colourValueLeft = LEFT_COL_SENSOR.getMode("Red"); 
       static SampleProvider colourValueRight = RIGHT_COL_SENSOR.getMode("Red"); 
       static float[] colourDataLeft = new float[colourValueLeft.sampleSize()];
@@ -36,7 +36,7 @@ public class LightLocalizer {
       /**
        * This method will localize the robot using light sensor, start the thread.
        */
-      public void testing() {
+      public void readLightData() {
         (new Thread() {
           public void run() {
             
@@ -50,7 +50,7 @@ public class LightLocalizer {
               RIGHT_COL_SENSOR.getMode("Red").fetchSample(colourDataRight, 0);
               colourIDRight = colourDataRight[0] * 100;
               
-              Display.showText("Left: " + colourIDLeft, "Right: " + colourIDRight);
+              //Display.showText("Left: " + colourIDLeft, "Right: " + colourIDRight);
               // this ensures that the light sensor runs once every 3 ms.
               updateDuration = System.currentTimeMillis() - updateStart;
               if (updateDuration < COLOUR_PERIOD) {

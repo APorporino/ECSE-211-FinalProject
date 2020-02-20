@@ -56,7 +56,7 @@ public class ColourDetecter {
         /**
          * This method will localize the robot using light sensor, start the thread.
          */
-        public void testing() {
+        public void readColourData() {
           (new Thread() {
               public void run() {
                   long updateStart;
@@ -67,7 +67,7 @@ public class ColourDetecter {
                       colourRed = colourData[0];
                       colourGreen = colourData[1];
                       colourBlue = colourData[2];
-                      Display.showText("Red: " + colourRed, "Green: " + colourGreen, "Blue: " + colourBlue);
+                      //Display.showText("Red: " + colourRed, "Green: " + colourGreen, "Blue: " + colourBlue);
                       // this ensures that the light sensor runs once every 3 ms.
                       updateDuration = System.currentTimeMillis() - updateStart;
                       if (updateDuration < COLOUR_PERIOD) {
