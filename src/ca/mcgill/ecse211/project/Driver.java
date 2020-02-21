@@ -15,16 +15,16 @@ public class Driver {
     // spawn a new Thread to avoid this method blocking
     (new Thread() {
       public void run() {
-        
-         // reset the motors
-         stopMotorsInstantaneously();
-         setSpeeds(ROTATION_SPEED,ROTATION_SPEED);
-         turnBy(FULL_SPIN_DEG);
-      
+
+        // reset the motors
+        stopMotorsInstantaneously();
+        setSpeeds(ROTATION_SPEED,ROTATION_SPEED);
+        turnBy(FULL_SPIN_DEG);
+
       }
     }).start();
   }
-  
+
   /**
    * Drives robot straight.
    */
@@ -32,23 +32,23 @@ public class Driver {
     // spawn a new Thread to avoid this method blocking
     (new Thread() {
       public void run() {
-        
-         // reset the motors
-         stopMotorsInstantaneously();
-         setSpeeds(ROTATION_SPEED,ROTATION_SPEED);
-         turnBy(FULL_SPIN_DEG);
-      
+
+        // reset the motors
+        stopMotorsInstantaneously();
+        setSpeeds(ROTATION_SPEED,ROTATION_SPEED);
+        turnBy(FULL_SPIN_DEG);
+
       }
     }).start();
   }
-  
+
   public static void drive() {
     stopMotors();
     setSpeeds(LINE_DETECTION_SPEED,LINE_DETECTION_SPEED);
     leftMotor.forward();
     rightMotor.forward();
   }
-  
+
   /**
    * Turns the robot by a specified angle. Note that this method is different from
    * {@code Navigation.turnTo()}. For example, if the robot is facing 90 degrees, calling
@@ -61,7 +61,7 @@ public class Driver {
     leftMotor.rotate(convertAngle(angle), true);
     rightMotor.rotate(-convertAngle(angle), false);
   }
-  
+
   /**
    * Stops both motors.
    */
@@ -70,12 +70,12 @@ public class Driver {
     leftMotor.stop();
     rightMotor.stop();
   }
-  
+
   /**
    * Stops both motors.
    */
   public static void stopMotorsInstantaneously() {
-   
+
     int speedL = leftMotor.getSpeed();
     int speedR = rightMotor.getSpeed();
     setSpeeds(0,0);
@@ -83,7 +83,7 @@ public class Driver {
     rightMotor.stop();
     setSpeeds(speedL, speedR);
   }
-  
+
   /**
    * Stops the left motor instantaneously.
    */
@@ -94,7 +94,7 @@ public class Driver {
     leftMotor.stop();
     setSpeeds(speedL, speedR);
   }
-  
+
   /**
    * Stops the right motor instantaneously.
    */
@@ -105,7 +105,7 @@ public class Driver {
     rightMotor.stop();
     setSpeeds(speedL, speedR);
   }
-  
+
   /**
    * Sets the speed of both motors to the same values.
    * 
@@ -114,7 +114,7 @@ public class Driver {
   public static void setSpeed(int speed) {
     setSpeeds(speed, speed);
   }
-  
+
   /**
    * Sets the speed of both motors to different values.
    * 
@@ -125,7 +125,7 @@ public class Driver {
     leftMotor.setSpeed(leftSpeed);
     rightMotor.setSpeed(rightSpeed);
   }
-  
+
   /**
    * Sets the acceleration of both motors.
    * 
@@ -135,7 +135,7 @@ public class Driver {
     leftMotor.setAcceleration(acceleration);
     rightMotor.setAcceleration(acceleration);
   }
-  
+
   /**
    * Moves the robot straight for the given distance.
    * 
@@ -145,7 +145,7 @@ public class Driver {
     leftMotor.rotate(convertDistance(distance), true);
     rightMotor.rotate(convertDistance(distance), false);
   }
-  
+
   /**
    * Converts input distance to the total rotation of each wheel needed to cover that distance.
    * 
@@ -155,7 +155,7 @@ public class Driver {
   public static int convertDistance(double distance) {
     return (int) ((FULL_SPIN_DEG / 2 * distance) / (Math.PI * WHEEL_RAD));
   }
-  
+
   /**
    * Converts input angle to the total rotation of each wheel needed to rotate the robot by that
    * angle.
@@ -166,6 +166,6 @@ public class Driver {
   public static int convertAngle(double angle) {
     return convertDistance(Math.PI * BASE_WIDTH * angle / FULL_SPIN_DEG);
   }
-  
+
 
 }
