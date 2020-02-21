@@ -66,6 +66,8 @@ public class ColourDetecter implements Runnable{
 
   public  COLOUR updateRingColour(double colourRed, double colourGreen, double colourBlue) {
     this.ringColour = COLOUR.NONE;
+    
+    //double[] normalizedColours = normalize(colourRed,colourGreen, colourBlue);
 
     if ((colourBlue >= B_MEAN_BLUE - 100*B_SD_BLUE) & (colourBlue <= B_MEAN_BLUE + 100*B_SD_BLUE)) {
       System.out.println("b1\n");
@@ -117,6 +119,13 @@ public class ColourDetecter implements Runnable{
     return this.ringColour;
 
   }
+  
+//  /**
+//   * This method will return normailzed values of a sample RGB reading.
+//   */
+//  public static double[3] normailze(double colourRed, double colourGreen, double colourBlue) {
+//    
+//  }
 
 
 }

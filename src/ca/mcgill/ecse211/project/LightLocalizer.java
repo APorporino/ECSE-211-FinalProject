@@ -92,7 +92,7 @@ public class LightLocalizer {
        * @param y yPosition to localize to in grid coordinates
        */
       public static void lightLocToPoint(int x, int y) {
-        //double currentAngle = odo.getXyt()[2];
+        double currentAngle = odo.getXyt()[2];
         double lineAngles[] = new double[4];
         int counter = 0;
         
@@ -104,7 +104,7 @@ public class LightLocalizer {
         
         //store thetas when black lines are read from light sensor
         while (counter != 4) {
-          while (readFrontLightData() > BLACK_LINE_THRESHOLD) {
+          while (readFrontLightData() > BLUE_LINE_THRESHOLD) {
           }
 
           lineAngles[counter] = odo.getXyt()[2]; // Record the angle at which we detected the line.
@@ -120,31 +120,39 @@ public class LightLocalizer {
         double dTheta = -0.5 * Math.abs(lineAngles[1] - lineAngles[3]) + Math.PI - lineAngles[3];
         
         //odo.setTheta(odo.getXyt()[2] + dTheta);
-
+        if(colourIDLeft <= BLUE_LINE_THRESHOLD || colourIDRight <= BLUE_LINE_THRESHOLD) {
+          if(xPos<0) {
+           Navigation.turnTo(90);
+           Driver.moveStraightFor(BACKUP_DISTANCE);
+          } else if(xPos>0) {
+           Navigation.turnTo(270);
+           Driver.moveStraightFor(BACKUP_DISTANCE);
+          }
+         }
         //correct the y position similar to when we localized to (1,1)
         if (yPos < 0) {
           Navigation.turnTo(0);
-          Driver.moveStraightFor(-2*LIGHT_TO_CENTER);
-          localizeToOneOne();
+          Driver.moveStraightFor(BACKUP_DISTANCE);
+          lineAdjustment();
           Driver.moveStraightFor(LIGHT_TO_CENTER);
         } else if (yPos > 0) {
           Navigation.turnTo(180);
-          Driver.moveStraightFor(-2*LIGHT_TO_CENTER);
-          localizeToOneOne();
+          Driver.moveStraightFor(BACKUP_DISTANCE);
+          lineAdjustment();
           Driver.moveStraightFor(LIGHT_TO_CENTER);
         }
         
         //correct the x position similar to when we localized to (1,1)
         if (xPos < 0) {
           Navigation.turnTo(90);
-          Driver.moveStraightFor(-2*LIGHT_TO_CENTER);
-          localizeToOneOne();
+          Driver.moveStraightFor(BACKUP_DISTANCE);
+          lineAdjustment();
           Driver.moveStraightFor(LIGHT_TO_CENTER);
           odo.setTheta(90);
         } else if (xPos > 0) {
           Navigation.turnTo(270);
-          Driver.moveStraightFor(-2*LIGHT_TO_CENTER);
-          localizeToOneOne();
+          Driver.moveStraightFor(BACKUP_DISTANCE);
+          lineAdjustment();
           Driver.moveStraightFor(LIGHT_TO_CENTER);
           odo.setTheta(270);
         }
@@ -153,6 +161,7 @@ public class LightLocalizer {
         odo.setX(x*TILE_SIZE);
         odo.setY(y*TILE_SIZE);
         
+        //Navigation.turnTo(currentAngle);
         topMotor.rotate(-110);
       }
     

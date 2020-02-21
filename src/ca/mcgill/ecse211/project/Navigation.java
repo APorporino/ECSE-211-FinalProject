@@ -18,8 +18,9 @@ public class Navigation {
           travelTo(elem[0], elem[1]);
 
           sleepFor(PAUSE_TIME);
-
-          localizeToPoint(elem[0], elem[1]);
+          
+          LightLocalizer.lightLocToPoint(elem[0], elem[1]);
+          //localizeToPoint(elem[0], elem[1]);
           //ultrasonicLocalizer.localizeToPoint(elem[0], elem[1]);
         }
         // int lastElement = map.length -1;
@@ -69,6 +70,7 @@ public class Navigation {
           Driver.stopMotorsInstantaneously();
           farFromRing = false;
           detectRing();
+          Driver.setSpeeds(ROTATION_SPEED, ROTATION_SPEED);
         }
       }
       //Make sure that we still stop once we reach the waypoint
