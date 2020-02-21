@@ -120,6 +120,9 @@ public class LightLocalizer {
         double dTheta = -0.5 * Math.abs(lineAngles[1] - lineAngles[3]) + Math.PI - lineAngles[3];
         
         //odo.setTheta(odo.getXyt()[2] + dTheta);
+        
+        //checks if left or right sensor is on a black line
+        //if so, turn to the right/left depending on xPos
         if(colourIDLeft <= BLUE_LINE_THRESHOLD || colourIDRight <= BLUE_LINE_THRESHOLD) {
           if(xPos<0) {
            Navigation.turnTo(90);
