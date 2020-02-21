@@ -19,34 +19,34 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 
 public class Odometer implements Runnable {
-  
+
   /**
    * The x-axis position in cm.
    */
   private volatile double x;
-  
+
   /**
    * The y-axis position in cm.
    */
   private volatile double y; // y-axis position
-  
+
   /**
    * The orientation in degrees.
    */
   private volatile double theta; // Head angle
-  
+
   /**
    * The (x, y, theta) position as an array.
    */
   private double[] position;
-  
+
 
   // Thread control tools
   /**
    * Fair lock for concurrent writing.
    */
   private static Lock lock = new ReentrantLock(true);
-  
+
   /**
    * Indicates if a thread is trying to reset any position parameters.
    */
@@ -62,7 +62,7 @@ public class Odometer implements Runnable {
   // Motor-related variables
   private static int leftMotorTachoCount = 0;
   private static int rightMotorTachoCount = 0;
-  
+
   private static int lastLeftMotorTachoCount = 0;
   private static int lastRightMotorTachoCount = 0;
 
@@ -71,7 +71,7 @@ public class Odometer implements Runnable {
    */
   private static final long ODOMETER_PERIOD = 25;
 
-  
+
   /**
    * This is the default constructor of this class. It initiates all motors and variables once. It
    * cannot be accessed externally.
@@ -80,18 +80,18 @@ public class Odometer implements Runnable {
     setXyt(TILE_SIZE, TILE_SIZE, 0);
   }
 
-//  /**
-//   * Returns the Odometer Object. Use this method to obtain an instance of Odometer.
-//   * 
-//   * @return the Odometer Object
-//   */
-//  public static synchronized Odometer getOdometer() {
-//    if (odo == null) {
-//      odo = new Odometer();
-//    }
-//    
-//    return odo;
-//  }
+  //  /**
+  //   * Returns the Odometer Object. Use this method to obtain an instance of Odometer.
+  //   * 
+  //   * @return the Odometer Object
+  //   */
+  //  public static synchronized Odometer getOdometer() {
+  //    if (odo == null) {
+  //      odo = new Odometer();
+  //    }
+  //    
+  //    return odo;
+  //  }
 
   /**
    * This method is where the logic for the odometer will run.
@@ -110,14 +110,14 @@ public class Odometer implements Runnable {
     rightMotor.resetTachoCount();
     while (true) {
       updateStart = System.currentTimeMillis();
-      
+
 
       leftMotorTachoCount = leftMotor.getTachoCount();
       rightMotorTachoCount = rightMotor.getTachoCount();
-      
-      
+
+
       // Calculate new robot position based on tachometer counts
-      
+
       // compute L and R wheel displacements
       distL = Math.PI * WHEEL_RAD * (leftMotorTachoCount - lastLeftMotorTachoCount) / 180;
       distR = Math.PI * WHEEL_RAD * (rightMotorTachoCount - lastRightMotorTachoCount) / 180;
@@ -125,14 +125,14 @@ public class Odometer implements Runnable {
       lastRightMotorTachoCount = rightMotorTachoCount;
       deltaD = 0.5 * (distL + distR); // compute vehicle displacement
       deltaT = (distL - distR) / BASE_WIDTH; // compute change in heading (estimate)
-      
+
       deltaT = radToDeg(deltaT);
       thetaRad = degToRad(theta);
       dX = deltaD * Math.sin(thetaRad); // compute x component of displacement
       dY = deltaD * Math.cos(thetaRad); // compute y component of displacement
-      
-      
-      
+
+
+
       // Update odometer values with new calculated values using update()
       update(dX, dY, deltaT);
 
@@ -143,8 +143,8 @@ public class Odometer implements Runnable {
       }
     }
   }
-  
-  
+
+
   /**
    * This method converts radians to degrees.
    * 
@@ -154,7 +154,7 @@ public class Odometer implements Runnable {
   public double radToDeg(double rad) {
     return Math.toDegrees(rad);
   }
-  
+
   /**
    * This method converts degrees to radians.
    * 
@@ -164,9 +164,9 @@ public class Odometer implements Runnable {
   public double degToRad(double degree) {
     return Math.toRadians(degree);
   }
-  
+
   // IT IS NOT NECESSARY TO MODIFY ANYTHING BELOW THIS LINE
-  
+
   /**
    * Returns the Odometer data.
    * 
