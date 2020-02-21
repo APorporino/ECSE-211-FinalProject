@@ -30,13 +30,13 @@ public class Navigation {
   }
 
   /**
-   * 
+   * This method will use the two side light sensors to adjust to robots position.
    */
   public static void localizeToPoint(int x, int y) {
     double currentAngle = odo.getXyt()[2];
     turnTo(90);
-    Driver.moveStraightFor(-2*LIGHT_TO_CENTER);
-    Main.localizeToOneOne();
+    Driver.moveStraightFor(BACKUP_DISTANCE);
+    Main.lineAdjustment();
     turnTo(currentAngle);
 
   }
@@ -60,35 +60,32 @@ public class Navigation {
     rightMotor.forward();
     boolean farFromRing = true;
 
+    //This section of code will make sure the robot stops if a ring is nearby
     while (farFromRing) {
+      //If we detect a ring logic
       if (ultrasonicLocalizer.currentDistance <= RING_THRESHOLD) {
-        Driver.stopMotorsInstantaneously();
-        farFromRing = false;
-        Sound.twoBeeps();
-        topMotor.setSpeed(40);
-        topMotor.rotate(110);
-        TEXT_LCD.drawString("Object Detected", 0,1);
-        Thread colour = new Thread(colorDetector);
-        colour.start();
-        colorDetector.updateRingColour(colorDetector.colourRed, colorDetector.colourGreen, colorDetector.colourBlue);
-        TEXT_LCD.drawString("COLOUR: " + colorDetector.ringColour, 0, 2);
-        Button.waitForAnyPress();
-        topMotor.rotate(-110);
-        colour.interrupt();
+        Driver.setSpeeds(APPROACHING_SPEED, APPROACHING_SPEED);
+        if (ultrasonicLocalizer.currentDistance <= RING_CLOSE) {
+          Driver.stopMotorsInstantaneously();
+          farFromRing = false;
+          detectRing();
+        }
+      }
+      //Make sure that we still stop once we reach the waypoint
+      double deltaX = Math.pow((odoValuesBefore[0] - odo.getXyt()[0]),2);      
+      double deltaY = Math.pow((odoValuesBefore[1] - odo.getXyt()[1]),2);
+      double distanceTravelled = Math.pow(deltaX+deltaY, .5);
+      if (distanceTravelled >= angleAndDistance[0]) {
+         farFromRing = false;
       }
     }
 
+    //Determine how much more distance we need to cover to get to waypoint
     double[] odoValuesAfter = odo.getXyt();
-
     double deltaX = Math.pow((odoValuesBefore[0] - odoValuesAfter[0]),2);      
     double deltaY = Math.pow((odoValuesBefore[1] - odoValuesAfter[1]),2);
     double distanceTravelled = Math.pow(deltaX+deltaY, .5);
-
-    TEXT_LCD.clear();
-    TEXT_LCD.drawString("Angle" + angleAndDistance[1],0,1);
-    TEXT_LCD.drawString("Distance" + angleAndDistance[0],0,2);
-    TEXT_LCD.drawString("Travlled" + distanceTravelled,0,2);
-    Button.waitForAnyPress();
+    
     Driver.moveStraightFor(angleAndDistance[0] - distanceTravelled);
   }
 
@@ -170,6 +167,23 @@ public class Navigation {
       Driver.turnBy(difference);
     }
 
+  }
+  /**
+   * This method will lower the front light sensor start a new thread to read the colour value of the ring and attempt to detect the colour.
+   */
+  public static void detectRing() {
+    Sound.twoBeeps();
+    topMotor.setSpeed(40);
+    topMotor.rotate(110);
+    TEXT_LCD.drawString("Object Detected", 0,1);
+    Thread colour = new Thread(colorDetector);
+    colour.start();
+    colorDetector.updateRingColour(colorDetector.colourRed, colorDetector.colourGreen, colorDetector.colourBlue);
+    TEXT_LCD.drawString("COLOUR: " + colorDetector.ringColour, 0, 2);
+    Button.waitForAnyPress();
+    topMotor.rotate(-110);
+    colour.interrupt();
+    sleepFor(5000);
   }
 
 }

@@ -5,7 +5,7 @@ import static ca.mcgill.ecse211.project.Resources.*;
 import java.text.DecimalFormat;
 
 /**
- * This class is used to display the content of the odometer variables (x, y, theta).
+ * This class is used to display content to the LCD screen.
  */
 public class Display implements Runnable {
 

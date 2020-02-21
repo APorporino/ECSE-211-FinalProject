@@ -16,94 +16,44 @@ public class Main {
    * @param args not used
    */
   public static void main(String[] args) {
-    //Assuming we start somewhere on 45 degree line in the first square
     //--------------------------------------
-
-
-
-    //Driver.drive();
-   // new Thread(new Display()).start();
-      //new Thread(ultrasonicLocalizer).start(); 
-////        
-//        localizeToStartingPosition();       //Get to point (1,1)
-//        
-//        new Thread(odo).start();
-//        Navigation.drive(MAP0);
-    Display.showText("test");
-      while (true) {
-        Display.showText("test2");
-        Button.waitForAnyPress();
-        TEXT_LCD.drawString("Object Detected", 0,1);
-        Button.waitForAnyPress();
-        Thread colour = new Thread(colorDetector);
-        colour.start();
-        colorDetector.updateRingColour(colorDetector.colourRed, colorDetector.colourGreen, colorDetector.colourBlue);
-        TEXT_LCD.drawString("COLOUR: " + colorDetector.ringColour, 0, 2);
-        colour.interrupt();
-      }
-//    
-//        
-        //lightLocalizer.readLightData();
+    int buttonChoice;
+    buttonChoice = chooseLocalize();
+    if (buttonChoice == Button.ID_RIGHT ) {      //2nd part of demo
+      //new Thread(new Display()).start();
+      new Thread(ultrasonicLocalizer).start(); 
+      //Assuming we start somewhere on 45 degree line in the first square
+      localizeToStartingPosition();
+      new Thread(odo).start();
+      Navigation.drive(MAP0);
+    }else if (buttonChoice == Button.ID_LEFT) {    //1st part of demo
+      detectColours();
+    }
     
-    
-//    Display.showText("READING: ");
-//    colorDetector.readColourData();
-//    //    double[] redValues = new double[10];
-//    //    double[] blueValues = new double[10];
-//    //    double[] greenValues = new double[10];
-//    //    
-//    //    for (int i = 0; i < 10; i++) {
-//    //      redValues[i] = colorDetector.colourRed;
-//    //      blueValues[i] = colorDetector.colourBlue;
-//    //      greenValues[i] = colorDetector.colourGreen;
-//    //    }
-//
-//    //    double redSum = 0;
-//    //    double blueSum = 0;
-//    //    double greenSum = 0;
-//    //    for (int i = 0; i < 10; i++) {
-//    //      redSum +=  redValues[i];
-//    //      blueSum += blueValues[i];
-//    //      greenSum += greenValues[i];
-//    //    }
-//
-//
-//    //sleepFor(3000);
-//    Display.showText("UPDATING: ");
-//    System.out.println("RED: " + colorDetector.colourRed + "\nGREEN: "  + colorDetector.colourGreen + "\nBLUE" + colorDetector.colourBlue);
-//    //    System.out.println("RED: " + redSum + "\nGREEN: "  + greenSum + "\nBLUE" + blueSum);
-//    //    System.out.println("RED: " + redSum/10 + "\nGREEN: "  + greenSum/10 + "\nBLUE" + blueSum/10);
-//    colorDetector.readColourData();
-//    colorDetector.updateRingColour(colorDetector.colourRed, colorDetector.colourGreen, colorDetector.colourBlue);
-//
-//    Display.showText("COLOUR: " + colorDetector.ringColour);
-    //
-
-    //--------------------------------------
-
-    //    int buttonChoice = chooseMap();
-    //
-    //    new Thread(odo).start();
-    //    new Thread(new Display()).start();
-    //    if (buttonChoice == Button.ID_LEFT) {
-    //      Navigation.drive(MAP1);            //call Navigation.drive to run through specific map
-    //    } else if (buttonChoice == Button.ID_RIGHT) {
-    //      Navigation.drive(MAP2);           
-    //    }
-    //    
-    //    Display.showText("WELCOME");
-    ////    Button.waitForAnyPress();
-    ////    lightLocalizer.testing();
-    //    Sound.beep();
-
-    //--------------------------------------
-
     //hitting escape button will stop the program 
-//    while (Button.waitForAnyPress() != Button.ID_ESCAPE) {
-//    } // do nothing
+    while (Button.waitForAnyPress() != Button.ID_ESCAPE) {
+    } // do nothing
 
-   // System.exit(0);
+    System.exit(0);
 
+  }
+
+  public static void detectColours() {
+    while (true) {
+      if (Button.waitForAnyPress() == Button.ID_ESCAPE) {
+        break;
+      }
+      TEXT_LCD.drawString("Object Detected", 0,1);
+      Button.waitForAnyPress();
+      Thread colour = new Thread(colorDetector);
+      colour.start();
+      System.out.println("RED: " + colorDetector.colourRed + "\nGREEN" + colorDetector.colourGreen + "\nBLUE" + colorDetector.colourBlue);
+      colorDetector.updateRingColour(colorDetector.colourRed, colorDetector.colourGreen, colorDetector.colourBlue);
+      TEXT_LCD.clear();
+      TEXT_LCD.drawString("COLOUR: " + colorDetector.ringColour, 0, 2);
+      colour.interrupt();
+    }
+    System.exit(0);
   }
 
   /**
@@ -111,45 +61,21 @@ public class Main {
    */
   public static void localizeToStartingPosition() {
     int[] positions = new int[2];    //Array used to store the x and y position of the robot from the wall.
-    int buttonChoice;
 
-    //--------------------------------------
-    buttonChoice = chooseLocalize();
-
-    if (buttonChoice == Button.ID_LEFT | buttonChoice == Button.ID_RIGHT) {
-      positions = localizeToZeroDeg();  //Position of robot now stored
-
-    }
-
+    positions = localizeToZeroDeg();  //Position of robot now stored
 
     lightLocalizer.readLightData();
-    sleepFor(500);
-    localizeToOneOne();
+    lineAdjustment();
     Driver.moveStraightFor(LIGHT_TO_CENTER);
     Driver.turnBy(90);
-    localizeToOneOne();
+    lineAdjustment();
     Driver.moveStraightFor(LIGHT_TO_CENTER);
     Driver.turnBy(-90);
 
 
-    Driver.moveStraightFor(-2*LIGHT_TO_CENTER);
-    localizeToOneOne();
+    Driver.moveStraightFor(BACKUP_DISTANCE);
+    lineAdjustment();
     Driver.moveStraightFor(LIGHT_TO_CENTER);
-
-    //        //Distance from center of robot to position (1,1)
-    //        double distanceFromPoint = calculateDistanceFromPosition(positions[0], positions[1]);
-    //        
-    //        Button.waitForAnyPress();   //wait for press so TA has time to measure the angle
-    //        
-    //        //Move to position (1,1)
-    //        Driver.turnBy(FULL_SPIN_DEG / 8);
-    //        Driver.moveStraightFor(distanceFromPoint);
-    //        Driver.turnBy(-(FULL_SPIN_DEG / 8));
-    //        
-    //        lightLocalizer.testing();
-    //        sleepFor(3000);
-    //        Driver.moveStraightFor(-3*LIGHT_TO_CENTER);
-    //        localizeToOneOne();
   }
 
   /**
@@ -166,7 +92,6 @@ public class Main {
     Driver.rotate();
     //continuously locate the current position of robot and store minimum position. Thread 
 
-
     sleepFor(WAIT_TIME);    //Must sleep to give it time to do a full circle
 
     //Now it will position itself at the minimum distance
@@ -179,14 +104,12 @@ public class Main {
         break;
       }
     }
-
     //We are now pointing at the closest wall.
     Driver.turnBy(FULL_SPIN_DEG / 4);
     if (ultrasonicLocalizer.currentDistance <= TILE_SIZE) {   //still facing a wall
       positions[1] = ultrasonicLocalizer.currentDistance;  //record distance x (length) from side wall
       Driver.turnBy(FULL_SPIN_DEG / 4);   //face the 0 degree direction
     }
-
     return positions;
   }
 
@@ -194,7 +117,7 @@ public class Main {
    * This method will move the robot to point 1, 1.
    * Assumptions are it is facing zero degrees somewhere in the first grid (0,0).
    */
-  public static void localizeToOneOne() {
+  public static void lineAdjustment() {
     boolean leftLineNotDetected = true;
     boolean rightLineNotDetected = true;
 
@@ -250,33 +173,6 @@ public class Main {
   }
 
   /**
-   * This method will position the robot at 0 degrees without recording any positions.
-   */
-  public static void goToZero() {
-    ultrasonicLocalizer.minDistance = 1500;         //reset the min value
-
-    Driver.rotate();   //make the robot rotate 360 degrees once. 
-    // it will continuously locate the current position of robot and store minimum position. 
-
-    sleepFor(WAIT_TIME);    //Must sleep to give it time to do a full circle
-
-    Driver.rotate();
-    while (true) {
-      if (ultrasonicLocalizer.currentDistance <= ultrasonicLocalizer.minDistance) {
-        Driver.stopMotorsInstantaneously();
-        break;
-      }
-    }
-
-    //now facing minimum distance to a wall
-    Driver.turnBy(FULL_SPIN_DEG / 4);
-    if (ultrasonicLocalizer.currentDistance <= BOARD_SIZE) {   //still facing a wall
-      Driver.turnBy(FULL_SPIN_DEG / 4);   //face the 0 degree direction
-    }
-
-  }
-
-  /**
    * This method will present the user with the option to localize the robot.
    * @return
    */
@@ -284,25 +180,8 @@ public class Main {
     int buttonChoice;
     Display.showText("< Left | Right >",
         "       |        ",
-        " Localize | Localize  ",
-        "the robot | the robot ",
-        "To position (1,1)");
-
-    do {
-      buttonChoice = Button.waitForAnyPress(); // left or right press
-    } while (buttonChoice != Button.ID_LEFT && buttonChoice != Button.ID_RIGHT);
-    return buttonChoice;
-  }
-
-  /**
-   * This method will present the user with the option to localize the robot.
-   * @return
-   */
-  private static int chooseMap() {
-    int buttonChoice;
-    Display.showText("< Left | Right >",
-        "       |        ",
-        " Map 1 | Map 2  ");
+        " Detect | Run through  ",
+        "Colours | map");
 
     do {
       buttonChoice = Button.waitForAnyPress(); // left or right press

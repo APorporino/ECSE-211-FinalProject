@@ -77,6 +77,11 @@ public class Resources {
    * Distance from light to center of rotation in cm.
    */
   public static final double LIGHT_TO_CENTER = 4;
+  
+  /**
+   * Distance used to back up the robot to localize using line detection.
+   */
+  public static final double BACKUP_DISTANCE = -8;
 
   /**
    * The motor acceleration in degrees per second squared.
@@ -129,14 +134,25 @@ public class Resources {
   public static final int BLACK_LINE_THRESHOLD = 40;
   
   /**
-   * This constant will be used to determine if the light is on top of a black line.
+   * This constant will be used to determine if the light is on top of a blue line.
    */
   public static final int BLUE_LINE_THRESHOLD = 25;
 
   /**
-   * 
+   * This constant will be used to determine if the robot should slow down if it sees a ring.
    */
-  public static final int RING_THRESHOLD = 5;
+  public static final int RING_THRESHOLD = 9;
+  
+  /**
+   * This constant will be used to determine when the robot should lower the front light sensor to detect the ring colour.
+   */
+  public static final int RING_CLOSE = 4;
+  
+  /**
+   * This constant will be used to set the speed at which the robot approaches the ring when it is close. 
+   * Measured in degree's per second.
+   */
+  public static final int APPROACHING_SPEED = 100;
 
   /**
    * The ultrasonic sensor.
@@ -144,17 +160,17 @@ public class Resources {
   public static final EV3UltrasonicSensor usSensor = new EV3UltrasonicSensor(SensorPort.S4);
 
   /**
-   * The left light sensor.
+   * The left light sensor. Used to detect lines and localize.
    */
   public static final EV3ColorSensor LEFT_COL_SENSOR = new EV3ColorSensor(SensorPort.S2);
 
   /**
-   * The right light sensor.
+   * The right light sensor. Used to detect lines and localize.
    */
   public static final EV3ColorSensor RIGHT_COL_SENSOR = new EV3ColorSensor(SensorPort.S3);
 
   /**
-   * The front light sensor.
+   * The front light sensor. Used to detect colours.
    */
   public static final EV3ColorSensor FRONT_COL_SENSOR = new EV3ColorSensor(SensorPort.S1);
 
@@ -174,12 +190,12 @@ public class Resources {
   public static final EV3LargeRegulatedMotor topMotor = new EV3LargeRegulatedMotor(MotorPort.B);
 
   /**
-   * The colorDetector.
+   * The colorDetector. 
    */
   public static ColourDetecter colorDetector = new ColourDetecter();
 
   /**
-   * The colorDetector.
+   * The light localizer.
    */
   public static LightLocalizer lightLocalizer = new LightLocalizer();
 
