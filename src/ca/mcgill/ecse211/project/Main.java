@@ -40,6 +40,8 @@ public class Main {
 
   public static void detectColours() {
     while (true) {
+      TEXT_LCD.clear();
+      Display.showText("Click any button to get reading");
       if (Button.waitForAnyPress() == Button.ID_ESCAPE) {
         break;
       }
@@ -62,11 +64,11 @@ public class Main {
    * This method will localize the robot to position 1,1.
    */
   public static void localizeToStartingPosition() {
-    int[] positions = new int[2];    //Array used to store the x and y position of the robot from the wall.
 
-    positions = localizeToZeroDeg();  //Position of robot now stored
+    localizeToZeroDeg();  //Position of robot now stored
 
-    lightLocalizer.readLightData();
+    Thread lightLocThread = new Thread(lightLocalizer);
+    lightLocThread.start();
     lineAdjustment();
     Driver.moveStraightFor(LIGHT_TO_CENTER);
     Driver.turnBy(90);
@@ -77,6 +79,7 @@ public class Main {
     Driver.moveStraightFor(BACKUP_DISTANCE);
     lineAdjustment();
     Driver.moveStraightFor(LIGHT_TO_CENTER);
+    lightLocThread.interrupt();
   }
 
   /**
@@ -85,9 +88,8 @@ public class Main {
    * @return int[] Integer array containing the x and y position of the robot from the two walls.
    * 
    */
-  public static int[] localizeToZeroDeg() {
+  public static void localizeToZeroDeg() {
     ultrasonicLocalizer.minDistance = 1500;
-    int[] positions = new int[2];
 
     //make the robot rotate 360 degrees once. Thread
     Driver.rotate();
@@ -100,18 +102,15 @@ public class Main {
     while (true) {
       if (ultrasonicLocalizer.currentDistance <= ultrasonicLocalizer.minDistance) {
         Driver.stopMotorsInstantaneously();
-        positions[0] = ultrasonicLocalizer.minDistance; //store minimum distance. Either x (height) or y (length)
-
         break;
       }
     }
     //We are now pointing at the closest wall.
     Driver.turnBy(FULL_SPIN_DEG / 4);
     if (ultrasonicLocalizer.currentDistance <= TILE_SIZE) {   //still facing a wall
-      positions[1] = ultrasonicLocalizer.currentDistance;  //record distance x (length) from side wall
+      
       Driver.turnBy(FULL_SPIN_DEG / 4);   //face the 0 degree direction
     }
-    return positions;
   }
 
   /**
@@ -126,12 +125,12 @@ public class Main {
     Driver.drive();
     while (leftLineNotDetected & rightLineNotDetected) {
 
-      if (lightLocalizer.colourIDLeft < BLUE_LINE_THRESHOLD) {
+      if (LightLocalizer.colourIDLeft < BLUE_LINE_THRESHOLD) {
         Driver.stopMotorsInstantaneously();
         leftLineNotDetected = false;
       }
 
-      if (lightLocalizer.colourIDRight < BLUE_LINE_THRESHOLD) {
+      if (LightLocalizer.colourIDRight < BLUE_LINE_THRESHOLD) {
         Driver.stopMotorsInstantaneously();
         rightLineNotDetected = false;
       }
@@ -141,7 +140,7 @@ public class Main {
       Driver.setSpeeds(0, 20);
       rightMotor.forward();
       while (rightLineNotDetected) {
-        if (lightLocalizer.colourIDRight < BLUE_LINE_THRESHOLD) {
+        if (LightLocalizer.colourIDRight < BLUE_LINE_THRESHOLD) {
           Driver.stopMotorsInstantaneously();
           rightLineNotDetected = false;
         }
@@ -150,7 +149,7 @@ public class Main {
       Driver.setSpeeds(20, 0);
       leftMotor.forward();
       while (leftLineNotDetected) {
-        if (lightLocalizer.colourIDLeft < BLUE_LINE_THRESHOLD) {
+        if (LightLocalizer.colourIDLeft < BLUE_LINE_THRESHOLD) {
           Driver.stopMotorsInstantaneously();
           leftLineNotDetected = false;
         }

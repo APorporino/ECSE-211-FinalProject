@@ -192,7 +192,7 @@ public class Resources {
   /**
    * The colorDetector. 
    */
-  public static ColourDetecter colorDetector = new ColourDetecter();
+  public static ColourDetector colorDetector = new ColourDetector();
 
   /**
    * The light localizer.

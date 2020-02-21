@@ -9,11 +9,9 @@ import static ca.mcgill.ecse211.project.Main.sleepFor;
 public class Navigation {
 
   /**
-   * This method starts a thread that loops through all grid positions in the map and goes to each one.
+   * This method starts a loops through all grid positions in the map and goes to each one.
    */
   public static void drive(final int[][] map) {
-    (new Thread() {
-      public void run() {
         for (int[] elem: map) {
           travelTo(elem[0], elem[1]);
 
@@ -26,8 +24,7 @@ public class Navigation {
         // int lastElement = map.length -1;
 
         // ultrasonicLocalizer.localizeToPoint(map[lastElement][0], map[lastElement][1]);      //localize at the last point
-      }
-    }).start();
+      
   }
 
   /**
@@ -181,12 +178,12 @@ public class Navigation {
     TEXT_LCD.drawString("Object Detected", 0,1);
     Thread colour = new Thread(colorDetector);
     colour.start();
-    double[] averageReadings = getTenReadings();
-    System.out.println("RED average: " + averageReadings[0]);
-    System.out.println("\nBLUE average: " + averageReadings[1]);
-    System.out.println("\nGREEN average: " + averageReadings[2]);
-    //colorDetector.updateRingColour(colorDetector.colourRed, colorDetector.colourGreen, colorDetector.colourBlue);
-    colorDetector.updateRingColour(averageReadings[0], averageReadings[1],averageReadings[2]);
+//    double[] averageReadings = getTenReadings();
+//    System.out.println("RED average: " + averageReadings[0]);
+//    System.out.println("\nBLUE average: " + averageReadings[1]);
+//    System.out.println("\nGREEN average: " + averageReadings[2]);
+    colorDetector.updateRingColour(colorDetector.colourRed, colorDetector.colourGreen, colorDetector.colourBlue);
+    //colorDetector.updateRingColour(averageReadings[0], averageReadings[1],averageReadings[2]);
     TEXT_LCD.drawString("COLOUR: " + colorDetector.ringColour, 0, 2);
     Button.waitForAnyPress();
     colour.interrupt();
