@@ -4,6 +4,8 @@ package ca.mcgill.ecse211.project;
 import static ca.mcgill.ecse211.project.Resources.*;
 import lejos.hardware.Button;
 import lejos.hardware.Sound;
+import lejos.hardware.lcd.LCD;
+import lejos.hardware.sensor.SensorMode;
 
 /**
  * The main driver class for the lab.
@@ -29,18 +31,46 @@ public class Main {
 //        
 //        new Thread(odo).start();
 //        Navigation.drive(MAP0);
-    Display.showText("test");
-      while (true) {
-        Display.showText("test2");
-        Button.waitForAnyPress();
-        TEXT_LCD.drawString("Object Detected", 0,1);
-        Button.waitForAnyPress();
-        Thread colour = new Thread(colorDetector);
-        colour.start();
-        colorDetector.updateRingColour(colorDetector.colourRed, colorDetector.colourGreen, colorDetector.colourBlue);
-        TEXT_LCD.drawString("COLOUR: " + colorDetector.ringColour, 0, 2);
-        colour.interrupt();
+//    Display.showText("test");
+//      while (true) {
+//        Display.showText("test2");
+//        Button.waitForAnyPress();
+//        TEXT_LCD.drawString("Object Detected", 0,1);
+//        Button.waitForAnyPress();
+//        Thread colour = new Thread(colorDetector);
+//        colour.start();
+//        colorDetector.updateRingColour(colorDetector.colourRed, colorDetector.colourGreen, colorDetector.colourBlue);
+//        TEXT_LCD.drawString("COLOUR: " + colorDetector.ringColour, 0, 2);
+//        colour.interrupt();
+//      }
+    
+    
+    
+  //  ---------------------------- COLOR CALIBRATION --------------------------------------
+    //Setting up the sensor
+    SensorMode sensorMode = Resources.FRONT_COL_SENSOR.getRGBMode();
+    float[] sample = new float[sensorMode.sampleSize()];
+
+    if(Button.waitForAnyPress() == Button.ID_LEFT) {
+      LCD.refresh();
+      LCD.clear();
+
+      //Taking 10 readings
+      for(int i = 1; i<11; i++) {
+        //fetching values from the sensor
+        sensorMode.fetchSample(sample, 0);
+        System.out.println("" + sample[0] + "," + sample[1] + "," + sample[2]); //printing on the console as comma seperated values (CSV)
+        LCD.drawString("R: " + sample[0], 1, 1);
+        LCD.drawString("G: " + sample[1], 1, 2);
+        LCD.drawString("B: " + sample[2], 1, 3);
+        Main.sleepFor(1000); //set to 1000 milliseconds to allow for substantial time between readings
       }
+    }
+    
+    //-----------------------------------------------------------------------------------------------
+    
+    
+    
 //    
 //        
         //lightLocalizer.readLightData();
