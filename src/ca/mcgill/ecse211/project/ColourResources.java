@@ -6,136 +6,45 @@ package ca.mcgill.ecse211.project;
  *
  */
 public class ColourResources {
-
-
-  //BLUE  RING
-
+  
   /**
-   * The mean value for blue value.
+   * Blue mean RGB values
    */
-  public static final double B_MEAN_RED = 0.033431374;
-
+  public static final double[] BLUE_MEAN = {0.033431374,0.113333334,0.064411768};
+  
   /**
-   * The standard deviation for blue value.
+   * Blue standard deviation RGB values
    */
-  public static final double B_SD_RED = 0.000556516;
-
+  public static final double[] BLUE_SD = {0.000556516, 0.000506271,0.000473574};
+  
   /**
-   * The mean value for blue value.
+   * Green mean RGB values
    */
-  public static final double B_MEAN_GREEN = 0.113333334;
-
+  public static final double[] GREEN_MEAN = {0.073823534,0.154117651,0.014803921};
+  
   /**
-   * The standard deviation for blue value.
+   * Green standard deviation RGB values
    */
-  public static final double B_SD_GREEN = 0.000506271;
-
+  public static final double[] GREEN_SD = {0.000661716,0.000620057,0.000556516};
+  
   /**
-   * The mean value for blue value.
+   * Yellow mean RGB values
    */
-  public static final double B_MEAN_BLUE = 0.064411768;
-
+  public static final double[] YELLOW_MEAN = {0.162647062,0.123235293,0.01892157};
+  
   /**
-   * The standard deviation for blue value.
+   * Yellow standard deviation RGB values
    */
-  public static final double B_SD_BLUE = 0.000473574;
-
-  //GREEN  RING
-
+  public static final double[] YELLOW_SD = {0.000556517, 0.000473573, 0.000661714};
+  
   /**
-   * The mean value for blue value.
+   * Orange mean RGB values
    */
-  public static final double G_MEAN_RED = 0.073823534;
-
+  public static final double[] ORANGE_MEAN = {0.138039223, 0.042843138, 0.008333334};
+  
   /**
-   * The standard deviation for blue value.
+   * Orange standard deviation RGB values
    */
-  public static final double G_SD_RED = 0.000661716;
-
-  /**
-   * The mean value for blue value.
-   */
-  public static final double G_MEAN_GREEN = 0.154117651;
-
-  /**
-   * The standard deviation for blue value.
-   */
-  public static final double G_SD_GREEN = 0.000620057;
-
-  /**
-   * The mean value for blue value.
-   */
-  public static final double G_MEAN_BLUE = 0.014803921;
-
-  /**
-   * The standard deviation for blue value.
-   */
-  public static final double G_SD_BLUE = 0.000556516;
-
-  //YELLOW  RING
-
-  /**
-   * The mean value for blue value.
-   */
-  public static final double Y_MEAN_RED = 0.162647062;
-
-  /**
-   * The standard deviation for blue value.
-   */
-  public static final double Y_SD_RED = 0.000556517;
-
-  /**
-   * The mean value for blue value.
-   */
-  public static final double Y_MEAN_GREEN = 0.123235293;
-
-  /**
-   * The standard deviation for blue value.
-   */
-  public static final double Y_SD_GREEN = 0.000473573;
-
-  /**
-   * The mean value for blue value.
-   */
-  public static final double Y_MEAN_BLUE = 0.01892157;
-
-  /**
-   * The standard deviation for blue value.
-   */
-  public static final double Y_SD_BLUE = 0.000661714;
-
-  //ORANGE  RING
-
-  /**
-   * The mean value for blue value.
-   */
-  public static final double O_MEAN_RED = 0.138039223;
-
-  /**
-   * The standard deviation for blue value.
-   */
-  public static final double O_SD_RED = 0.000620055;
-
-  /**
-   * The mean value for blue value.
-   */
-  public static final double O_MEAN_GREEN = 0.042843138;
-
-  /**
-   * The standard deviation for blue value.
-   */
-  public static final double O_SD_GREEN = 0.000473574;
-
-  /**
-   * The mean value for blue value.
-   */
-  public static final double O_MEAN_BLUE = 0.008333334;
-
-  /**
-   * The standard deviation for blue value.
-   */
-  public static final double O_SD_BLUE = 0.000516712;
-
-
+  public static final double[] ORANGE_SD = {0.000620055, 0.000473574, 0.000516712};
 
 }
