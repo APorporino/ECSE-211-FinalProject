@@ -43,15 +43,17 @@ public class Main {
       if (Button.waitForAnyPress() == Button.ID_ESCAPE) {
         break;
       }
-      TEXT_LCD.drawString("Object Detected", 0,1);
-      Button.waitForAnyPress();
-      Thread colour = new Thread(colorDetector);
-      colour.start();
-      System.out.println("RED: " + colorDetector.colourRed + "\nGREEN" + colorDetector.colourGreen + "\nBLUE" + colorDetector.colourBlue);
-      colorDetector.updateRingColour(colorDetector.colourRed, colorDetector.colourGreen, colorDetector.colourBlue);
       TEXT_LCD.clear();
-      TEXT_LCD.drawString("COLOUR: " + colorDetector.ringColour, 0, 2);
-      colour.interrupt();
+      Navigation.detectRing();
+//      TEXT_LCD.drawString("Object Detected", 0,1);
+//      Button.waitForAnyPress();
+//      Thread colour = new Thread(colorDetector);
+//      colour.start();
+//      //System.out.println("RED: " + colorDetector.colourRed + "\nGREEN" + colorDetector.colourGreen + "\nBLUE" + colorDetector.colourBlue);
+//      colorDetector.updateRingColour(colorDetector.colourRed, colorDetector.colourGreen, colorDetector.colourBlue);
+//      TEXT_LCD.clear();
+//      TEXT_LCD.drawString("COLOUR: " + colorDetector.ringColour, 0, 2);
+//      colour.interrupt();
     }
     System.exit(0);
   }
@@ -71,7 +73,6 @@ public class Main {
     lineAdjustment();
     Driver.moveStraightFor(LIGHT_TO_CENTER);
     Driver.turnBy(-90);
-
 
     Driver.moveStraightFor(BACKUP_DISTANCE);
     lineAdjustment();

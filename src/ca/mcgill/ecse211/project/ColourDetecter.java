@@ -63,69 +63,74 @@ public class ColourDetecter implements Runnable{
     }
   }
 
-
+/**
+ * This method returns a COLOUR enumeration object given a sample reading.
+ * @param colourRed Sample red RGB value
+ * @param colourGreen Sample green RGB value
+ * @param colourBlue Sample blue RGB value
+ * @return COLOUR enumeration which corresponds to the colour detected.
+ */
   public  COLOUR updateRingColour(double colourRed, double colourGreen, double colourBlue) {
     this.ringColour = COLOUR.NONE;
+    double minDistance;
+    double[] normalizedColours = normailze(colourRed,colourGreen, colourBlue);
     
-    //double[] normalizedColours = normalize(colourRed,colourGreen, colourBlue);
 
-    if ((colourBlue >= B_MEAN_BLUE - 100*B_SD_BLUE) & (colourBlue <= B_MEAN_BLUE + 100*B_SD_BLUE)) {
-      System.out.println("b1\n");
-      if ((colourRed >= B_MEAN_RED - 100*B_SD_RED) & (colourRed <= B_MEAN_RED + 100*B_SD_RED)) {
-        System.out.println("b2\n");
-        if ((colourGreen >= B_MEAN_GREEN - 100*B_SD_GREEN) & (colourGreen <= B_MEAN_GREEN + 100*B_SD_GREEN)) {
-          System.out.println("b3\n");
-          this.ringColour = COLOUR.BLUE;
-          return this.ringColour;
-        }
-      }
-    } 
-    if ((colourBlue >= G_MEAN_BLUE - 100*G_SD_BLUE) & (colourBlue <= G_MEAN_BLUE + 100*G_SD_BLUE)) {
-      System.out.println("g1\n");
-      if ((colourRed >= G_MEAN_RED - 100*G_SD_RED) & (colourRed <= G_MEAN_RED + 100*G_SD_RED)) {
-        System.out.println("g2\n");
-        if ((colourGreen >= G_MEAN_GREEN - 100*G_SD_GREEN) & (colourGreen <= G_MEAN_GREEN + 100*G_SD_GREEN)) {
-          System.out.println("g3\n");
-          this.ringColour = COLOUR.GREEN;
-          return this.ringColour;
-        }
-      }
-    }  
-
-    if ((colourBlue >= Y_MEAN_BLUE - 100*Y_SD_BLUE) & (colourBlue <= Y_MEAN_BLUE + 100*Y_SD_BLUE)) {
-      System.out.println("y1\n");
-      if ((colourRed >= Y_MEAN_RED - 100*Y_SD_RED) & (colourRed <= Y_MEAN_RED + 100*Y_SD_RED)) {
-        System.out.println("y2\n");
-        if ((colourGreen >= Y_MEAN_GREEN - 100*Y_SD_GREEN) & (colourGreen <= Y_MEAN_GREEN + 100*Y_SD_GREEN)) {
-          System.out.println("y3\n");
-          this.ringColour = COLOUR.YELLOW;
-          return this.ringColour;
-        }
-      }
-
-    }  
-    if ((colourBlue >= O_MEAN_BLUE - 100*O_SD_BLUE) & (colourBlue <= O_MEAN_BLUE + 100*O_SD_BLUE)) {
-      System.out.println("o1\n");
-      if ((colourRed >= O_MEAN_RED - 100*O_SD_RED) & (colourRed <= O_MEAN_RED + 100*O_SD_RED)) {
-        System.out.println("o2\n");
-        if ((colourGreen >= O_MEAN_GREEN - 100*O_SD_GREEN) & (colourGreen <= O_MEAN_GREEN + 100*O_SD_GREEN)) {
-          System.out.println("o3\n");
-          this.ringColour = COLOUR.ORANGE;
-          return this.ringColour;
-        }
-      }
+    //blue
+    double sumOfSquaresBlue = Math.pow(normalizedColours[0] - B_MEAN_RED, 2) + 
+                                                    Math.pow(normalizedColours[1] - B_MEAN_GREEN, 2) + 
+                                                    Math.pow(normalizedColours[2] - B_MEAN_BLUE, 2);
+    double distanceFromBlue = Math.pow(sumOfSquaresBlue, .5);
+    minDistance = distanceFromBlue;
+    this.ringColour = COLOUR.BLUE;
+    
+    //green
+    double sumOfSquaresGreen = Math.pow(normalizedColours[0] - G_MEAN_RED, 2) + 
+                                                   Math.pow(normalizedColours[1] - G_MEAN_GREEN, 2) + 
+                                                   Math.pow(normalizedColours[2] - G_MEAN_BLUE, 2);
+    double distanceFromGreen = Math.pow(sumOfSquaresGreen, .5);
+    if (distanceFromGreen < minDistance) {
+      minDistance = distanceFromGreen;
+      this.ringColour = COLOUR.GREEN;
     }
-
+    //yellow
+    double sumOfSquaresYellow = Math.pow(normalizedColours[0] - Y_MEAN_RED, 2) + 
+                                                    Math.pow(normalizedColours[1] - Y_MEAN_GREEN, 2) + 
+                                                    Math.pow(normalizedColours[2] - Y_MEAN_BLUE, 2);
+    double distanceFromYellow = Math.pow(sumOfSquaresYellow, .5);
+    if (distanceFromYellow < minDistance) {
+      minDistance = distanceFromYellow;
+      this.ringColour = COLOUR.YELLOW;
+    }
+    
+    //orange
+    double sumOfSquaresOrange = Math.pow(normalizedColours[0] - O_MEAN_RED, 2) + 
+                                                    Math.pow(normalizedColours[1] - O_MEAN_GREEN, 2) + 
+                                                    Math.pow(normalizedColours[2] - O_MEAN_BLUE, 2);
+    double distanceFromOrange = Math.pow(sumOfSquaresOrange, .5);
+    if (distanceFromOrange < minDistance) {
+      minDistance = distanceFromOrange;
+      this.ringColour = COLOUR.ORANGE;
+    }
+    System.out.println("Min distance: " +minDistance );
     return this.ringColour;
 
   }
-  
-//  /**
-//   * This method will return normailzed values of a sample RGB reading.
-//   */
-//  public static double[3] normailze(double colourRed, double colourGreen, double colourBlue) {
-//    
-//  }
+
+  /**
+   * This method will return normailzed values of a sample RGB reading.
+   */
+  public static double[] normailze(double colourRed, double colourGreen, double colourBlue) {
+    double[] normalizedColours = new double[3];
+    double sumOfSquares = Math.pow(colourRed, 2) + Math.pow(colourGreen, 2) + Math.pow(colourBlue, 2);
+    double denominator = Math.pow(sumOfSquares, .5);
+
+    normalizedColours[0] = colourRed / denominator;
+    normalizedColours[1] = colourGreen / denominator;
+    normalizedColours[2] = colourBlue / denominator;
+
+    return normalizedColours;
+  }
 
 
 }
