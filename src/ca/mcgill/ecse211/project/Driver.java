@@ -17,7 +17,7 @@ public class Driver {
       public void run() {
 
         // reset the motors
-        stopMotorsInstantaneously();
+        stopMotors();
         setSpeeds(ROTATION_SPEED,ROTATION_SPEED);
         turnBy(FULL_SPIN_DEG);
 
@@ -25,9 +25,11 @@ public class Driver {
     }).start();
   }
 
-
+/**
+ * Will drive the robot straight.
+ */
   public static void drive() {
-    stopMotors();
+    stopMotors(); 
     setSpeeds(LINE_DETECTION_SPEED,LINE_DETECTION_SPEED);
     leftMotor.forward();
     rightMotor.forward();

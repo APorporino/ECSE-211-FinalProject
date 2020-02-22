@@ -112,6 +112,11 @@ public class Resources {
    * Sleep time for display.
    */
   public static final long SLEEP_TIME = 200;
+  
+  /**
+   * This will determine number of readings the colour detector should get
+   */
+  public static final int NUM_READINGS = 10;
 
   /**
    * The wheel radius in centimeters.
@@ -213,7 +218,7 @@ public class Resources {
   /**
    * The Odometer.
    */
-  public static Odometer odo = new Odometer();
+  public static Odometer odo = Odometer.getOdometer();
 
 
 }

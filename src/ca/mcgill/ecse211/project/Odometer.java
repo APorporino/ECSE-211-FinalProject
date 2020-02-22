@@ -80,18 +80,17 @@ public class Odometer implements Runnable {
     setXyt(TILE_SIZE, TILE_SIZE, 0);
   }
 
-  //  /**
-  //   * Returns the Odometer Object. Use this method to obtain an instance of Odometer.
-  //   * 
-  //   * @return the Odometer Object
-  //   */
-  //  public static synchronized Odometer getOdometer() {
-  //    if (odo == null) {
-  //      odo = new Odometer();
-  //    }
-  //    
-  //    return odo;
-  //  }
+  /**
+   * Returns the Odometer Object. Use this method to obtain an instance of Odometer.
+   * 
+   * @return the Odometer Object
+   */
+  public static synchronized Odometer getOdometer() {
+    if (odo == null) {
+      odo = new Odometer();
+    }
+    return odo;
+  }
 
   /**
    * This method is where the logic for the odometer will run.

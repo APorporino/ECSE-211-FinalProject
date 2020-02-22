@@ -9,6 +9,11 @@ import static ca.mcgill.ecse211.project.Main.*;
 import lejos.robotics.SampleProvider;
 import lejos.hardware.Sound;
 
+/**
+ * This class is used to control and receive readings from multiple light sensors.
+ * @author Team06
+ *
+ */
 public class LightLocalizer implements Runnable{
 
   private static final long COLOUR_PERIOD = 100;
@@ -56,6 +61,52 @@ public class LightLocalizer implements Runnable{
     colourIDFront = colourDataFront[0]*100;
     return colourIDFront;
   }
+  
+  /**
+   * This method will adjust the robot's position to have both sensor directly on a line.
+   */
+  public static void lineAdjustment() {
+    boolean leftLineNotDetected = true;
+    boolean rightLineNotDetected = true;
+
+    //Drive robot straight until it sees a line
+    Driver.drive();
+    while (leftLineNotDetected & rightLineNotDetected) {
+
+      if (LightLocalizer.colourIDLeft < BLUE_LINE_THRESHOLD) {
+        Driver.stopMotors();
+        leftLineNotDetected = false;
+      }
+
+      if (LightLocalizer.colourIDRight < BLUE_LINE_THRESHOLD) {
+        Driver.stopMotors();
+        rightLineNotDetected = false;
+      }
+    }
+
+    //Untill both light sensors see a line adjust one of them
+    if (rightLineNotDetected) {
+      Driver.setSpeeds(0, 20);
+      rightMotor.forward();
+      while (rightLineNotDetected) {
+        if (LightLocalizer.colourIDRight < BLUE_LINE_THRESHOLD) {
+          Driver.stopMotors();
+          rightLineNotDetected = false;
+        }
+      }
+    }else {
+      Driver.setSpeeds(20, 0);
+      leftMotor.forward();
+      while (leftLineNotDetected) {
+        if (LightLocalizer.colourIDLeft < BLUE_LINE_THRESHOLD) {
+          Driver.stopMotors();
+          leftLineNotDetected = false;
+        }
+      }
+    }
+    Driver.setSpeeds(LINE_DETECTION_SPEED,LINE_DETECTION_SPEED);
+   // Driver.setSpeeds(ROTATION_SPEED, ROTATION_SPEED);
+  }
 
   /**
    * Localizing method using the light sensor to get closer to a specified grid position.
@@ -83,7 +134,7 @@ public class LightLocalizer implements Runnable{
 
       counter++;
 
-      sleepThread(1f); // wait for a second to avoid multiple detections of the same line.
+      Main.sleepFor(1000); // wait for a second to avoid multiple detections of the same line.
     }
 
     // calculate the x and y position relative to the grid point that we inputted
@@ -140,41 +191,4 @@ public class LightLocalizer implements Runnable{
     topMotor.rotate(-110);
   }
 
-  /**
-   * This method move the robot to find the line.
-   * The robot moves forward until it detect a line, then it turns to another direction and repeat.
-   */
-  //      public static void movement() {
-  //        Driver.setSpeed(FORWARD_SPEED);
-  //        (new Thread() {
-  //          public void run() {
-  //            while (true) {
-  //              while ((getcolorID() < colorID_constant)) {
-  //                leftMotor.forward();
-  //                rightMotor.forward();
-  //              }
-  //              Driver.turnBy(90.0);
-  //    
-  //              while ((getcolorID() < colorID_constant)) {
-  //                leftMotor.forward();
-  //                rightMotor.forward();
-  //              }
-  //              // corrections for light sensor to make sure it orientated itself perfectly
-  //              leftMotor.rotate(Driver.convertDistance(3), true);
-  //              rightMotor.rotate(Driver.convertDistance(3), false);
-  //              Driver.turnBy(-88);
-  //              leftMotor.rotate(Driver.convertDistance(8), true);
-  //              rightMotor.rotate(Driver.convertDistance(8), false);
-  //              break;
-  //            }
-  //          }
-  //        }).start();
-  //      }
-
-  private static void sleepThread(float seconds) {
-    try {
-      Thread.sleep((long) (seconds * 1000));
-    } catch (Exception e) {
-    }
-  }
 }

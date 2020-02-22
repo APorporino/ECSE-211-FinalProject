@@ -34,7 +34,7 @@ public class Navigation {
     double currentAngle = odo.getXyt()[2];
     turnTo(90);
     Driver.moveStraightFor(BACKUP_DISTANCE);
-    Main.lineAdjustment();
+    LightLocalizer.lineAdjustment();
     turnTo(currentAngle);
 
   }
@@ -64,7 +64,7 @@ public class Navigation {
       if (ultrasonicLocalizer.currentDistance <= RING_THRESHOLD) {
         Driver.setSpeeds(APPROACHING_SPEED, APPROACHING_SPEED);
         if (ultrasonicLocalizer.currentDistance <= RING_CLOSE) {
-          Driver.stopMotorsInstantaneously();
+          Driver.stopMotors();
           farFromRing = false;
           Sound.twoBeeps();
           topMotor.setSpeed(40);
@@ -175,51 +175,21 @@ public class Navigation {
    * This method will lower the front light sensor start a new thread to read the colour value of the ring and attempt to detect the colour.
    */
   public static void detectRing() {
+    TEXT_LCD.clear();
     TEXT_LCD.drawString("Object Detected", 0,1);
-    Thread colour = new Thread(colorDetector);
-    colour.start();
-//    double[] averageReadings = getTenReadings();
+//    Thread colour = new Thread(colorDetector);
+//    colour.start();
+    
+    //Will get NUM_READINGS amount of readings from the colour detector and return the average.
+   double[] averageReadings = ColourDetector.getReadings();
 //    System.out.println("RED average: " + averageReadings[0]);
 //    System.out.println("\nBLUE average: " + averageReadings[1]);
 //    System.out.println("\nGREEN average: " + averageReadings[2]);
-    colorDetector.updateRingColour(colorDetector.colourRed, colorDetector.colourGreen, colorDetector.colourBlue);
-    //colorDetector.updateRingColour(averageReadings[0], averageReadings[1],averageReadings[2]);
+    sleepFor(1000);
+    //colorDetector.updateRingColour(colorDetector.colourRed, colorDetector.colourGreen, colorDetector.colourBlue);
+    colorDetector.updateRingColour(averageReadings[0], averageReadings[1],averageReadings[2]);
     TEXT_LCD.drawString("COLOUR: " + colorDetector.ringColour, 0, 2);
-    Button.waitForAnyPress();
-    colour.interrupt();
-    sleepFor(5000);
-  }
-
-  public static double[] getTenReadings(){
-    double[] averages = new double[3];
-    
-    double[] redValues = new double[10];
-    double[] blueValues = new double[10];
-    double[] greenValues = new double[10];
-
-    for (int i = 0; i < 10; i++) {
-      redValues[i] = colorDetector.colourRed;
-      blueValues[i] = colorDetector.colourBlue;
-      greenValues[i] = colorDetector.colourGreen;
-    }
-
-    double redSum = 0;
-    double blueSum = 0;
-    double greenSum = 0;
-    for (int i = 0; i < 10; i++) {
-      redSum +=  redValues[i];
-      blueSum += blueValues[i];
-      greenSum += greenValues[i];
-      
-    }
-    
-    averages[0] = redSum/10.0;
-    averages[1] = blueSum/10.0;
-    averages[2] = greenSum/10.0;
-    
-    
-    return averages;
-
+    //colour.interrupt();
   }
 
 }

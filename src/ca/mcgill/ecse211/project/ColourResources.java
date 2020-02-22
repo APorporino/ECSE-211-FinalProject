@@ -3,7 +3,6 @@ package ca.mcgill.ecse211.project;
 /**
  * This class will be used to store all variables related to colour detection.
  * @author Team06
- *
  */
 public class ColourResources {
   

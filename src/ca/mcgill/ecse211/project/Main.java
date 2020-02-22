@@ -23,9 +23,11 @@ public class Main {
       //new Thread(new Display()).start();
       new Thread(ultrasonicLocalizer).start(); 
       //Assuming we start somewhere on 45 degree line in the first square
+      TEXT_LCD.clear();
+      TEXT_LCD.drawString("Localizing to 1,1", 0, 1);
       localizeToStartingPosition();
       new Thread(odo).start();
-      Navigation.drive(MAP0);
+      Navigation.drive(MAP1);
     }else if (buttonChoice == Button.ID_LEFT) {    //1st part of demo
       detectColours();
     }
@@ -47,15 +49,6 @@ public class Main {
       }
       TEXT_LCD.clear();
       Navigation.detectRing();
-//      TEXT_LCD.drawString("Object Detected", 0,1);
-//      Button.waitForAnyPress();
-//      Thread colour = new Thread(colorDetector);
-//      colour.start();
-//      //System.out.println("RED: " + colorDetector.colourRed + "\nGREEN" + colorDetector.colourGreen + "\nBLUE" + colorDetector.colourBlue);
-//      colorDetector.updateRingColour(colorDetector.colourRed, colorDetector.colourGreen, colorDetector.colourBlue);
-//      TEXT_LCD.clear();
-//      TEXT_LCD.drawString("COLOUR: " + colorDetector.ringColour, 0, 2);
-//      colour.interrupt();
     }
     System.exit(0);
   }
@@ -69,15 +62,15 @@ public class Main {
 
     Thread lightLocThread = new Thread(lightLocalizer);
     lightLocThread.start();
-    lineAdjustment();
+    LightLocalizer.lineAdjustment();
     Driver.moveStraightFor(LIGHT_TO_CENTER);
     Driver.turnBy(90);
-    lineAdjustment();
+    LightLocalizer.lineAdjustment();
     Driver.moveStraightFor(LIGHT_TO_CENTER);
     Driver.turnBy(-90);
 
     Driver.moveStraightFor(BACKUP_DISTANCE);
-    lineAdjustment();
+    LightLocalizer.lineAdjustment();
     Driver.moveStraightFor(LIGHT_TO_CENTER);
     lightLocThread.interrupt();
   }
@@ -101,7 +94,7 @@ public class Main {
     Driver.rotate();
     while (true) {
       if (ultrasonicLocalizer.currentDistance <= ultrasonicLocalizer.minDistance) {
-        Driver.stopMotorsInstantaneously();
+        Driver.stopMotors();
         break;
       }
     }
@@ -111,52 +104,6 @@ public class Main {
       
       Driver.turnBy(FULL_SPIN_DEG / 4);   //face the 0 degree direction
     }
-  }
-
-  /**
-   * This method will move the robot to point 1, 1.
-   * Assumptions are it is facing zero degrees somewhere in the first grid (0,0).
-   */
-  public static void lineAdjustment() {
-    boolean leftLineNotDetected = true;
-    boolean rightLineNotDetected = true;
-
-    //Drive robot straight
-    Driver.drive();
-    while (leftLineNotDetected & rightLineNotDetected) {
-
-      if (LightLocalizer.colourIDLeft < BLUE_LINE_THRESHOLD) {
-        Driver.stopMotorsInstantaneously();
-        leftLineNotDetected = false;
-      }
-
-      if (LightLocalizer.colourIDRight < BLUE_LINE_THRESHOLD) {
-        Driver.stopMotorsInstantaneously();
-        rightLineNotDetected = false;
-      }
-    }
-
-    if (rightLineNotDetected) {
-      Driver.setSpeeds(0, 20);
-      rightMotor.forward();
-      while (rightLineNotDetected) {
-        if (LightLocalizer.colourIDRight < BLUE_LINE_THRESHOLD) {
-          Driver.stopMotorsInstantaneously();
-          rightLineNotDetected = false;
-        }
-      }
-    }else {
-      Driver.setSpeeds(20, 0);
-      leftMotor.forward();
-      while (leftLineNotDetected) {
-        if (LightLocalizer.colourIDLeft < BLUE_LINE_THRESHOLD) {
-          Driver.stopMotorsInstantaneously();
-          leftLineNotDetected = false;
-        }
-      }
-    }
-    Driver.setSpeeds(ROTATION_SPEED, ROTATION_SPEED);
-
   }
 
   /**
