@@ -21,7 +21,6 @@ public class Main {
     buttonChoice = chooseLocalize();
     if (buttonChoice == Button.ID_RIGHT ) {      //2nd part of demo
       //new Thread(new Display()).start();
-      new Thread(ultrasonicLocalizer).start(); 
       //Assuming we start somewhere on 45 degree line in the first square
       TEXT_LCD.clear();
       TEXT_LCD.drawString("Localizing to 1,1", 0, 1);
@@ -40,26 +39,18 @@ public class Main {
 
   }
 
-  public static void detectColours() {
-    while (true) {
-      TEXT_LCD.clear();
-      Display.showText("Click any button to get reading");
-      if (Button.waitForAnyPress() == Button.ID_ESCAPE) {
-        break;
-      }
-      TEXT_LCD.clear();
-      Navigation.detectRing();
-    }
-    System.exit(0);
-  }
-
   /**
    * This method will localize the robot to position 1,1.
    */
   public static void localizeToStartingPosition() {
-
-    localizeToZeroDeg();  //Position of robot now stored
-
+    
+    //new Ultrasonic thread
+    Thread usThread = new Thread(ultrasonicLocalizer);
+    usThread.start();
+    localizeToZeroDeg();  
+    usThread.interrupt();
+    
+    //new Light thread (left and right light sensors)
     Thread lightLocThread = new Thread(lightLocalizer);
     lightLocThread.start();
     LightLocalizer.lineAdjustment();
@@ -79,29 +70,30 @@ public class Main {
    * This method will position the robot at 0 degrees.
    * 
    * @return int[] Integer array containing the x and y position of the robot from the two walls.
-   * 
    */
   public static void localizeToZeroDeg() {
     ultrasonicLocalizer.minDistance = 1500;
 
     //make the robot rotate 360 degrees once. Thread
-    Driver.rotate();
+    Driver.rotate().start();
     //continuously locate the current position of robot and store minimum position. Thread 
 
     sleepFor(WAIT_TIME);    //Must sleep to give it time to do a full circle
 
     //Now it will position itself at the minimum distance
-    Driver.rotate();
+    Thread rotateThread  = Driver.rotate();
+    rotateThread.start();
     while (true) {
       if (ultrasonicLocalizer.currentDistance <= ultrasonicLocalizer.minDistance) {
-        Driver.stopMotors();
+        rotateThread.interrupt();
+        //Driver.waitMotors();
+        //Driver.stopMotors();
         break;
       }
     }
     //We are now pointing at the closest wall.
     Driver.turnBy(FULL_SPIN_DEG / 4);
     if (ultrasonicLocalizer.currentDistance <= TILE_SIZE) {   //still facing a wall
-      
       Driver.turnBy(FULL_SPIN_DEG / 4);   //face the 0 degree direction
     }
   }
@@ -134,6 +126,26 @@ public class Main {
       buttonChoice = Button.waitForAnyPress(); // left or right press
     } while (buttonChoice != Button.ID_LEFT && buttonChoice != Button.ID_RIGHT);
     return buttonChoice;
+  }
+  
+  /**
+   * This method will present the user with the option to detect colours.
+   * @return
+   */
+  public static void detectColours() {
+    while (true) {
+      TEXT_LCD.clear();
+      Display.showText("Hit any     |      Hit     >",
+          "    button  |       back   ",
+          " to detect |  button to ",
+          "colour.      |         leave.");
+      if (Button.waitForAnyPress() == Button.ID_ESCAPE) {
+        break;
+      }
+      TEXT_LCD.clear();
+      Navigation.detectRing();
+    }
+    System.exit(0);
   }
 
   /**

@@ -63,6 +63,24 @@ public class LightLocalizer implements Runnable{
   }
   
   /**
+   * This method will read data from the left light sensor
+   */
+  public static double readLeftLightData() {
+    LEFT_COL_SENSOR.getMode("Red").fetchSample(colourDataLeft, 0);
+    colourIDFront = colourDataFront[0]*100;
+    return colourIDFront;
+  }
+  
+  /**
+   * This method will read data from the right light sensor
+   */
+  public static double readRightLightData() {
+    RIGHT_COL_SENSOR.getMode("Red").fetchSample(colourDataRight, 0);
+    colourIDFront = colourDataFront[0]*100;
+    return colourIDFront;
+  }
+  
+  /**
    * This method will adjust the robot's position to have both sensor directly on a line.
    */
   public static void lineAdjustment() {
@@ -75,11 +93,13 @@ public class LightLocalizer implements Runnable{
 
       if (LightLocalizer.colourIDLeft < BLUE_LINE_THRESHOLD) {
         Driver.stopMotors();
+        //Driver.waitMotors();
         leftLineNotDetected = false;
       }
 
       if (LightLocalizer.colourIDRight < BLUE_LINE_THRESHOLD) {
         Driver.stopMotors();
+      //Driver.waitMotors();
         rightLineNotDetected = false;
       }
     }
@@ -91,6 +111,7 @@ public class LightLocalizer implements Runnable{
       while (rightLineNotDetected) {
         if (LightLocalizer.colourIDRight < BLUE_LINE_THRESHOLD) {
           Driver.stopMotors();
+        //Driver.waitMotors();
           rightLineNotDetected = false;
         }
       }

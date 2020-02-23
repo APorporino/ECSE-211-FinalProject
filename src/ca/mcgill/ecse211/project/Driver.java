@@ -11,25 +11,26 @@ public class Driver {
   /**
    * Rotates the robot once.
    */
-  public static void rotate() {
-    // spawn a new Thread to avoid this method blocking
-    (new Thread() {
-      public void run() {
-
-        // reset the motors
-        stopMotors();
-        setSpeeds(ROTATION_SPEED,ROTATION_SPEED);
-        turnBy(FULL_SPIN_DEG);
-
-      }
-    }).start();
+  public static Thread rotate() {
+     // spawn a new Thread to avoid this method blocking
+    Thread rotateThread = new Thread() {
+        public void run() {
+  
+          // reset the motors
+          //stopMotors();
+          setSpeeds(ROTATION_SPEED,ROTATION_SPEED);
+          turnBy(FULL_SPIN_DEG);
+  
+        }
+    };
+    return rotateThread;
   }
 
 /**
  * Will drive the robot straight.
  */
   public static void drive() {
-    stopMotors(); 
+    //stopMotors(); 
     setSpeeds(LINE_DETECTION_SPEED,LINE_DETECTION_SPEED);
     leftMotor.forward();
     rightMotor.forward();
@@ -55,6 +56,24 @@ public class Driver {
     //setSpeeds(0, 0);
     leftMotor.stop();
     rightMotor.stop();
+  }
+  
+  /**
+   * Stops both motors.
+   */
+  public static void waitMotors() {
+    //setSpeeds(0, 0);
+    try {
+      
+      leftMotor.wait();
+    } catch (InterruptedException e) {
+      // There is nothing to be done here
+    }
+    try {
+      rightMotor.wait();
+    } catch (InterruptedException e) {
+      // There is nothing to be done here
+    }
   }
 
   /**

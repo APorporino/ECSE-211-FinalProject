@@ -151,7 +151,7 @@ public class Resources {
   /**
    * This constant will be used to determine when the robot should lower the front light sensor to detect the ring colour.
    */
-  public static final int RING_CLOSE = 4;
+  public static final int RING_CLOSE = 6;
   
   /**
    * This constant will be used to set the speed at which the robot approaches the ring when it is close. 

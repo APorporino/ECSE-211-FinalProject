@@ -85,7 +85,7 @@ public class UltrasonicLocalizer implements Runnable{
   public void localizeToPoint(int x, int y) {
     double currentAngle = odo.getXyt()[2];
 
-    Main.localizeToZeroDeg();    //position robot at zero degrees.
+    Navigation.turnTo(0);
 
     sleepFor(PAUSE_TIME);
     //get accurate x position
@@ -101,6 +101,7 @@ public class UltrasonicLocalizer implements Runnable{
     odo.setTheta(FULL_SPIN_DEG * 3/4);
 
     sleepFor(PAUSE_TIME);
+    
     Navigation.travelTo(x,y);
 
     sleepFor(PAUSE_TIME);
