@@ -1,8 +1,14 @@
 package ca.mcgill.ecse211.project;
 
 //static import to avoid duplicating variables and make the code easier to read
-import static ca.mcgill.ecse211.project.Resources.*;
 import static ca.mcgill.ecse211.project.Main.sleepFor;
+import static ca.mcgill.ecse211.project.Resources.FILTER_MAX;
+import static ca.mcgill.ecse211.project.Resources.FULL_SPIN_DEG;
+import static ca.mcgill.ecse211.project.Resources.PAUSE_TIME;
+import static ca.mcgill.ecse211.project.Resources.SENSOR_TO_CENTER;
+import static ca.mcgill.ecse211.project.Resources.US_PERIOD;
+import static ca.mcgill.ecse211.project.Resources.odo;
+import static ca.mcgill.ecse211.project.Resources.usSensor;
 
 /**
  * This class will be used to localize the robot.
@@ -50,13 +56,14 @@ public class UltrasonicLocalizer implements Runnable{
   }
 
 
-  @Override
+
   /**
    * Will continuously take readings and keep track of the min distance found.
    */
+  @Override
   public void run() {
 
-    while(true) {
+    while (true) {
       long updateStart;
       long updateDuration;
       updateStart = System.currentTimeMillis();
@@ -80,8 +87,8 @@ public class UltrasonicLocalizer implements Runnable{
    * @param y yPosition to localize to in grid coordinates
    */
   public void localizeToPoint(int x, int y) {
-    double currentAngle = odo.getXyt()[2];
-
+    double currentAngle;
+    currentAngle = odo.getXyt()[2];
     Navigation.turnTo(0);
 
     sleepFor(PAUSE_TIME);
@@ -95,7 +102,7 @@ public class UltrasonicLocalizer implements Runnable{
     //reset odometer values to known x, y and theta values.
     odo.setX(xPos);
     odo.setY(yPos);
-    odo.setTheta(FULL_SPIN_DEG * 3/4);
+    odo.setTheta(FULL_SPIN_DEG * 3 / 4);
 
     sleepFor(PAUSE_TIME);
     
@@ -114,7 +121,6 @@ public class UltrasonicLocalizer implements Runnable{
     double sum = 0;
     double average;
     for (int i = 0; i < 20; i++) {
-
       readings[i] = readUsDistance();
       sum += readings[i];
     }
@@ -141,7 +147,7 @@ public class UltrasonicLocalizer implements Runnable{
    * @return the filtered distance in cm
    */
   int filter(int distance) {
-    if(distance >= FILTER_MAX) {
+    if (distance >= FILTER_MAX) {
       return FILTER_MAX;
     }
     return distance;

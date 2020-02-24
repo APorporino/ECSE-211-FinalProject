@@ -4,7 +4,7 @@ package ca.mcgill.ecse211.project;
 import static ca.mcgill.ecse211.project.Main.sleepFor;
 import static ca.mcgill.ecse211.project.Resources.DISPLAY_PERIOD;
 import static ca.mcgill.ecse211.project.Resources.TEXT_LCD;
-import static ca.mcgill.ecse211.project.Resources.ultrasonicLocalizer;
+import static ca.mcgill.ecse211.project.Resources.usLocalizer;
 
 /**
  * This class is used to display content to the LCD screen.
@@ -24,8 +24,8 @@ public class Display implements Runnable {
       // print last US reading
       TEXT_LCD.drawString("LEFT ID: " + LightLocalizer.colourIDLeft,0,0);
       TEXT_LCD.drawString("RIGHT ID: " + LightLocalizer.colourIDRight,0,2);
-      TEXT_LCD.drawString("US Distance: " + ultrasonicLocalizer.readUsDistance(), 0, 5);
-      TEXT_LCD.drawString("Min Distance: " + ultrasonicLocalizer.minDistance, 0, 6);
+      TEXT_LCD.drawString("US Distance: " + usLocalizer.readUsDistance(), 0, 5);
+      TEXT_LCD.drawString("Min Distance: " + usLocalizer.minDistance, 0, 6);
       
       updateDuration = System.currentTimeMillis() - updateStart;
       if (updateDuration < DISPLAY_PERIOD) {

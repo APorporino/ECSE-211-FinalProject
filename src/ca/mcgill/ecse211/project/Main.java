@@ -11,7 +11,7 @@ import static ca.mcgill.ecse211.project.Resources.TILE_SIZE;
 import static ca.mcgill.ecse211.project.Resources.WAIT_TIME;
 import static ca.mcgill.ecse211.project.Resources.lightLocalizer;
 import static ca.mcgill.ecse211.project.Resources.odo;
-import static ca.mcgill.ecse211.project.Resources.ultrasonicLocalizer;
+import static ca.mcgill.ecse211.project.Resources.usLocalizer;
 
 import lejos.hardware.Button;
 
@@ -52,7 +52,7 @@ public class Main {
   public static void localizeToStartingPosition() {
     
     //new Ultrasonic thread
-    Thread usThread = new Thread(ultrasonicLocalizer);
+    Thread usThread = new Thread(usLocalizer);
     usThread.start();
     localizeToZeroDeg();  
     usThread.interrupt();
@@ -79,7 +79,7 @@ public class Main {
    * @return 
    */
   public static void localizeToZeroDeg() {
-    ultrasonicLocalizer.minDistance = 1500;
+    usLocalizer.minDistance = 1500;
 
     //make the robot rotate 360 degrees once. Thread
     Driver.rotate().start();
@@ -90,7 +90,7 @@ public class Main {
     Thread rotateThread  = Driver.rotate();
     rotateThread.start();
     while (true) {
-      if (ultrasonicLocalizer.currentDistance <= ultrasonicLocalizer.minDistance) {
+      if (usLocalizer.currentDistance <= usLocalizer.minDistance) {
         rotateThread.interrupt();
         break;
       }
@@ -98,7 +98,7 @@ public class Main {
     //We are now pointing at the closest wall.
     Driver.turnBy(FULL_SPIN_DEG / 4);
     // still facing the wall
-    if (ultrasonicLocalizer.currentDistance <= TILE_SIZE) { 
+    if (usLocalizer.currentDistance <= TILE_SIZE) { 
       Driver.turnBy(FULL_SPIN_DEG / 4);   //face the 0 degree direction
     }
   }

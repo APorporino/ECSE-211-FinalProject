@@ -1,10 +1,29 @@
 package ca.mcgill.ecse211.project;
 
-import static ca.mcgill.ecse211.project.Resources.*;
-import ca.mcgill.ecse211.project.ColourDetector.Colour;
-import lejos.hardware.Button;
-import lejos.hardware.Sound;
 import static ca.mcgill.ecse211.project.Main.sleepFor;
+import static ca.mcgill.ecse211.project.Resources.APPROACHING_SPEED;
+import static ca.mcgill.ecse211.project.Resources.FULL_SPIN_DEG;
+import static ca.mcgill.ecse211.project.Resources.LIGHT_TO_CENTER;
+import static ca.mcgill.ecse211.project.Resources.LINE_THRESHOLD;
+import static ca.mcgill.ecse211.project.Resources.LOC_BACKUP_DISTANCE;
+import static ca.mcgill.ecse211.project.Resources.MIN_LIGHT_DATA;
+import static ca.mcgill.ecse211.project.Resources.ONE_LIGHT_ROTATION;
+import static ca.mcgill.ecse211.project.Resources.RING_CLOSE;
+import static ca.mcgill.ecse211.project.Resources.RING_THRESHOLD;
+import static ca.mcgill.ecse211.project.Resources.ROTATION_SPEED;
+import static ca.mcgill.ecse211.project.Resources.STRAIGHT_LINE;
+import static ca.mcgill.ecse211.project.Resources.TEXT_LCD;
+import static ca.mcgill.ecse211.project.Resources.TILE_SIZE;
+import static ca.mcgill.ecse211.project.Resources.colorDetector;
+import static ca.mcgill.ecse211.project.Resources.leftMotor;
+import static ca.mcgill.ecse211.project.Resources.lightLocalizer;
+import static ca.mcgill.ecse211.project.Resources.odo;
+import static ca.mcgill.ecse211.project.Resources.rightMotor;
+import static ca.mcgill.ecse211.project.Resources.topMotor;
+import static ca.mcgill.ecse211.project.Resources.usLocalizer;
+
+import ca.mcgill.ecse211.project.ColourDetector.Colour;
+import lejos.hardware.Sound;
 
 /**
  * This class will be used to navigate the robot to certain positions.
@@ -24,8 +43,8 @@ public class Navigation {
     for (int[] elem: map) {
       TEXT_LCD.clear();
       TEXT_LCD.drawString("Moving to: " + elem[0] + "," + elem[1], 0, 1);
-      
-      Thread usThread = new Thread(ultrasonicLocalizer);
+
+      Thread usThread = new Thread(usLocalizer);
       usThread.start();
       travelTo(elem[0], elem[1]);
       usThread.interrupt();
@@ -37,7 +56,7 @@ public class Navigation {
 
   /**
    * This method will perform the requested actions after reaching the final waypoint.
-   * The actions are: beep three times, display number of rings detected and colour of rings in order.
+   * Actions: beep three times, display number of rings detected and colour of rings in order.
    */
   public static void finalWaypoint() {
     Sound.beep();
@@ -45,18 +64,18 @@ public class Navigation {
     Sound.beep();
     TEXT_LCD.clear();
     TEXT_LCD.drawString("Number rings: " + numberRingsDetected, 0, 1);
-    
-    for (int i=0; i < numberRingsDetected; i++) {
+
+    for (int i = 0; i < numberRingsDetected; i++) {
       TEXT_LCD.drawString("Colour" + i + 1 + ": " +  colours[i], 0, i + 2);
     }
   }
 
   /**
    * This method returns the euclidian distance between two points in cm.
-   * @param x1 
-   * @param y1
-   * @param x2
-   * @param y2
+   * @param x1 first x pos 
+   * @param y1 first y pos
+   * @param x2 second x pos
+   * @param y2 second y pos
    * @return Euclidian distance in cm.
    */
   public static double euclidDistance(double x1, double y1, double x2, double y2) {
@@ -65,14 +84,15 @@ public class Navigation {
   }
 
   /**
-   * This method will use the two side light sensors to adjust to robots position closer to the waypoint.
-   * @param x
-   * @param y
+   * This method will use the two side light sensors to adjust to robots position 
+   * closer to the waypoint.
+   * @param x x position
+   * @param y y position
    */
   public static void localizeToPoint(int x,int y) {
     double currentXPos = odo.getXyt()[0];
     double currentYPos = odo.getXyt()[1];
-    double distance = euclidDistance(currentXPos, currentYPos, x*TILE_SIZE, y*TILE_SIZE);
+    double distance = euclidDistance(currentXPos, currentYPos, x * TILE_SIZE, y * TILE_SIZE);
 
     //distance is fine, continue
     if (distance <= 3) {
@@ -84,39 +104,41 @@ public class Navigation {
     Thread lightThread = new Thread(lightLocalizer);
     lightThread.start();
 
-    if ((LightLocalizer.colourIDLeft < LINE_THRESHOLD) & (LightLocalizer.colourIDRight < LINE_THRESHOLD)) {
+    if ((LightLocalizer.colourIDLeft < LINE_THRESHOLD) 
+        & (LightLocalizer.colourIDRight < LINE_THRESHOLD)) {
       bothSensorsOnLine();
-    }else if (LightLocalizer.colourIDLeft < LINE_THRESHOLD) {
+    } else if (LightLocalizer.colourIDLeft < LINE_THRESHOLD) {
       leftSensorOnLine();
-    }else if (LightLocalizer.colourIDRight < LINE_THRESHOLD) {
+    } else if (LightLocalizer.colourIDRight < LINE_THRESHOLD) {
       rightSensorOnLine();
-    }else {
+    } else {
       noSensorOnLine();
     }
 
     //reset the odometers to a more accurate values
-    odo.setX(x*TILE_SIZE);
-    odo.setY(y*TILE_SIZE);
+    odo.setX(x * TILE_SIZE);
+    odo.setY(y * TILE_SIZE);
     odo.setTheta(0);
 
     lightThread.interrupt();
   }
 
   /**
-   * This method will localize the robot to waypoint knowing that only the left light sensors is currently touching a line.
+   * This method will localize the robot to waypoint knowing that 
+   * only the left light sensors is currently touching a line.
    */
   public static void leftSensorOnLine() {
     rightMotor.rotate(-ONE_LIGHT_ROTATION);     //make center of rotation on y axis
     Driver.turnBy(-FULL_SPIN_DEG / 4);                          //turn back to zero degrees
     LightLocalizer.minLeft = MIN_LIGHT_DATA;        //reset the minimum to high value
     LightLocalizer.minRight = MIN_LIGHT_DATA;
-    
+
     //adjust to make both sensors on the x axis line.
     Driver.moveStraightFor(-LOC_BACKUP_DISTANCE);       //backup
-    if ((LightLocalizer.minLeft < LINE_THRESHOLD)&(LightLocalizer.minRight < LINE_THRESHOLD)) {
+    if ((LightLocalizer.minLeft < LINE_THRESHOLD) & (LightLocalizer.minRight < LINE_THRESHOLD)) {
       //we passed the line
       LightLocalizer.lineAdjustment();
-    }else {
+    } else {
       //the line is in front of us
       Driver.moveStraightFor(LOC_BACKUP_DISTANCE);
       LightLocalizer.lineAdjustment();
@@ -125,20 +147,21 @@ public class Navigation {
   }
 
   /**
-   * This method will localize the robot to waypoint knowing that only the right light sensors is currently touching a line.
+   * This method will localize the robot to waypoint knowing that only the 
+   * right light sensors is currently touching a line.
    */
   public static void rightSensorOnLine() {
     leftMotor.rotate(-ONE_LIGHT_ROTATION);          //make center of rotation on y axis
     Driver.turnBy(FULL_SPIN_DEG / 4);                             //turn back to zero degrees
     LightLocalizer.minLeft = MIN_LIGHT_DATA;
     LightLocalizer.minRight = MIN_LIGHT_DATA;
-    
-  //adjust to make both sensors on the x axis line.
+
+    //adjust to make both sensors on the x axis line.
     Driver.moveStraightFor(-LOC_BACKUP_DISTANCE);
-    if ((LightLocalizer.minLeft < LINE_THRESHOLD)&(LightLocalizer.minRight < LINE_THRESHOLD)) {
+    if ((LightLocalizer.minLeft < LINE_THRESHOLD) & (LightLocalizer.minRight < LINE_THRESHOLD)) {
       //we passed the line
       LightLocalizer.lineAdjustment();
-    }else {
+    } else {
       //the line is in front of us
       Driver.moveStraightFor(LOC_BACKUP_DISTANCE);
       LightLocalizer.lineAdjustment();
@@ -147,20 +170,21 @@ public class Navigation {
   }
 
   /**
-   * This method will localize the robot to waypoint knowing that both light sensors are currently touching a line.
+   * This method will localize the robot to waypoint knowing that
+   *  both light sensors are currently touching a line.
    */
   public static void bothSensorsOnLine() {
     Driver.moveStraightFor(LIGHT_TO_CENTER);
     Driver.turnBy(FULL_SPIN_DEG / 4);
     LightLocalizer.minLeft = MIN_LIGHT_DATA;
     LightLocalizer.minRight = MIN_LIGHT_DATA;
-    
-  //adjust to make both sensors on the y axis line.
+
+    //adjust to make both sensors on the y axis line.
     Driver.moveStraightFor(-LOC_BACKUP_DISTANCE);
-    if ((LightLocalizer.minLeft < LINE_THRESHOLD)&(LightLocalizer.minRight < LINE_THRESHOLD)) {
+    if ((LightLocalizer.minLeft < LINE_THRESHOLD) & (LightLocalizer.minRight < LINE_THRESHOLD)) {
       //we passed the line
       LightLocalizer.lineAdjustment();
-    }else {
+    } else {
       //the line is in front of us
       Driver.moveStraightFor(LOC_BACKUP_DISTANCE);
       LightLocalizer.lineAdjustment();
@@ -169,35 +193,36 @@ public class Navigation {
   }
 
   /**
-   * This method will localize the robot to waypoint knowing that the light sensors aren't currently touching a line.
+   * This method will localize the robot to waypoint knowing that 
+   * the light sensors aren't currently touching a line.
    */
   public static void noSensorOnLine() {
     LightLocalizer.minLeft = MIN_LIGHT_DATA;
     LightLocalizer.minRight = MIN_LIGHT_DATA;
-    
+
     //adjust to make both sensors on the y axis line.
     Driver.moveStraightFor(-LOC_BACKUP_DISTANCE);
-    if ((LightLocalizer.minLeft < LINE_THRESHOLD)&(LightLocalizer.minRight < LINE_THRESHOLD)) {
+    if ((LightLocalizer.minLeft < LINE_THRESHOLD) & (LightLocalizer.minRight < LINE_THRESHOLD)) {
       //Now we know we passed the line
       LightLocalizer.lineAdjustment();
-    }else {
+    } else {
       //the line is in front of us
       Driver.moveStraightFor(LOC_BACKUP_DISTANCE);
       LightLocalizer.lineAdjustment();
     }
     Driver.moveStraightFor(LIGHT_TO_CENTER);
-    
-    
+
+
     Driver.turnBy(FULL_SPIN_DEG / 4);
     LightLocalizer.minLeft = MIN_LIGHT_DATA;
     LightLocalizer.minRight = MIN_LIGHT_DATA;
-    
+
     //adjust to make both sensors on the x axis line.
     Driver.moveStraightFor(-LOC_BACKUP_DISTANCE);
-    if ((LightLocalizer.minLeft < LINE_THRESHOLD)&(LightLocalizer.minRight < LINE_THRESHOLD)) {
+    if ((LightLocalizer.minLeft < LINE_THRESHOLD) & (LightLocalizer.minRight < LINE_THRESHOLD)) {
       //Now we know we passed the line
       LightLocalizer.lineAdjustment();
-    }else {
+    } else {
       //the line is in front of us
       Driver.moveStraightFor(LOC_BACKUP_DISTANCE);
       LightLocalizer.lineAdjustment();
@@ -227,9 +252,9 @@ public class Navigation {
     //This section of code will make sure the robot stops if a ring is nearby
     while (farFromRing) {
       //If we detect a ring logic
-      if (ultrasonicLocalizer.currentDistance <= RING_THRESHOLD) {
+      if (usLocalizer.currentDistance <= RING_THRESHOLD) {
         Driver.setSpeeds(APPROACHING_SPEED, APPROACHING_SPEED);
-        if (ultrasonicLocalizer.currentDistance <= RING_CLOSE) {
+        if (usLocalizer.currentDistance <= RING_CLOSE) {
           //Driver.stopMotors();
           Driver.turnBy(1);
           Driver.stopMotorsInstantaneously();
@@ -245,7 +270,8 @@ public class Navigation {
         }
       }
       //Make sure that we still stop once we reach the waypoint
-      double distanceTravelled = euclidDistance(odoValuesBefore[0], odoValuesBefore[1], odo.getXyt()[0], odo.getXyt()[1]);
+      double distanceTravelled = euclidDistance(odoValuesBefore[0], odoValuesBefore[1], 
+          odo.getXyt()[0], odo.getXyt()[1]);
       if (distanceTravelled >= angleAndDistance[0]) {
         farFromRing = false;
       }
@@ -253,7 +279,8 @@ public class Navigation {
 
     //Determine how much more distance we need to cover to get to waypoint
     double[] odoValuesAfter = odo.getXyt();
-    double distanceTravelled = euclidDistance(odoValuesBefore[0], odoValuesBefore[1], odoValuesAfter[0], odoValuesAfter[1]);
+    double distanceTravelled = euclidDistance(odoValuesBefore[0], odoValuesBefore[1], 
+        odoValuesAfter[0], odoValuesAfter[1]);
 
     Driver.moveStraightFor(angleAndDistance[0] - distanceTravelled);
   }
@@ -268,45 +295,39 @@ public class Navigation {
     double[] positions = odo.getXyt();
     double[] returnValue = new double[2];
     double angleToTurnTo;
-    double base = x*TILE_SIZE - positions[0];   
-    double height = y*TILE_SIZE - positions[1];
+    double base = x * TILE_SIZE - positions[0];   
+    double height = y * TILE_SIZE - positions[1];
     double hypotenus = Math.pow((Math.pow(base, 2) + Math.pow(height, 2)), .5);
     returnValue[0] = hypotenus;
 
     //if its traveling in a straight line
     if (base >= -STRAIGHT_LINE && base <= STRAIGHT_LINE) {
       if (height > 0) {
-        angleToTurnTo =0;
-      }else {
+        angleToTurnTo = 0;
+      } else {
         angleToTurnTo = FULL_SPIN_DEG / 2;
       }
     } else if (height >= -STRAIGHT_LINE && height <= STRAIGHT_LINE) {
       if (base > 0) {
         angleToTurnTo = FULL_SPIN_DEG / 4;
+      } else {
+        angleToTurnTo = FULL_SPIN_DEG * 3 / 4;
       }
-      else {
-        angleToTurnTo = FULL_SPIN_DEG * 3/4;
-      }
-    }//not straight line
-    else{
-      angleToTurnTo = Math.atan(Math.abs(height/base));
+    } else { //not straight line
+      angleToTurnTo = Math.atan(Math.abs(height / base));
       angleToTurnTo = Math.abs(Math.toDegrees(angleToTurnTo));
 
       //logic to figure out which angle we want to turn by
       if (height < 0 && base < 0) {
         //Quadrant 3
-        angleToTurnTo = FULL_SPIN_DEG * 3/4 - angleToTurnTo;
-
-      }
-      else if (height < 0) {
+        angleToTurnTo = FULL_SPIN_DEG * 3 / 4 - angleToTurnTo;
+      } else if (height < 0) {
         //Quadrant 4
         angleToTurnTo = FULL_SPIN_DEG / 4 + angleToTurnTo;
-
-      }else if (base < 0) {
+      } else if (base < 0) {
         //Quadrant 2
-        angleToTurnTo = FULL_SPIN_DEG * 3/4 + angleToTurnTo;
-
-      }else {
+        angleToTurnTo = FULL_SPIN_DEG * 3 / 4 + angleToTurnTo; 
+      } else {
         //Quadrant 1
         angleToTurnTo = FULL_SPIN_DEG / 4 - angleToTurnTo;
       }
@@ -328,17 +349,18 @@ public class Navigation {
       if (difference < 0) {
         difference = FULL_SPIN_DEG  + difference;
         Driver.turnBy(difference);
-      }else {
+      } else {
         difference = difference - FULL_SPIN_DEG;
         Driver.turnBy(difference);
       }
-    }else {
+    } else {
       Driver.turnBy(difference);
     }
-
   }
+  
   /**
-   * This method will lower the front light sensor start a new thread to read the colour value of the ring and attempt to detect the colour.
+   * This method will lower the front light sensor start a new thread to read the 
+   * colour value of the ring and attempt to detect the colour.
    */
   public static void detectRing() {
     TEXT_LCD.clear();

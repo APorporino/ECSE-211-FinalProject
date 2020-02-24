@@ -5,9 +5,8 @@ import lejos.hardware.lcd.TextLCD;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import lejos.hardware.port.MotorPort;
 import lejos.hardware.port.SensorPort;
-import lejos.hardware.sensor.EV3GyroSensor;
-import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.hardware.sensor.EV3ColorSensor;
+import lejos.hardware.sensor.EV3UltrasonicSensor;
 
 /**
  * This class is used to define static resources in one place for easy access and to avoid
@@ -65,7 +64,7 @@ public class Resources {
   public static final long US_PERIOD = 300;
   
   /**
-   * Minimum value to reset the light localizer left and right data
+   * Minimum value to reset the light localizer left and right data.
    */
   public static final long MIN_LIGHT_DATA = 60;
 
@@ -145,9 +144,10 @@ public class Resources {
   public static final double BASE_WIDTH = 12.2;
   
   /**
-   * Rotate value in degrees to make robot center of rotation on y axis, knowing our left or right sensor is touching a line and current angle is 0.
+   * Rotate value in degrees to make robot center of rotation on y axis, 
+   * knowing our left or right sensor is touching a line and current angle is 0.
    */
-  public static final int ONE_LIGHT_ROTATION = (int) (BASE_WIDTH *90   / WHEEL_RAD);
+  public static final int ONE_LIGHT_ROTATION = (int) (BASE_WIDTH * 90 / WHEEL_RAD);
 
   /**
    * The limit of invalid samples that we read from the US sensor before assuming no obstacle.
@@ -255,7 +255,7 @@ public class Resources {
   /**
    * The Ultrasonic Localizer.
    */
-  public static UltrasonicLocalizer ultrasonicLocalizer = UltrasonicLocalizer.getUltrasonicLocalizer();
+  public static UltrasonicLocalizer usLocalizer = UltrasonicLocalizer.getUltrasonicLocalizer();
 
 
   /**
