@@ -29,7 +29,7 @@ public class LightLocalizer implements Runnable{
   static float[] colourDataFront = new float[colourValueFront.sampleSize()];
 
   /**
-   * This method will localize the robot using light sensor, start the thread.
+   * This method is used to continuously read data from the left and right light sensors..
    */
   public void run() {
 

@@ -9,7 +9,8 @@ import static ca.mcgill.ecse211.project.Resources.*;
 public class Driver {
 
   /**
-   * Rotates the robot once.
+   * Returns a thread that will rotate the robot once.
+   * @return Thread that rotates the robot once.
    */
   public static Thread rotate() {
      // spawn a new Thread to avoid this method blocking
@@ -26,9 +27,9 @@ public class Driver {
     return rotateThread;
   }
 
-/**
- * Will drive the robot straight.
- */
+  /**
+   * Will drive the robot continuously straight at LINE_DETECTION_SPEED speed.
+   */
   public static void drive() {
     //stopMotors(); 
     setSpeeds(LINE_DETECTION_SPEED,LINE_DETECTION_SPEED);
@@ -50,7 +51,7 @@ public class Driver {
   }
 
   /**
-   * Stops both motors.
+   * Stops both left and right motors.
    */
   public static void stopMotors() {
     //setSpeeds(0, 0);
@@ -59,7 +60,7 @@ public class Driver {
   }
   
   /**
-   * Stops both motors.
+   * Calls wait method on both left and right motor threads.
    */
   public static void waitMotors() {
     //setSpeeds(0, 0);
@@ -77,7 +78,7 @@ public class Driver {
   }
 
   /**
-   * Stops both motors.
+   * Stops both motors by first setting their speed to 0.
    */
   public static void stopMotorsInstantaneously() {
 
@@ -90,7 +91,7 @@ public class Driver {
   }
 
   /**
-   * Stops the left motor instantaneously.
+   * Stops the left motor by first setting left motor speed to 0.
    */
   public static void leftMotorStop() {
     int speedL = leftMotor.getSpeed();
@@ -101,7 +102,7 @@ public class Driver {
   }
 
   /**
-   * Stops the right motor instantaneously.
+   * Stops the right motor by first setting the right motor speed to 0.
    */
   public static void rightMotorStop() {
     int speedL = leftMotor.getSpeed();

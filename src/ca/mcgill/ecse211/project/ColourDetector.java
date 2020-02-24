@@ -16,7 +16,6 @@ public class ColourDetector implements Runnable{
 
 
   private static final long COLOUR_PERIOD = 300;
-  private long timeout = Long.MAX_VALUE;
 
   //local variables for 
   public  float colourRed;
@@ -49,9 +48,8 @@ public class ColourDetector implements Runnable{
   public  COLOUR ringColour;
 
   /**
-   * This method will localize the robot using light sensor, start the thread.
+   * This run method continuously receives data RGB values from the front light sensor and stores it in static variables.
    */
-
   public void run() {
     long updateStart;
     long updateDuration;
@@ -70,7 +68,7 @@ public class ColourDetector implements Runnable{
   }
   
   /**
-   * This method will receive a fixed number of readings from the RGB colour sensor and return an average for each.
+   * This method will receive a fixed number of readings (NUM_READINGS) from the RGB colour sensor and return an average for each.
    * @return double[3] containing averages for RGB readings.
    */
   public static double[] getReadings(){
@@ -116,7 +114,7 @@ public class ColourDetector implements Runnable{
  * @param colourRed Red colour sample
  * @param colourGreen Green colour sample
  * @param colourBlue Blue colour sample
- * @return
+ * @return COLOUR representing the colour detected
  */
   public  COLOUR updateRingColour(double colourRed, double colourGreen, double colourBlue) {
     this.ringColour = COLOUR.NONE;

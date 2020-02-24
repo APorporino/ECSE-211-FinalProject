@@ -69,7 +69,7 @@ public class Main {
   /**
    * This method will position the robot at 0 degrees.
    * 
-   * @return int[] Integer array containing the x and y position of the robot from the two walls.
+   * @return 
    */
   public static void localizeToZeroDeg() {
     ultrasonicLocalizer.minDistance = 1500;

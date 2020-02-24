@@ -13,8 +13,7 @@ public class Display implements Runnable {
   private static final long DISPLAY_PERIOD = 30;
 
   /**
-   * This thread will continuously display the robots reading of the USsensor and its min position 
-   * and the left and right light sensor readings.
+   * This thread will continuously display any information needed for debugging.
    */
   public void run() {
     long updateStart;
