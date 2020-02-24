@@ -18,60 +18,36 @@ public class Navigation {
 
   /**
    * This method starts a loops through all grid positions in the map and goes to each one.
+   * At each point it will localize.
    */
   public static void drive(final int[][] map) {
     for (int[] elem: map) {
       TEXT_LCD.clear();
       TEXT_LCD.drawString("Moving to: " + elem[0] + "," + elem[1], 0, 1);
+      
       Thread usThread = new Thread(ultrasonicLocalizer);
       usThread.start();
       travelTo(elem[0], elem[1]);
       usThread.interrupt();
 
-      //sleepFor(PAUSE_TIME);
-
       localizeToPoint(elem[0], elem[1]);
-
-      //LightLocalizer.lightLocToPoint(elem[0], elem[1]);
     }
     finalWaypoint();
-    // int lastElement = map.length -1;
-    // ultrasonicLocalizer.localizeToPoint(map[lastElement][0], map[lastElement][1]);      //localize at the last point
-
   }
 
   /**
    * This method will perform the requested actions after reaching the final waypoint.
+   * The actions are: beep three times, display number of rings detected and colour of rings in order.
    */
   public static void finalWaypoint() {
     Sound.beep();
     Sound.beep();
     Sound.beep();
     TEXT_LCD.clear();
-
-    TEXT_LCD.drawString("Num rings: " + numberRingsDetected, 0, 1);
-
+    TEXT_LCD.drawString("Number rings: " + numberRingsDetected, 0, 1);
+    
     for (int i=0; i < numberRingsDetected; i++) {
       TEXT_LCD.drawString("Colour" + i + 1 + ": " +  colours[i], 0, i + 2);
-    }
-  }
-
-  /**
-   * This method checks if the left or right sensor is on top of a line.
-   * If so it adjust so that the robot is no longer touching a line.
-   */
-  public static void checkIfOnLine() {
-
-    if (LightLocalizer.colourIDLeft < BLACK_LINE_THRESHOLD) {
-      System.out.println("ON LINE LEFT");
-      turnTo(90);
-      Driver.moveStraightFor(2*BASE_WIDTH);
-      turnTo(0);
-    }else if (LightLocalizer.colourIDRight < BLACK_LINE_THRESHOLD) {
-      System.out.println("ON LINE RIGHT");
-      turnTo(270);
-      Driver.moveStraightFor(2*BASE_WIDTH);
-      turnTo(0);
     }
   }
 
@@ -108,8 +84,6 @@ public class Navigation {
     Thread lightThread = new Thread(lightLocalizer);
     lightThread.start();
 
-    //if both touching line, do only x
-
     if ((LightLocalizer.colourIDLeft < LINE_THRESHOLD) & (LightLocalizer.colourIDRight < LINE_THRESHOLD)) {
       bothSensorsOnLine();
     }else if (LightLocalizer.colourIDLeft < LINE_THRESHOLD) {
@@ -129,18 +103,18 @@ public class Navigation {
   }
 
   /**
-   * This method will localize the robot to waypoint knowing that both the left light sensors is currently touching a line.
+   * This method will localize the robot to waypoint knowing that only the left light sensors is currently touching a line.
    */
   public static void leftSensorOnLine() {
-    //BASE_WIDTH* PI/2 (90)   / 2.33
-    //convert to degrees
-    rightMotor.rotate(-515);
-    Driver.turnBy(-90);
-    LightLocalizer.minLeft = 60;
-    LightLocalizer.minRight = 60;
-    Driver.moveStraightFor(-LOC_BACKUP_DISTANCE);
+    rightMotor.rotate(-ONE_LIGHT_ROTATION);     //make center of rotation on y axis
+    Driver.turnBy(-FULL_SPIN_DEG / 4);                          //turn back to zero degrees
+    LightLocalizer.minLeft = MIN_LIGHT_DATA;        //reset the minimum to high value
+    LightLocalizer.minRight = MIN_LIGHT_DATA;
+    
+    //adjust to make both sensors on the x axis line.
+    Driver.moveStraightFor(-LOC_BACKUP_DISTANCE);       //backup
     if ((LightLocalizer.minLeft < LINE_THRESHOLD)&(LightLocalizer.minRight < LINE_THRESHOLD)) {
-      //Now we know we passed the line
+      //we passed the line
       LightLocalizer.lineAdjustment();
     }else {
       //the line is in front of us
@@ -151,18 +125,18 @@ public class Navigation {
   }
 
   /**
-   * This method will localize the robot to waypoint knowing that both the right light sensors is currently touching a line.
+   * This method will localize the robot to waypoint knowing that only the right light sensors is currently touching a line.
    */
   public static void rightSensorOnLine() {
-    //BASE_WIDTH* PI/2 (90)   / 2.33
-    //convert to degrees
-    leftMotor.rotate(-515);
-    Driver.turnBy(90);
-    LightLocalizer.minLeft = 60;
-    LightLocalizer.minRight = 60;
+    leftMotor.rotate(-ONE_LIGHT_ROTATION);          //make center of rotation on y axis
+    Driver.turnBy(FULL_SPIN_DEG / 4);                             //turn back to zero degrees
+    LightLocalizer.minLeft = MIN_LIGHT_DATA;
+    LightLocalizer.minRight = MIN_LIGHT_DATA;
+    
+  //adjust to make both sensors on the x axis line.
     Driver.moveStraightFor(-LOC_BACKUP_DISTANCE);
     if ((LightLocalizer.minLeft < LINE_THRESHOLD)&(LightLocalizer.minRight < LINE_THRESHOLD)) {
-      //Now we know we passed the line
+      //we passed the line
       LightLocalizer.lineAdjustment();
     }else {
       //the line is in front of us
@@ -177,12 +151,14 @@ public class Navigation {
    */
   public static void bothSensorsOnLine() {
     Driver.moveStraightFor(LIGHT_TO_CENTER);
-    Driver.turnBy(90);
-    LightLocalizer.minLeft = 60;
-    LightLocalizer.minRight = 60;
+    Driver.turnBy(FULL_SPIN_DEG / 4);
+    LightLocalizer.minLeft = MIN_LIGHT_DATA;
+    LightLocalizer.minRight = MIN_LIGHT_DATA;
+    
+  //adjust to make both sensors on the y axis line.
     Driver.moveStraightFor(-LOC_BACKUP_DISTANCE);
     if ((LightLocalizer.minLeft < LINE_THRESHOLD)&(LightLocalizer.minRight < LINE_THRESHOLD)) {
-      //Now we know we passed the line
+      //we passed the line
       LightLocalizer.lineAdjustment();
     }else {
       //the line is in front of us
@@ -196,7 +172,10 @@ public class Navigation {
    * This method will localize the robot to waypoint knowing that the light sensors aren't currently touching a line.
    */
   public static void noSensorOnLine() {
-    //y
+    LightLocalizer.minLeft = MIN_LIGHT_DATA;
+    LightLocalizer.minRight = MIN_LIGHT_DATA;
+    
+    //adjust to make both sensors on the y axis line.
     Driver.moveStraightFor(-LOC_BACKUP_DISTANCE);
     if ((LightLocalizer.minLeft < LINE_THRESHOLD)&(LightLocalizer.minRight < LINE_THRESHOLD)) {
       //Now we know we passed the line
@@ -207,11 +186,14 @@ public class Navigation {
       LightLocalizer.lineAdjustment();
     }
     Driver.moveStraightFor(LIGHT_TO_CENTER);
-    //x
-    Driver.turnBy(90);
-    LightLocalizer.minLeft = 60;
-    LightLocalizer.minRight = 60;
-    Driver.moveStraightFor(-TILE_SIZE/4);
+    
+    
+    Driver.turnBy(FULL_SPIN_DEG / 4);
+    LightLocalizer.minLeft = MIN_LIGHT_DATA;
+    LightLocalizer.minRight = MIN_LIGHT_DATA;
+    
+    //adjust to make both sensors on the x axis line.
+    Driver.moveStraightFor(-LOC_BACKUP_DISTANCE);
     if ((LightLocalizer.minLeft < LINE_THRESHOLD)&(LightLocalizer.minRight < LINE_THRESHOLD)) {
       //Now we know we passed the line
       LightLocalizer.lineAdjustment();
