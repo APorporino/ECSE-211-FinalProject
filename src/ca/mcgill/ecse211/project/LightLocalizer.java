@@ -1,30 +1,35 @@
 package ca.mcgill.ecse211.project;
 
-import static ca.mcgill.ecse211.project.Main.sleepFor;
 //static import to avoid duplicating variables and make the code easier to read
-import static ca.mcgill.ecse211.project.Resources.*;
-import static ca.mcgill.ecse211.project.Driver.*;
-import static ca.mcgill.ecse211.project.Main.*;
+import static ca.mcgill.ecse211.project.Main.sleepFor;
+import static ca.mcgill.ecse211.project.Resources.FRONT_COL_SENSOR;
+import static ca.mcgill.ecse211.project.Resources.LEFT_COL_SENSOR;
+import static ca.mcgill.ecse211.project.Resources.LIGHTLOCALIZER_PERIOD;
+import static ca.mcgill.ecse211.project.Resources.LINE_DETECTION_SPEED;
+import static ca.mcgill.ecse211.project.Resources.LINE_THRESHOLD;
+import static ca.mcgill.ecse211.project.Resources.RIGHT_COL_SENSOR;
+import static ca.mcgill.ecse211.project.Resources.leftMotor;
+import static ca.mcgill.ecse211.project.Resources.rightMotor;
 
 import lejos.robotics.SampleProvider;
-import lejos.hardware.Sound;
 
 /**
  * This class is used to control and receive readings from multiple light sensors.
  * @author Team06
  *
  */
-public class LightLocalizer implements Runnable{
+public class LightLocalizer implements Runnable {
 
-  private static final long COLOUR_PERIOD = 100;
-
+  // class variables used to store the color values from the light sensor
   public static float colourIDLeft;
   public static float colourIDRight;
   public static float colourIDFront;
-  
+
+  // class varaibels used to compare with the colour values from the light sensor
   public static float minLeft;
   public static float minRight;
-  
+
+  // buffers to store the data from the light sensors
   static SampleProvider colourValueLeft = LEFT_COL_SENSOR.getMode("Red"); 
   static SampleProvider colourValueRight = RIGHT_COL_SENSOR.getMode("Red"); 
   static SampleProvider colourValueFront = FRONT_COL_SENSOR.getMode("Red"); 
@@ -51,51 +56,53 @@ public class LightLocalizer implements Runnable{
       if (colourIDRight < minRight) {
         minRight = colourIDRight;
       }
-      //Display.showText("Left: " + colourIDLeft, "Right: " + colourIDRight);
+      
       // this ensures that the light sensor runs once every 3 ms.
       updateDuration = System.currentTimeMillis() - updateStart;
-      if (updateDuration < COLOUR_PERIOD) {
-        sleepFor(COLOUR_PERIOD - updateDuration);
+      if (updateDuration < LIGHTLOCALIZER_PERIOD) {
+        sleepFor(LIGHTLOCALIZER_PERIOD - updateDuration);
       }
-
     }
   }
 
   /**
-   * This method will read data from the top light sensor
+   * This method will read data from the top light sensor.
    */
   public static double readFrontLightData() {
     FRONT_COL_SENSOR.getMode("Red").fetchSample(colourDataFront, 0);
-    colourIDFront = colourDataFront[0]*100;
+    colourIDFront = colourDataFront[0] * 100;
     return colourIDFront;
   }
-  
+
   /**
-   * This method will read data from the left light sensor
+   * This method will read data from the left light sensor.
    */
   public static double readLeftLightData() {
     LEFT_COL_SENSOR.getMode("Red").fetchSample(colourDataLeft, 0);
-    colourIDFront = colourDataFront[0]*100;
+    colourIDFront = colourDataFront[0] * 100;
     return colourIDFront;
   }
-  
+
   /**
-   * This method will read data from the right light sensor
+   * This method will read data from the right light sensor.
    */
   public static double readRightLightData() {
     RIGHT_COL_SENSOR.getMode("Red").fetchSample(colourDataRight, 0);
-    colourIDFront = colourDataFront[0]*100;
+    colourIDFront = colourDataFront[0] * 100;
     return colourIDFront;
   }
-  
+
   /**
    * This method will adjust the robot's position to have both sensor directly on a line.
    */
   public static void lineAdjustment() {
-    
-    boolean leftLineNotDetected = true;
-    boolean rightLineNotDetected = true;
 
+    // boolean variables which control the motion of the motors while doing line detecting
+    boolean leftLineNotDetected;
+    boolean rightLineNotDetected;
+    leftLineNotDetected = true;
+    rightLineNotDetected = true;
+    
     //Drive robot straight until it sees a line
     Driver.drive();
     LightLocalizer.colourIDLeft = 50;
@@ -103,16 +110,12 @@ public class LightLocalizer implements Runnable{
     while (leftLineNotDetected & rightLineNotDetected) {
 
       if (LightLocalizer.colourIDLeft < LINE_THRESHOLD) {
-        //Driver.stopMotors();
-        //Driver.turnBy(1);
         Driver.stopMotorsInstantaneously();
         leftLineNotDetected = false;
       }
 
       if (LightLocalizer.colourIDRight < LINE_THRESHOLD) {
-        //Driver.stopMotors();
-        //Driver.turnBy(1);
-      Driver.stopMotorsInstantaneously();
+        Driver.stopMotorsInstantaneously();
         rightLineNotDetected = false;
       }
     }
@@ -123,25 +126,20 @@ public class LightLocalizer implements Runnable{
       rightMotor.forward();
       while (rightLineNotDetected) {
         if (LightLocalizer.colourIDRight < LINE_THRESHOLD) {
-          //Driver.stopMotors();
-          //Driver.turnBy(1);
           Driver.stopMotorsInstantaneously();
           rightLineNotDetected = false;
         }
       }
-    }else {
+    } else {
       Driver.setSpeeds(20, 0);
       leftMotor.forward();
       while (leftLineNotDetected) {
         if (LightLocalizer.colourIDLeft < LINE_THRESHOLD) {
-          //Driver.stopMotors();
-          //Driver.turnBy(1);
           Driver.stopMotorsInstantaneously();
           leftLineNotDetected = false;
         }
       }
     }
     Driver.setSpeeds(LINE_DETECTION_SPEED,LINE_DETECTION_SPEED);
-   // Driver.setSpeeds(ROTATION_SPEED, ROTATION_SPEED);
   }
 }

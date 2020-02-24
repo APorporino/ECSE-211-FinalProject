@@ -1,9 +1,19 @@
 package ca.mcgill.ecse211.project;
 
 //static import to avoid duplicating variables and make the code easier to read
-import static ca.mcgill.ecse211.project.Resources.*;
+import static ca.mcgill.ecse211.project.Resources.BACKUP_DISTANCE;
+import static ca.mcgill.ecse211.project.Resources.FULL_SPIN_DEG;
+import static ca.mcgill.ecse211.project.Resources.LIGHT_TO_CENTER;
+import static ca.mcgill.ecse211.project.Resources.MAP1;
+import static ca.mcgill.ecse211.project.Resources.SENSOR_TO_CENTER;
+import static ca.mcgill.ecse211.project.Resources.TEXT_LCD;
+import static ca.mcgill.ecse211.project.Resources.TILE_SIZE;
+import static ca.mcgill.ecse211.project.Resources.WAIT_TIME;
+import static ca.mcgill.ecse211.project.Resources.lightLocalizer;
+import static ca.mcgill.ecse211.project.Resources.odo;
+import static ca.mcgill.ecse211.project.Resources.ultrasonicLocalizer;
+
 import lejos.hardware.Button;
-import lejos.hardware.Sound;
 
 /**
  * The main driver class for the lab.
@@ -16,19 +26,16 @@ public class Main {
    * @param args not used
    */
   public static void main(String[] args) {
-    //--------------------------------------
     int buttonChoice;
     buttonChoice = chooseLocalize();
-    if (buttonChoice == Button.ID_RIGHT ) {      //2nd part of demo
-      //new Thread(new Display()).start();
+    if (buttonChoice == Button.ID_RIGHT) {
       //Assuming we start somewhere on 45 degree line in the first square
-      
       TEXT_LCD.clear();
       TEXT_LCD.drawString("Localizing to 1,1", 0, 1);
       localizeToStartingPosition();
       new Thread(odo).start();
       Navigation.drive(MAP1);
-    }else if (buttonChoice == Button.ID_LEFT) {    //1st part of demo
+    } else if (buttonChoice == Button.ID_LEFT) { 
       detectColours();
     }
     
@@ -37,7 +44,6 @@ public class Main {
     } // do nothing
 
     System.exit(0);
-
   }
 
   /**
@@ -56,10 +62,10 @@ public class Main {
     lightLocThread.start();
     LightLocalizer.lineAdjustment();
     Driver.moveStraightFor(LIGHT_TO_CENTER);
-    Driver.turnBy(90);
+    Driver.turnBy(FULL_SPIN_DEG / 4);
     LightLocalizer.lineAdjustment();
     Driver.moveStraightFor(LIGHT_TO_CENTER);
-    Driver.turnBy(-90);
+    Driver.turnBy(-FULL_SPIN_DEG / 4);
 
     Driver.moveStraightFor(BACKUP_DISTANCE);
     LightLocalizer.lineAdjustment();
@@ -77,8 +83,7 @@ public class Main {
 
     //make the robot rotate 360 degrees once. Thread
     Driver.rotate().start();
-    //continuously locate the current position of robot and store minimum position. Thread 
-
+    //continuously locate the current position of robot and store minimum position.
     sleepFor(WAIT_TIME);    //Must sleep to give it time to do a full circle
 
     //Now it will position itself at the minimum distance
@@ -87,14 +92,13 @@ public class Main {
     while (true) {
       if (ultrasonicLocalizer.currentDistance <= ultrasonicLocalizer.minDistance) {
         rotateThread.interrupt();
-        //Driver.waitMotors();
-        //Driver.stopMotors();
         break;
       }
     }
     //We are now pointing at the closest wall.
     Driver.turnBy(FULL_SPIN_DEG / 4);
-    if (ultrasonicLocalizer.currentDistance <= TILE_SIZE) {   //still facing a wall
+    // still facing the wall
+    if (ultrasonicLocalizer.currentDistance <= TILE_SIZE) { 
       Driver.turnBy(FULL_SPIN_DEG / 4);   //face the 0 degree direction
     }
   }

@@ -1,28 +1,27 @@
 package ca.mcgill.ecse211.project;
 
+//static import to avoid duplicating variables and make the code easier to read
+import static ca.mcgill.ecse211.project.ColourResources.BLUE_MEAN;
+import static ca.mcgill.ecse211.project.ColourResources.GREEN_MEAN;
+import static ca.mcgill.ecse211.project.ColourResources.ORANGE_MEAN;
+import static ca.mcgill.ecse211.project.ColourResources.YELLOW_MEAN;
+import static ca.mcgill.ecse211.project.ColourResources.YELLOW_THRESH;
 import static ca.mcgill.ecse211.project.Main.sleepFor;
-import static ca.mcgill.ecse211.project.ColourResources.*;
-import static ca.mcgill.ecse211.project.Resources.*;
-import java.text.DecimalFormat;
-import lejos.robotics.SampleProvider;
+import static ca.mcgill.ecse211.project.Resources.COLOUR_PERIOD;
+import static ca.mcgill.ecse211.project.Resources.FRONT_COL_SENSOR;
+import static ca.mcgill.ecse211.project.Resources.NUM_READINGS;
 
 /**
  * This class will be used to control colour detection and determine the colour 
  * of a ring given a sample.
  * @author Team06
- *
  */
-public class ColourDetector implements Runnable{
-
-
-  private static final long COLOUR_PERIOD = 300;
+public class ColourDetector implements Runnable {
 
   //local variables for 
   public  float colourRed;
   public  float colourGreen;
   public  float colourBlue;
-  //for some reason this sampleProvider does not work.
-  //private static SampleProvider colourValue = FRONT_COL_SENSOR.getRGBMode(); 
 
   /**
    * Buffer (array) to store light samples.
@@ -38,17 +37,18 @@ public class ColourDetector implements Runnable{
   /**
    * Enumeration of all possible colour detections.
    */
-  public enum COLOUR {
+  public enum Colour {
     BLUE, GREEN, YELLOW, ORANGE, NONE;
   }
 
   /**
    * Variable used to determine the colour detected by the colour detector.
    */
-  public  COLOUR ringColour;
+  public  Colour ringColour;
 
   /**
-   * This run method continuously receives data RGB values from the front light sensor and stores it in static variables.
+   * This run method continuously receives data RGB values from the front
+   *  light sensor and stores it in static variables.
    */
   public void run() {
     long updateStart;
@@ -68,10 +68,11 @@ public class ColourDetector implements Runnable{
   }
 
   /**
-   * This method will receive a fixed number of readings (NUM_READINGS) from the RGB colour sensor and return an average for each.
+   * This method will receive a fixed number of readings (NUM_READINGS) from the 
+   * RGB colour sensor and return an average for each.
    * @return double[3] containing averages for RGB readings.
    */
-  public static double[] getReadings(){
+  public static double[] getReadings() {
     double[] averages = new double[3];
 
     double[] redValues = new double[10];
@@ -84,6 +85,7 @@ public class ColourDetector implements Runnable{
       blueValues[i] = colourData[1];
       greenValues[i] = colourData[2];
     }
+    
     double redSum = 0;
     double blueSum = 0;
     double greenSum = 0;
@@ -92,9 +94,9 @@ public class ColourDetector implements Runnable{
       blueSum += blueValues[i];
       greenSum += greenValues[i];
     }
-    averages[0] = redSum/10.0;
-    averages[1] = blueSum/10.0;
-    averages[2] = greenSum/10.0;
+    averages[0] = redSum / 10.0;
+    averages[1] = blueSum / 10.0;
+    averages[2] = greenSum / 10.0;
 
     return averages;
 
@@ -107,82 +109,81 @@ public class ColourDetector implements Runnable{
    */
   public  double[] normailze(double colourRed, double colourGreen, double colourBlue) {
     double[] normalizedColours = new double[3];
-    double sumOfSquares = Math.pow(colourRed, 2) + Math.pow(colourGreen, 2) + Math.pow(colourBlue, 2);
+    double sumOfSquares = Math.pow(colourRed, 2) + Math.pow(colourGreen, 2) 
+        + Math.pow(colourBlue, 2);
     double denominator = Math.pow(sumOfSquares, .5);
-
 
     normalizedColours[0] = colourRed / denominator;
     normalizedColours[1] = colourGreen / denominator;
     normalizedColours[2] = colourBlue / denominator;
 
-
     return normalizedColours;
   }
-  
+
+  // TODO don't understand the warning
   /**
    * This method returns the euclidean distance of 2 points of 3 dimensions.
-   * @param x1
-   * @param y1
-   * @param x2
-   * @param y2
-   * @param x3
-   * @param y3
+   * @param x1 first x pos
+   * @param y1 first y pos
+   * @param x2 second x pos
+   * @param y2 second y pos
+   * @param x3 third x pos
+   * @param y3 third y pos
    * @return Euclidean distance
    */
-  public static double euclideanDistance(double x1, double y1,double x2, double y2,double x3, double y3) {
-    double sumOfSquaresBlue = Math.pow(x1 - y1, 2) + 
-        Math.pow(x2 - y2, 2) + 
-        Math.pow(x3 - y3, 2);
+  public static double euclideanDistance(double x1, double y1,double x2, double y2,
+      double x3, double y3) {
+    double sumOfSquaresBlue = Math.pow(x1 - y1, 2)
+          +  Math.pow(x2 - y2, 2) + Math.pow(x3 - y3, 2);
     return Math.pow(sumOfSquaresBlue, .5);
   }
 
   /**
-   * This method will update the ring colour variable given a sample by first normalizing the sample and then comparing euclidean distances.
-   * @param colourRed
-   * @param colourGreen
-   * @param colourBlue
+   * This method will update the ring colour variable given a sample by first normalizing t
+   * he sample and then comparing euclidean distances.
+   * @param colourRed red colour variable
+   * @param colourGreen green colour variable
+   * @param colourBlue blue colour variable
    * @return COLOUR representing the colour detected.
    */
-  public  COLOUR updateRingColour(double colourRed, double colourGreen, double colourBlue) {
-    this.ringColour = COLOUR.NONE;
+  public  Colour updateRingColour(double colourRed, double colourGreen, double colourBlue) {
+    this.ringColour = Colour.NONE;
     double minDistance;
     double[] normalizedColours = normailze(colourRed,colourGreen, colourBlue);
 
     //blue
-    double distanceFromBlue = euclideanDistance(normalizedColours[0], BLUE_MEAN[0],normalizedColours[1], BLUE_MEAN[1],
-        normalizedColours[2], BLUE_MEAN[2]);
-    
+    double distanceFromBlue = euclideanDistance(normalizedColours[0], BLUE_MEAN[0],
+        normalizedColours[1], BLUE_MEAN[1],normalizedColours[2], BLUE_MEAN[2]);
+
     minDistance = distanceFromBlue;
-    this.ringColour = COLOUR.BLUE;
+    this.ringColour = Colour.BLUE;
 
     //green
-    double distanceFromGreen = euclideanDistance(normalizedColours[0], GREEN_MEAN[0],normalizedColours[1], GREEN_MEAN[1],
-        normalizedColours[2], GREEN_MEAN[2]);
-    
+    double distanceFromGreen = euclideanDistance(normalizedColours[0], GREEN_MEAN[0],
+        normalizedColours[1], GREEN_MEAN[1], normalizedColours[2], GREEN_MEAN[2]);
+
     if (distanceFromGreen < minDistance) {
       minDistance = distanceFromGreen;
-      this.ringColour = COLOUR.GREEN;
+      this.ringColour = Colour.GREEN;
     }
+
     //yellow
-    double distanceFromYellow = euclideanDistance(normalizedColours[0], YELLOW_MEAN[0],normalizedColours[1], YELLOW_MEAN[1],
-        normalizedColours[2], YELLOW_MEAN[2]);
-    
+    double distanceFromYellow = euclideanDistance(normalizedColours[0], YELLOW_MEAN[0],
+        normalizedColours[1], YELLOW_MEAN[1],  normalizedColours[2], YELLOW_MEAN[2]);
+
     if ((distanceFromYellow < minDistance) & (distanceFromYellow < YELLOW_THRESH)) {
       minDistance = distanceFromYellow;
-      this.ringColour = COLOUR.YELLOW;
+      this.ringColour = Colour.YELLOW;
     }
 
     //orange
-    double distanceFromOrange = euclideanDistance(normalizedColours[0], ORANGE_MEAN[0],normalizedColours[1], ORANGE_MEAN[1],
-        normalizedColours[2], ORANGE_MEAN[2]);
-    
+    double distanceFromOrange = euclideanDistance(normalizedColours[0], ORANGE_MEAN[0],
+        normalizedColours[1], ORANGE_MEAN[1], normalizedColours[2], ORANGE_MEAN[2]);
+
     if (distanceFromOrange < minDistance) {
       minDistance = distanceFromOrange;
-      this.ringColour = COLOUR.ORANGE;
+      this.ringColour = Colour.ORANGE;
     }
     return this.ringColour;
-
   }
-
-
 }

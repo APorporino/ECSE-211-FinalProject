@@ -1,7 +1,7 @@
 package ca.mcgill.ecse211.project;
 
 import static ca.mcgill.ecse211.project.Resources.*;
-import ca.mcgill.ecse211.project.ColourDetector.COLOUR;
+import ca.mcgill.ecse211.project.ColourDetector.Colour;
 import lejos.hardware.Button;
 import lejos.hardware.Sound;
 import static ca.mcgill.ecse211.project.Main.sleepFor;
@@ -13,7 +13,7 @@ import static ca.mcgill.ecse211.project.Main.sleepFor;
  */
 public class Navigation {
 
-  public static COLOUR[] colours = new COLOUR[5];
+  public static Colour[] colours = new Colour[5];
   public static int numberRingsDetected = 0;
 
   /**

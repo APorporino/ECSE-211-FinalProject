@@ -18,9 +18,9 @@ import lejos.hardware.sensor.EV3ColorSensor;
 public class Resources {
 
   /**
-   * List of coordinates for 4 x 4 grid Map1
+   * List of coordinates for 4 x 4 grid Map1.
    */
-  public static final int[][] MAP0 = {{1,3},{2,3}, {2,2}, {1,1} } ;
+  public static final int[][] MAP0 = {{1,3},{2,3}, {2,2}, {1,1} };
 
   /**
    * List of coordinates for 8 x 8 grid Map1.
@@ -43,7 +43,8 @@ public class Resources {
   public static final int[][] MAP4 = {{1,4},{3,7},{3,1},{7,4},{7,7}};
 
   /**
-   * Variable for the threshold to determine if robot is traveling in straight line. Base = 0 or Height = 0.
+   * Variable for the threshold to determine if robot is traveling in straight line. 
+   * Base = 0 or Height = 0.
    */
   public static final double STRAIGHT_LINE = 2.5;
 
@@ -110,7 +111,7 @@ public class Resources {
   /**
    * The tile size in centimeters. Note that 30.48 cm = 1 ft.
    */
-  public static final double BOARD_SIZE = 4*30.48;
+  public static final double BOARD_SIZE = 4 * 30.48;
 
   /**
    * Sleep time for display.
@@ -118,7 +119,7 @@ public class Resources {
   public static final long SLEEP_TIME = 200;
   
   /**
-   * This will determine number of readings the colour detector should get
+   * This will determine number of readings the colour detector should get.
    */
   public static final int NUM_READINGS = 10;
 
@@ -133,7 +134,7 @@ public class Resources {
   public static final double BASE_WIDTH = 12.2;
 
   /**
-   * The limit of invalid samples that we read from the US sensor before assuming no obstacle. Originally 20
+   * The limit of invalid samples that we read from the US sensor before assuming no obstacle.
    */
   public static final int INVALID_SAMPLE_LIMIT = 20;
 
@@ -158,15 +159,32 @@ public class Resources {
   public static final int RING_THRESHOLD = 9;
   
   /**
-   * This constant will be used to determine when the robot should lower the front light sensor to detect the ring colour.
+   * This constant will be used to determine when the robot should lower the 
+   * front light sensor to detect the ring colour.
    */
   public static final int RING_CLOSE = 4;
   
   /**
-   * This constant will be used to set the speed at which the robot approaches the ring when it is close. 
+   * This constant will be used to set the speed at which the robot 
+   * approaches the ring when it is close. 
    * Measured in degree's per second.
    */
   public static final int APPROACHING_SPEED = 100;
+  
+  /**
+   * The colour updating/sampling period, 3ms, used in colour detector.
+   */
+  public static final long COLOUR_PERIOD = 300;
+  
+  /**
+   * The light localizer colour updating/sampling period, 3ms, used in light localizer.
+   */
+  public static final long LIGHTLOCALIZER_PERIOD = 100;
+  
+  /**
+   * The display period.
+   */
+  public static final long DISPLAY_PERIOD = 30;
 
   /**
    * The ultrasonic sensor.

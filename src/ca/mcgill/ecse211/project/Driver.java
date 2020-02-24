@@ -1,7 +1,12 @@
 package ca.mcgill.ecse211.project;
 
-import static ca.mcgill.ecse211.project.Main.sleepFor;
-import static ca.mcgill.ecse211.project.Resources.*;
+import static ca.mcgill.ecse211.project.Resources.BASE_WIDTH;
+import static ca.mcgill.ecse211.project.Resources.FULL_SPIN_DEG;
+import static ca.mcgill.ecse211.project.Resources.LINE_DETECTION_SPEED;
+import static ca.mcgill.ecse211.project.Resources.ROTATION_SPEED;
+import static ca.mcgill.ecse211.project.Resources.WHEEL_RAD;
+import static ca.mcgill.ecse211.project.Resources.leftMotor;
+import static ca.mcgill.ecse211.project.Resources.rightMotor;
 
 /**
  * This class is used to control the robots movement.
@@ -13,16 +18,12 @@ public class Driver {
    * @return Thread that rotates the robot once.
    */
   public static Thread rotate() {
-     // spawn a new Thread to avoid this method blocking
+    // spawn a new Thread to avoid this method blocking
     Thread rotateThread = new Thread() {
-        public void run() {
-  
-          // reset the motors
-          //stopMotors();
-          setSpeeds(ROTATION_SPEED,ROTATION_SPEED);
-          turnBy(FULL_SPIN_DEG);
-  
-        }
+      public void run() {
+        setSpeed(ROTATION_SPEED);
+        turnBy(FULL_SPIN_DEG);
+      }
     };
     return rotateThread;
   }
@@ -31,8 +32,7 @@ public class Driver {
    * Will drive the robot continuously straight at LINE_DETECTION_SPEED speed.
    */
   public static void drive() {
-    //stopMotors(); 
-    setSpeeds(LINE_DETECTION_SPEED,LINE_DETECTION_SPEED);
+    setSpeed(LINE_DETECTION_SPEED);
     leftMotor.forward();
     rightMotor.forward();
   }
@@ -54,18 +54,15 @@ public class Driver {
    * Stops both left and right motors.
    */
   public static void stopMotors() {
-    //setSpeeds(0, 0);
     leftMotor.stop();
     rightMotor.stop();
   }
-  
+
   /**
    * Calls wait method on both left and right motor threads.
    */
   public static void waitMotors() {
-    //setSpeeds(0, 0);
     try {
-      
       leftMotor.wait();
     } catch (InterruptedException e) {
       // There is nothing to be done here
@@ -81,35 +78,7 @@ public class Driver {
    * Stops both motors by first setting their speed to 0.
    */
   public static void stopMotorsInstantaneously() {
-
-    int speedL = leftMotor.getSpeed();
-    int speedR = rightMotor.getSpeed();
     setSpeeds(0,0);
-//    leftMotor.stop();
-//    rightMotor.stop();
-    //setSpeeds(speedL, speedR);
-  }
-
-  /**
-   * Stops the left motor by first setting left motor speed to 0.
-   */
-  public static void leftMotorStop() {
-    int speedL = leftMotor.getSpeed();
-    int speedR = rightMotor.getSpeed();
-    setSpeeds(0,speedR);
-    leftMotor.stop();
-    setSpeeds(speedL, speedR);
-  }
-
-  /**
-   * Stops the right motor by first setting the right motor speed to 0.
-   */
-  public static void rightMotorStop() {
-    int speedL = leftMotor.getSpeed();
-    int speedR = rightMotor.getSpeed();
-    setSpeeds(speedL,0);
-    rightMotor.stop();
-    setSpeeds(speedL, speedR);
   }
 
   /**
@@ -172,6 +141,4 @@ public class Driver {
   public static int convertAngle(double angle) {
     return convertDistance(Math.PI * BASE_WIDTH * angle / FULL_SPIN_DEG);
   }
-
-
 }
