@@ -12,7 +12,7 @@ import static ca.mcgill.ecse211.project.Main.sleepFor;
  *
  */
 public class Navigation {
-  
+
   public static COLOUR[] colours = new COLOUR[5];
   public static int numberRingsDetected = 0;
 
@@ -20,28 +20,26 @@ public class Navigation {
    * This method starts a loops through all grid positions in the map and goes to each one.
    */
   public static void drive(final int[][] map) {
-        for (int[] elem: map) {
-          TEXT_LCD.clear();
-          TEXT_LCD.drawString("Moving to: " + elem[0] + "," + elem[1], 0, 1);
-          Thread usThread = new Thread(ultrasonicLocalizer);
-          usThread.start();
-          travelTo(elem[0], elem[1]);
-          usThread.interrupt();
-          
-          sleepFor(PAUSE_TIME);
-          
-//          Thread lightThread = new Thread(lightLocalizer);
-//          lightThread.start();
-//          localizeToPoint(elem[0], elem[1]);
-//          lightThread.interrupt();
-          //LightLocalizer.lightLocToPoint(elem[0], elem[1]);
-        }
-        finalWaypoint();
-        // int lastElement = map.length -1;
-        // ultrasonicLocalizer.localizeToPoint(map[lastElement][0], map[lastElement][1]);      //localize at the last point
-      
+    for (int[] elem: map) {
+      TEXT_LCD.clear();
+      TEXT_LCD.drawString("Moving to: " + elem[0] + "," + elem[1], 0, 1);
+      Thread usThread = new Thread(ultrasonicLocalizer);
+      usThread.start();
+      travelTo(elem[0], elem[1]);
+      usThread.interrupt();
+
+      //sleepFor(PAUSE_TIME);
+
+      localizeToPoint(elem[0], elem[1]);
+
+      //LightLocalizer.lightLocToPoint(elem[0], elem[1]);
+    }
+    finalWaypoint();
+    // int lastElement = map.length -1;
+    // ultrasonicLocalizer.localizeToPoint(map[lastElement][0], map[lastElement][1]);      //localize at the last point
+
   }
-  
+
   /**
    * This method will perform the requested actions after reaching the final waypoint.
    */
@@ -50,30 +48,33 @@ public class Navigation {
     Sound.beep();
     Sound.beep();
     TEXT_LCD.clear();
-    
+
     TEXT_LCD.drawString("Num rings: " + numberRingsDetected, 0, 1);
-    
-    for (int i=0; i <= numberRingsDetected; i++) {
-      TEXT_LCD.drawString("Colour" + i + ": " +  colours[i], 0, i + 2);
+
+    for (int i=0; i < numberRingsDetected; i++) {
+      TEXT_LCD.drawString("Colour" + i + 1 + ": " +  colours[i], 0, i + 2);
     }
   }
-  
+
   /**
    * This method checks if the left or right sensor is on top of a line.
    * If so it adjust so that the robot is no longer touching a line.
    */
   public static void checkIfOnLine() {
-    if (LightLocalizer.readRightLightData() < BLACK_LINE_THRESHOLD) {
+
+    if (LightLocalizer.colourIDLeft < BLACK_LINE_THRESHOLD) {
+      System.out.println("ON LINE LEFT");
       turnTo(90);
-      Driver.moveStraightFor(LIGHT_TO_CENTER);
+      Driver.moveStraightFor(2*BASE_WIDTH);
       turnTo(0);
-    }else if (LightLocalizer.readLeftLightData() < BLACK_LINE_THRESHOLD) {
+    }else if (LightLocalizer.colourIDRight < BLACK_LINE_THRESHOLD) {
+      System.out.println("ON LINE RIGHT");
       turnTo(270);
-      Driver.moveStraightFor(LIGHT_TO_CENTER);
+      Driver.moveStraightFor(2*BASE_WIDTH);
       turnTo(0);
     }
   }
-  
+
   /**
    * This method returns the euclidian distance between two points in cm.
    * @param x1 
@@ -89,44 +90,138 @@ public class Navigation {
 
   /**
    * This method will use the two side light sensors to adjust to robots position closer to the waypoint.
+   * @param x
+   * @param y
    */
-  public static void localizeToPoint(int x, int y) {
-    double currentAngle = odo.getXyt()[2];
+  public static void localizeToPoint(int x,int y) {
     double currentXPos = odo.getXyt()[0];
     double currentYPos = odo.getXyt()[1];
-    
-    turnTo(0);
-    
-    checkIfOnLine();
     double distance = euclidDistance(currentXPos, currentYPos, x*TILE_SIZE, y*TILE_SIZE);
-    
-    //if within 5 cm of waypoint consider it fine.
-    if (distance <= 5) {
+
+    //distance is fine, continue
+    if (distance <= 3) {
       return;
     }
-    
-    
-    if ((currentYPos - y*TILE_SIZE) < 0) {
-      //Driver.moveStraightFor(BACKUP_DISTANCE);
-      LightLocalizer.lineAdjustment();
-      
+
+    //otherwise fix distance using light localization
+    turnTo(0);
+    Thread lightThread = new Thread(lightLocalizer);
+    lightThread.start();
+
+    //if both touching line, do only x
+
+    if ((LightLocalizer.colourIDLeft < LINE_THRESHOLD) & (LightLocalizer.colourIDRight < LINE_THRESHOLD)) {
+      bothSensorsOnLine();
+    }else if (LightLocalizer.colourIDLeft < LINE_THRESHOLD) {
+      leftSensorOnLine();
+    }else if (LightLocalizer.colourIDRight < LINE_THRESHOLD) {
+      rightSensorOnLine();
     }else {
-      turnTo(180);
-      Driver.moveStraightFor(-LIGHT_TO_CENTER);
+      noSensorOnLine();
+    }
+
+    //reset the odometers to a more accurate values
+    odo.setX(x*TILE_SIZE);
+    odo.setY(y*TILE_SIZE);
+    odo.setTheta(0);
+
+    lightThread.interrupt();
+  }
+
+  /**
+   * This method will localize the robot to waypoint knowing that both the left light sensors is currently touching a line.
+   */
+  public static void leftSensorOnLine() {
+    //BASE_WIDTH* PI/2 (90)   / 2.33
+    //convert to degrees
+    rightMotor.rotate(-515);
+    Driver.turnBy(-90);
+    LightLocalizer.minLeft = 60;
+    LightLocalizer.minRight = 60;
+    Driver.moveStraightFor(-LOC_BACKUP_DISTANCE);
+    if ((LightLocalizer.minLeft < LINE_THRESHOLD)&(LightLocalizer.minRight < LINE_THRESHOLD)) {
+      //Now we know we passed the line
+      LightLocalizer.lineAdjustment();
+    }else {
+      //the line is in front of us
+      Driver.moveStraightFor(LOC_BACKUP_DISTANCE);
       LightLocalizer.lineAdjustment();
     }
-    
-    if ((currentXPos - x*TILE_SIZE) < 0) {
-      turnTo(90);
+    Driver.moveStraightFor(LIGHT_TO_CENTER);
+  }
+
+  /**
+   * This method will localize the robot to waypoint knowing that both the right light sensors is currently touching a line.
+   */
+  public static void rightSensorOnLine() {
+    //BASE_WIDTH* PI/2 (90)   / 2.33
+    //convert to degrees
+    leftMotor.rotate(-515);
+    Driver.turnBy(90);
+    LightLocalizer.minLeft = 60;
+    LightLocalizer.minRight = 60;
+    Driver.moveStraightFor(-LOC_BACKUP_DISTANCE);
+    if ((LightLocalizer.minLeft < LINE_THRESHOLD)&(LightLocalizer.minRight < LINE_THRESHOLD)) {
+      //Now we know we passed the line
       LightLocalizer.lineAdjustment();
-      
     }else {
-      turnTo(270);
+      //the line is in front of us
+      Driver.moveStraightFor(LOC_BACKUP_DISTANCE);
       LightLocalizer.lineAdjustment();
     }
-    turnTo(currentAngle);
-   }
-  
+    Driver.moveStraightFor(LIGHT_TO_CENTER);
+  }
+
+  /**
+   * This method will localize the robot to waypoint knowing that both light sensors are currently touching a line.
+   */
+  public static void bothSensorsOnLine() {
+    Driver.moveStraightFor(LIGHT_TO_CENTER);
+    Driver.turnBy(90);
+    LightLocalizer.minLeft = 60;
+    LightLocalizer.minRight = 60;
+    Driver.moveStraightFor(-LOC_BACKUP_DISTANCE);
+    if ((LightLocalizer.minLeft < LINE_THRESHOLD)&(LightLocalizer.minRight < LINE_THRESHOLD)) {
+      //Now we know we passed the line
+      LightLocalizer.lineAdjustment();
+    }else {
+      //the line is in front of us
+      Driver.moveStraightFor(LOC_BACKUP_DISTANCE);
+      LightLocalizer.lineAdjustment();
+    }
+    Driver.moveStraightFor(LIGHT_TO_CENTER);
+  }
+
+  /**
+   * This method will localize the robot to waypoint knowing that the light sensors aren't currently touching a line.
+   */
+  public static void noSensorOnLine() {
+    //y
+    Driver.moveStraightFor(-LOC_BACKUP_DISTANCE);
+    if ((LightLocalizer.minLeft < LINE_THRESHOLD)&(LightLocalizer.minRight < LINE_THRESHOLD)) {
+      //Now we know we passed the line
+      LightLocalizer.lineAdjustment();
+    }else {
+      //the line is in front of us
+      Driver.moveStraightFor(LOC_BACKUP_DISTANCE);
+      LightLocalizer.lineAdjustment();
+    }
+    Driver.moveStraightFor(LIGHT_TO_CENTER);
+    //x
+    Driver.turnBy(90);
+    LightLocalizer.minLeft = 60;
+    LightLocalizer.minRight = 60;
+    Driver.moveStraightFor(-TILE_SIZE/4);
+    if ((LightLocalizer.minLeft < LINE_THRESHOLD)&(LightLocalizer.minRight < LINE_THRESHOLD)) {
+      //Now we know we passed the line
+      LightLocalizer.lineAdjustment();
+    }else {
+      //the line is in front of us
+      Driver.moveStraightFor(LOC_BACKUP_DISTANCE);
+      LightLocalizer.lineAdjustment();
+    }
+    Driver.moveStraightFor(LIGHT_TO_CENTER);
+  }
 
   /**
    * This method will make the robot travel to a specified x and y grid position.
@@ -134,7 +229,7 @@ public class Navigation {
    * @param y Y grid position
    */
   public static void travelTo(int x, int y) {
-     
+
     //Distance from center of robot to position (1,1)
     double[] angleAndDistance = getAngleAndDistance(x, y);
 
@@ -153,9 +248,11 @@ public class Navigation {
       if (ultrasonicLocalizer.currentDistance <= RING_THRESHOLD) {
         Driver.setSpeeds(APPROACHING_SPEED, APPROACHING_SPEED);
         if (ultrasonicLocalizer.currentDistance <= RING_CLOSE) {
-          Driver.stopMotors();
+          //Driver.stopMotors();
+          Driver.turnBy(1);
+          Driver.stopMotorsInstantaneously();
           farFromRing = false;
-         
+
           topMotor.setSpeed(40);
           topMotor.rotate(110);
           detectRing();
@@ -264,22 +361,14 @@ public class Navigation {
   public static void detectRing() {
     TEXT_LCD.clear();
     TEXT_LCD.drawString("Object Detected", 0,1);
-//    Thread colour = new Thread(colorDetector);
-//    colour.start();
-    
+
     //Will get NUM_READINGS amount of readings from the colour detector and return the average.
-   double[] averageReadings = ColourDetector.getReadings();
-//    System.out.println("RED average: " + averageReadings[0]);
-//    System.out.println("\nBLUE average: " + averageReadings[1]);
-//    System.out.println("\nGREEN average: " + averageReadings[2]);
-    //sleepFor(1000);
-    //colorDetector.updateRingColour(colorDetector.colourRed, colorDetector.colourGreen, colorDetector.colourBlue);
+    double[] averageReadings = ColourDetector.getReadings();
     colorDetector.updateRingColour(averageReadings[0], averageReadings[1],averageReadings[2]);
     TEXT_LCD.drawString("COLOUR: " + colorDetector.ringColour, 0, 2);
-    sleepFor(3000);
-    //colours[numberRingsDetected] = colorDetector.ringColour;
+    sleepFor(5000);
+    colours[numberRingsDetected] = colorDetector.ringColour;
     numberRingsDetected++;
-    //colour.interrupt();
   }
 
 }

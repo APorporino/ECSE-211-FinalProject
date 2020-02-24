@@ -85,9 +85,9 @@ public class Driver {
     int speedL = leftMotor.getSpeed();
     int speedR = rightMotor.getSpeed();
     setSpeeds(0,0);
-    leftMotor.stop();
-    rightMotor.stop();
-    setSpeeds(speedL, speedR);
+//    leftMotor.stop();
+//    rightMotor.stop();
+    //setSpeeds(speedL, speedR);
   }
 
   /**

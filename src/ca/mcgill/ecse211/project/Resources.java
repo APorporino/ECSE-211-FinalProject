@@ -20,7 +20,7 @@ public class Resources {
   /**
    * List of coordinates for 4 x 4 grid Map1
    */
-  public static final int[][] MAP0 = {{3,3}, {3,1}, {1,3}} ;
+  public static final int[][] MAP0 = {{1,3},{2,3}, {2,2}, {1,1} } ;
 
   /**
    * List of coordinates for 8 x 8 grid Map1.
@@ -56,7 +56,6 @@ public class Resources {
    * The value used as max reading of US sensor.
    */
   public static final int FILTER_MAX = 255;
-
 
   /**
    * The speed at which the robot will rotate in degrees per second.
@@ -102,6 +101,11 @@ public class Resources {
    * The tile size in centimeters. Note that 30.48 cm = 1 ft.
    */
   public static final double TILE_SIZE = 30.48;
+  
+  /**
+   * The tile size in centimeters. Note that 30.48 cm = 1 ft.
+   */
+  public static final double LOC_BACKUP_DISTANCE = TILE_SIZE / 3;
 
   /**
    * The tile size in centimeters. Note that 30.48 cm = 1 ft.
@@ -142,6 +146,11 @@ public class Resources {
    * This constant will be used to determine if the light is on top of a blue line.
    */
   public static final int BLUE_LINE_THRESHOLD = 25;
+  
+  /**
+   * This constant will be used to determine if the light is on top of a blue line.
+   */
+  public static final int LINE_THRESHOLD = BLUE_LINE_THRESHOLD;
 
   /**
    * This constant will be used to determine if the robot should slow down if it sees a ring.
@@ -151,7 +160,7 @@ public class Resources {
   /**
    * This constant will be used to determine when the robot should lower the front light sensor to detect the ring colour.
    */
-  public static final int RING_CLOSE = 6;
+  public static final int RING_CLOSE = 4;
   
   /**
    * This constant will be used to set the speed at which the robot approaches the ring when it is close. 

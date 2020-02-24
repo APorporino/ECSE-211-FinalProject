@@ -20,8 +20,9 @@ public class Main {
     int buttonChoice;
     buttonChoice = chooseLocalize();
     if (buttonChoice == Button.ID_RIGHT ) {      //2nd part of demo
-      new Thread(new Display()).start();
+      //new Thread(new Display()).start();
       //Assuming we start somewhere on 45 degree line in the first square
+      
       TEXT_LCD.clear();
       TEXT_LCD.drawString("Localizing to 1,1", 0, 1);
       localizeToStartingPosition();
@@ -49,7 +50,7 @@ public class Main {
     usThread.start();
     localizeToZeroDeg();  
     usThread.interrupt();
-    
+    sleepFor(500);
     //new Light thread (left and right light sensors)
     Thread lightLocThread = new Thread(lightLocalizer);
     lightLocThread.start();
