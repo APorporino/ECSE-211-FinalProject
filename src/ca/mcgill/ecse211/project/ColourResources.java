@@ -9,7 +9,7 @@ public class ColourResources {
   /**
    * Blue mean RGB values
    */
-  public static final double[] BLUE_MEAN = {0.033431374,0.113333334,0.064411768};
+  public static final double[] BLUE_MEAN = {0.01725490279495716,0.09313725680112839,0.05137254968285561};
   
   /**
    * Blue standard deviation RGB values
@@ -19,7 +19,7 @@ public class ColourResources {
   /**
    * Green mean RGB values
    */
-  public static final double[] GREEN_MEAN = {0.073823534,0.154117651,0.014803921};
+  public static final double[] GREEN_MEAN = {0.036666668206453326,0.09568627625703811,0.00862745139747858};
   
   /**
    * Green standard deviation RGB values
@@ -29,7 +29,7 @@ public class ColourResources {
   /**
    * Yellow mean RGB values
    */
-  public static final double[] YELLOW_MEAN = {0.162647062,0.123235293,0.01892157};
+  public static final double[] YELLOW_MEAN = {0.08931372761726379,0.06960784643888474,0.00970588270574808};
   
   /**
    * Yellow standard deviation RGB values
@@ -37,9 +37,14 @@ public class ColourResources {
   public static final double[] YELLOW_SD = {0.000556517, 0.000473573, 0.000661714};
   
   /**
+   * Threshold distance of normalized sample from the mean to know the colour is yellow.
+   */
+  public static final double YELLOW_THRESH = 0.89;
+  
+  /**
    * Orange mean RGB values
    */
-  public static final double[] ORANGE_MEAN = {0.138039223, 0.042843138, 0.008333334};
+  public static final double[] ORANGE_MEAN = {0.06843137592077256, 0.027254902198910712, 0.003921568859368563};
   
   /**
    * Orange standard deviation RGB values

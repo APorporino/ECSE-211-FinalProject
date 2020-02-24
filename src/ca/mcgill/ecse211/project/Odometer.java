@@ -8,7 +8,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * The odometer class keeps track of the robot's (x, y, theta) position.
+ * The singleton odometer class keeps track of the robot's (x, y, theta) position.
  * 
  * @author Rodrigo Silva
  * @author Dirk Dubois

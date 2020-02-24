@@ -20,7 +20,7 @@ public class Main {
     int buttonChoice;
     buttonChoice = chooseLocalize();
     if (buttonChoice == Button.ID_RIGHT ) {      //2nd part of demo
-      //new Thread(new Display()).start();
+      new Thread(new Display()).start();
       //Assuming we start somewhere on 45 degree line in the first square
       TEXT_LCD.clear();
       TEXT_LCD.drawString("Localizing to 1,1", 0, 1);
@@ -135,10 +135,10 @@ public class Main {
   public static void detectColours() {
     while (true) {
       TEXT_LCD.clear();
-      Display.showText("Hit any     |      Hit     >",
-          "    button  |       back   ",
-          " to detect |  button to ",
-          "colour.      |         leave.");
+      Display.showText("Hit any |  Hit >",
+          "    button  |   back   ",
+          " to detect | button to ",
+          "colour. | leave.");
       if (Button.waitForAnyPress() == Button.ID_ESCAPE) {
         break;
       }

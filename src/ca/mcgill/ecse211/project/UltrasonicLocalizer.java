@@ -5,7 +5,7 @@ import static ca.mcgill.ecse211.project.Resources.*;
 import static ca.mcgill.ecse211.project.Main.sleepFor;
 
 /**
- * This singleton class will be used to localize the robot.
+ * This class will be used to localize the robot.
  * @author Team06
  *
  */

@@ -1,19 +1,28 @@
 package ca.mcgill.ecse211.project;
 
 import static ca.mcgill.ecse211.project.Resources.*;
+import ca.mcgill.ecse211.project.ColourDetector.COLOUR;
 import lejos.hardware.Button;
 import lejos.hardware.Sound;
 import static ca.mcgill.ecse211.project.Main.sleepFor;
 
-
+/**
+ * This class will be used to navigate the robot to certain positions.
+ * @author Team06
+ *
+ */
 public class Navigation {
+  
+  public static COLOUR[] colours = new COLOUR[5];
+  public static int numberRingsDetected = 0;
 
   /**
    * This method starts a loops through all grid positions in the map and goes to each one.
    */
   public static void drive(final int[][] map) {
         for (int[] elem: map) {
-          
+          TEXT_LCD.clear();
+          TEXT_LCD.drawString("Moving to: " + elem[0] + "," + elem[1], 0, 1);
           Thread usThread = new Thread(ultrasonicLocalizer);
           usThread.start();
           travelTo(elem[0], elem[1]);
@@ -21,18 +30,32 @@ public class Navigation {
           
           sleepFor(PAUSE_TIME);
           
-          Thread lightThread = new Thread(lightLocalizer);
-          lightThread.start();
-          localizeToPoint(elem[0], elem[1]);
-          lightThread.interrupt();
+//          Thread lightThread = new Thread(lightLocalizer);
+//          lightThread.start();
+//          localizeToPoint(elem[0], elem[1]);
+//          lightThread.interrupt();
           //LightLocalizer.lightLocToPoint(elem[0], elem[1]);
         }
-        Sound.beep();
-        Sound.beep();
-        Sound.beep();
+        finalWaypoint();
         // int lastElement = map.length -1;
         // ultrasonicLocalizer.localizeToPoint(map[lastElement][0], map[lastElement][1]);      //localize at the last point
       
+  }
+  
+  /**
+   * This method will perform the requested actions after reaching the final waypoint.
+   */
+  public static void finalWaypoint() {
+    Sound.beep();
+    Sound.beep();
+    Sound.beep();
+    TEXT_LCD.clear();
+    
+    TEXT_LCD.drawString("Num rings: " + numberRingsDetected, 0, 1);
+    
+    for (int i=0; i <= numberRingsDetected; i++) {
+      TEXT_LCD.drawString("Colour" + i + ": " +  colours[i], 0, i + 2);
+    }
   }
   
   /**
@@ -249,10 +272,13 @@ public class Navigation {
 //    System.out.println("RED average: " + averageReadings[0]);
 //    System.out.println("\nBLUE average: " + averageReadings[1]);
 //    System.out.println("\nGREEN average: " + averageReadings[2]);
-    sleepFor(1000);
+    //sleepFor(1000);
     //colorDetector.updateRingColour(colorDetector.colourRed, colorDetector.colourGreen, colorDetector.colourBlue);
     colorDetector.updateRingColour(averageReadings[0], averageReadings[1],averageReadings[2]);
     TEXT_LCD.drawString("COLOUR: " + colorDetector.ringColour, 0, 2);
+    sleepFor(3000);
+    //colours[numberRingsDetected] = colorDetector.ringColour;
+    numberRingsDetected++;
     //colour.interrupt();
   }
 

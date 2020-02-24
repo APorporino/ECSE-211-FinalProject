@@ -91,14 +91,16 @@ public class LightLocalizer implements Runnable{
     Driver.drive();
     while (leftLineNotDetected & rightLineNotDetected) {
 
-      if (LightLocalizer.colourIDLeft < BLUE_LINE_THRESHOLD) {
+      if (LightLocalizer.colourIDLeft < BLACK_LINE_THRESHOLD) {
         Driver.stopMotors();
+        Driver.turnBy(2);
         //Driver.waitMotors();
         leftLineNotDetected = false;
       }
 
-      if (LightLocalizer.colourIDRight < BLUE_LINE_THRESHOLD) {
+      if (LightLocalizer.colourIDRight < BLACK_LINE_THRESHOLD) {
         Driver.stopMotors();
+        Driver.turnBy(2);
       //Driver.waitMotors();
         rightLineNotDetected = false;
       }
@@ -109,8 +111,9 @@ public class LightLocalizer implements Runnable{
       Driver.setSpeeds(0, 20);
       rightMotor.forward();
       while (rightLineNotDetected) {
-        if (LightLocalizer.colourIDRight < BLUE_LINE_THRESHOLD) {
+        if (LightLocalizer.colourIDRight < BLACK_LINE_THRESHOLD) {
           Driver.stopMotors();
+          Driver.turnBy(2);
         //Driver.waitMotors();
           rightLineNotDetected = false;
         }
@@ -119,8 +122,9 @@ public class LightLocalizer implements Runnable{
       Driver.setSpeeds(20, 0);
       leftMotor.forward();
       while (leftLineNotDetected) {
-        if (LightLocalizer.colourIDLeft < BLUE_LINE_THRESHOLD) {
+        if (LightLocalizer.colourIDLeft < BLACK_LINE_THRESHOLD) {
           Driver.stopMotors();
+          Driver.turnBy(2);
           leftLineNotDetected = false;
         }
       }

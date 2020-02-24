@@ -91,7 +91,7 @@ public class Resources {
   /**
    * Wait time before positioning at min after finding the min distance.
    */
-  public static final int WAIT_TIME = 5000;
+  public static final int WAIT_TIME = 7000;
 
   /**
    * Sleep time of 3 seconds to pause before functionality.

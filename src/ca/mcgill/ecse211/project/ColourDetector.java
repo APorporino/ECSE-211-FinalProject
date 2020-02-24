@@ -23,7 +23,7 @@ public class ColourDetector implements Runnable{
   public  float colourBlue;
   //for some reason this sampleProvider does not work.
   //private static SampleProvider colourValue = FRONT_COL_SENSOR.getRGBMode(); 
-  
+
   /**
    * Buffer (array) to store light samples.
    */
@@ -66,14 +66,14 @@ public class ColourDetector implements Runnable{
       }
     }
   }
-  
+
   /**
    * This method will receive a fixed number of readings (NUM_READINGS) from the RGB colour sensor and return an average for each.
    * @return double[3] containing averages for RGB readings.
    */
   public static double[] getReadings(){
     double[] averages = new double[3];
-    
+
     double[] redValues = new double[10];
     double[] blueValues = new double[10];
     double[] greenValues = new double[10];
@@ -84,7 +84,6 @@ public class ColourDetector implements Runnable{
       blueValues[i] = colourData[1];
       greenValues[i] = colourData[2];
     }
-
     double redSum = 0;
     double blueSum = 0;
     double greenSum = 0;
@@ -92,96 +91,95 @@ public class ColourDetector implements Runnable{
       redSum +=  redValues[i];
       blueSum += blueValues[i];
       greenSum += greenValues[i];
-      
     }
-    
     averages[0] = redSum/10.0;
     averages[1] = blueSum/10.0;
     averages[2] = greenSum/10.0;
-    
-    
+
     return averages;
 
   }
 
-/**
- * This unique method is used to guess the colour of the ring given the sample RGB values.
- * The method will check if each RGB sample is within 100 standard deviations of the mean.
- * This seems way too high however since the standard deviation is extremely low to actually achieve 
- * it for all three RGB sample is difficult unless it is the correct colour.
- * Method has been tested and works consistently.
- * 
- * @param colourRed Red colour sample
- * @param colourGreen Green colour sample
- * @param colourBlue Blue colour sample
- * @return COLOUR representing the colour detected
- */
+  /**
+   * This method will return normailzed values of a sample RGB reading.
+   * 
+   * @return double[] containing RGB data normalized values
+   */
+  public  double[] normailze(double colourRed, double colourGreen, double colourBlue) {
+    double[] normalizedColours = new double[3];
+    double sumOfSquares = Math.pow(colourRed, 2) + Math.pow(colourGreen, 2) + Math.pow(colourBlue, 2);
+    double denominator = Math.pow(sumOfSquares, .5);
+
+
+    normalizedColours[0] = colourRed / denominator;
+    normalizedColours[1] = colourGreen / denominator;
+    normalizedColours[2] = colourBlue / denominator;
+
+
+    return normalizedColours;
+  }
+  
+  /**
+   * This method returns the euclidean distance of 2 points of 3 dimensions.
+   * @param x1
+   * @param y1
+   * @param x2
+   * @param y2
+   * @param x3
+   * @param y3
+   * @return Euclidean distance
+   */
+  public static double euclideanDistance(double x1, double y1,double x2, double y2,double x3, double y3) {
+    double sumOfSquaresBlue = Math.pow(x1 - y1, 2) + 
+        Math.pow(x2 - y2, 2) + 
+        Math.pow(x3 - y3, 2);
+    return Math.pow(sumOfSquaresBlue, .5);
+  }
+
+  /**
+   * This method will update the ring colour variable given a sample by first normalizing the sample and then comparing euclidean distances.
+   * @param colourRed
+   * @param colourGreen
+   * @param colourBlue
+   * @return COLOUR representing the colour detected.
+   */
   public  COLOUR updateRingColour(double colourRed, double colourGreen, double colourBlue) {
     this.ringColour = COLOUR.NONE;
+    double minDistance;
+    double[] normalizedColours = normailze(colourRed,colourGreen, colourBlue);
+
+    //blue
+    double distanceFromBlue = euclideanDistance(normalizedColours[0], BLUE_MEAN[0],normalizedColours[1], BLUE_MEAN[1],
+        normalizedColours[2], BLUE_MEAN[2]);
     
-    if ((colourBlue >= BLUE_MEAN[2] - 100*BLUE_SD[2]) & (colourBlue <= BLUE_MEAN[2] + 100*BLUE_SD[2])) {
-      System.out.println("b1\n");
-      if ( this.ringColour == COLOUR.NONE) {
-        this.ringColour = COLOUR.BLUE;
-      }
-      if ((colourRed >= BLUE_MEAN[0] - 100*BLUE_SD[0]) & (colourRed <= BLUE_MEAN[0] + 100*BLUE_SD[0])) {
-        System.out.println("b2\n");
-        this.ringColour = COLOUR.BLUE;
-        if ((colourGreen >= BLUE_MEAN[1] - 100*BLUE_SD[1]) & (colourGreen <= BLUE_MEAN[1] + 100*BLUE_SD[1])) {
-          System.out.println("b3\n");
-          this.ringColour = COLOUR.BLUE;
-          return this.ringColour;
-        }
-      }
-    } 
-    if ((colourBlue >= GREEN_MEAN[2] - 100*GREEN_SD[2]) & (colourBlue <= GREEN_MEAN[2] + 100*GREEN_SD[2])) {
-      System.out.println("g1\n");
-      if ( this.ringColour == COLOUR.NONE) {
-        this.ringColour = COLOUR.GREEN;
-      }
-      if ((colourRed >= GREEN_MEAN[0] - 100*GREEN_SD[0]) & (colourRed <= GREEN_MEAN[0] + 100*GREEN_SD[0])) {
-        System.out.println("g2\n");
-        this.ringColour = COLOUR.GREEN;
-        if ((colourGreen >= GREEN_MEAN[1] - 100*GREEN_SD[1]) & (colourGreen <= GREEN_MEAN[1] + 100*GREEN_SD[1])) {
-          System.out.println("g3\n");
-          this.ringColour = COLOUR.GREEN;
-          return this.ringColour;
-        }
-      }
-    } 
+    minDistance = distanceFromBlue;
+    this.ringColour = COLOUR.BLUE;
 
-    if ((colourBlue >= YELLOW_MEAN[2] - 100*YELLOW_SD[2]) & (colourBlue <= YELLOW_MEAN[2] + 100*YELLOW_SD[2])) {
-      System.out.println("y1\n");
-      if ( this.ringColour == COLOUR.NONE) {
-        this.ringColour = COLOUR.YELLOW;
-      }
-      if ((colourRed >= YELLOW_MEAN[0] - 100*YELLOW_SD[0]) & (colourRed <= YELLOW_MEAN[0] + 100*YELLOW_SD[0])) {
-        System.out.println("y2\n");
-        this.ringColour = COLOUR.YELLOW;
-        if ((colourGreen >= YELLOW_MEAN[1] - 100*YELLOW_SD[1]) & (colourGreen <= YELLOW_MEAN[1] + 100*YELLOW_SD[1])) {
-          System.out.println("y3\n");
-          this.ringColour = COLOUR.YELLOW;
-          return this.ringColour;
-        }
-      }
-
-    }  
-    if ((colourBlue >= ORANGE_MEAN[2] - 100*ORANGE_SD[2]) & (colourBlue <= ORANGE_MEAN[2] + 100*ORANGE_SD[2])) {
-      System.out.println("o1\n");
-      if ( this.ringColour == COLOUR.NONE) {
-        this.ringColour = COLOUR.ORANGE;
-      }
-      if ((colourRed >= ORANGE_MEAN[0] - 100*ORANGE_SD[0]) & (colourRed <= ORANGE_MEAN[0] + 100*ORANGE_SD[0])) {
-        System.out.println("o2\n");
-        this.ringColour = COLOUR.ORANGE;
-        if ((colourGreen >= ORANGE_MEAN[1] - 100*ORANGE_SD[1]) & (colourGreen <= ORANGE_MEAN[1] + 100*ORANGE_SD[1])) {
-          System.out.println("o3\n");
-          this.ringColour = COLOUR.ORANGE;
-          return this.ringColour;
-        }
-      }
+    //green
+    double distanceFromGreen = euclideanDistance(normalizedColours[0], GREEN_MEAN[0],normalizedColours[1], GREEN_MEAN[1],
+        normalizedColours[2], GREEN_MEAN[2]);
+    
+    if (distanceFromGreen < minDistance) {
+      minDistance = distanceFromGreen;
+      this.ringColour = COLOUR.GREEN;
+    }
+    //yellow
+    double distanceFromYellow = euclideanDistance(normalizedColours[0], YELLOW_MEAN[0],normalizedColours[1], YELLOW_MEAN[1],
+        normalizedColours[2], YELLOW_MEAN[2]);
+    
+    if ((distanceFromYellow < minDistance) & (distanceFromYellow < YELLOW_THRESH)) {
+      minDistance = distanceFromYellow;
+      this.ringColour = COLOUR.YELLOW;
     }
 
+    //orange
+    double distanceFromOrange = euclideanDistance(normalizedColours[0], ORANGE_MEAN[0],normalizedColours[1], ORANGE_MEAN[1],
+        normalizedColours[2], ORANGE_MEAN[2]);
+    
+    if (distanceFromOrange < minDistance) {
+      minDistance = distanceFromOrange;
+      this.ringColour = COLOUR.ORANGE;
+    }
     return this.ringColour;
 
   }
