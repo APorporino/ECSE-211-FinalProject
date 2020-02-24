@@ -51,11 +51,22 @@ public class Resources {
    * The value used to rotate the robot in a full circle.
    */
   public static final int FULL_SPIN_DEG = 360;
+  
 
   /**
    * The value used as max reading of US sensor.
    */
   public static final int FILTER_MAX = 255;
+  
+  /**
+   * Period for ultrasonic reading.
+   */
+  public static final long US_PERIOD = 300;
+  
+  /**
+   * Minimum value to reset the light localizer left and right data
+   */
+  public static final long MIN_LIGHT_DATA = 60;
 
   /**
    * The speed at which the robot will rotate in degrees per second.
@@ -131,6 +142,11 @@ public class Resources {
    * The robot width in centimeters. 11.1155
    */
   public static final double BASE_WIDTH = 12.2;
+  
+  /**
+   * Rotate value in degrees to make robot center of rotation on y axis, knowing our left or right sensor is touching a line and current angle is 0.
+   */
+  public static final int ONE_LIGHT_ROTATION = (int) (BASE_WIDTH *90   / WHEEL_RAD);
 
   /**
    * The limit of invalid samples that we read from the US sensor before assuming no obstacle. Originally 20
