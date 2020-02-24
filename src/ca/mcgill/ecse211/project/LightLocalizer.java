@@ -24,10 +24,25 @@ public class LightLocalizer implements Runnable {
   public static float colourIDLeft;
   public static float colourIDRight;
   public static float colourIDFront;
-
-  // class varaibels used to compare with the colour values from the light sensor
+  
+  /**
+   * This variable will store the minimum light value detected for the left sensor.
+   */
   public static float minLeft;
+  /**
+   * This variable will store the minimum light value detected for the right sensor.
+   */
   public static float minRight;
+  
+  /**
+   * This variable will store how many times the left light sensor detected a line.
+   */
+  public static float counterLeft;
+  
+  /**
+   * This variable will store how many times the left right sensor detected a line.
+   */
+  public static float counterRight;
 
   // buffers to store the data from the light sensors
   static SampleProvider colourValueLeft = LEFT_COL_SENSOR.getMode("Red"); 
@@ -48,11 +63,19 @@ public class LightLocalizer implements Runnable {
     while (true) {
       LEFT_COL_SENSOR.getMode("Red").fetchSample(colourDataLeft, 0);
       colourIDLeft = colourDataLeft[0] * 100;
+      
       if (colourIDLeft < minLeft) {
         minLeft = colourIDLeft;
       }
+      if (colourIDLeft < LINE_THRESHOLD) {
+        counterLeft++;
+      }
+      if (colourIDRight < LINE_THRESHOLD) {
+        counterRight++;
+      }
       RIGHT_COL_SENSOR.getMode("Red").fetchSample(colourDataRight, 0);
       colourIDRight = colourDataRight[0] * 100;
+      
       if (colourIDRight < minRight) {
         minRight = colourIDRight;
       }

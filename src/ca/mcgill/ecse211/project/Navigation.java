@@ -46,6 +46,18 @@ public class Navigation {
 
       Thread usThread = new Thread(usLocalizer);
       usThread.start();
+
+
+      //update backup distance if we are close to wall.
+      //makes sure we do not collide with a wall.
+      if ((elem[0] == 1) & (elem[1] == 7)) {
+        LOC_BACKUP_DISTANCE = TILE_SIZE / 4;
+      }else if ((elem[0] == 7) & (elem[1] == 1)) {
+        LOC_BACKUP_DISTANCE = TILE_SIZE / 4;
+      }else {
+        LOC_BACKUP_DISTANCE = TILE_SIZE / 2;
+      }
+
       travelTo(elem[0], elem[1]);
       usThread.interrupt();
 
@@ -95,9 +107,9 @@ public class Navigation {
     double distance = euclidDistance(currentXPos, currentYPos, x * TILE_SIZE, y * TILE_SIZE);
 
     //distance is fine, continue
-    if (distance <= 3) {
-      return;
-    }
+    //    if (distance <= 3) {
+    //      return;
+    //    }
 
     //otherwise fix distance using light localization
     turnTo(0);
@@ -118,7 +130,7 @@ public class Navigation {
     //reset the odometers to a more accurate values
     odo.setX(x * TILE_SIZE);
     odo.setY(y * TILE_SIZE);
-    odo.setTheta(0);
+    odo.setTheta(90);
 
     lightThread.interrupt();
   }
@@ -179,7 +191,7 @@ public class Navigation {
     LightLocalizer.minLeft = MIN_LIGHT_DATA;
     LightLocalizer.minRight = MIN_LIGHT_DATA;
 
-    //adjust to make both sensors on the y axis line.
+    //adjust to make both sensors on the x axis line.
     Driver.moveStraightFor(-LOC_BACKUP_DISTANCE);
     if ((LightLocalizer.minLeft < LINE_THRESHOLD) & (LightLocalizer.minRight < LINE_THRESHOLD)) {
       //we passed the line
@@ -197,21 +209,28 @@ public class Navigation {
    * the light sensors aren't currently touching a line.
    */
   public static void noSensorOnLine() {
+    //resets the min light data to high value
     LightLocalizer.minLeft = MIN_LIGHT_DATA;
     LightLocalizer.minRight = MIN_LIGHT_DATA;
 
     //adjust to make both sensors on the y axis line.
     Driver.moveStraightFor(-LOC_BACKUP_DISTANCE);
-    if ((LightLocalizer.minLeft < LINE_THRESHOLD) & (LightLocalizer.minRight < LINE_THRESHOLD)) {
-      //Now we know we passed the line
-      LightLocalizer.lineAdjustment();
-    } else {
-      //the line is in front of us
-      Driver.moveStraightFor(LOC_BACKUP_DISTANCE);
-      LightLocalizer.lineAdjustment();
-    }
-    Driver.moveStraightFor(LIGHT_TO_CENTER);
+    Driver.moveStraightFor(LOC_BACKUP_DISTANCE);
+    if ((LightLocalizer.counterLeft % 2 != 0)|(LightLocalizer.counterRight % 2 != 0))  {
 
+    }else {
+
+      Driver.moveStraightFor(-LOC_BACKUP_DISTANCE);
+      if ((LightLocalizer.minLeft < LINE_THRESHOLD) & (LightLocalizer.minRight < LINE_THRESHOLD)) {
+        //Now we know we passed the line
+        LightLocalizer.lineAdjustment();
+      } else {
+        //the line is in front of us
+        Driver.moveStraightFor(LOC_BACKUP_DISTANCE);
+        LightLocalizer.lineAdjustment();
+      }
+      Driver.moveStraightFor(LIGHT_TO_CENTER);
+    }
 
     Driver.turnBy(FULL_SPIN_DEG / 4);
     LightLocalizer.minLeft = MIN_LIGHT_DATA;
@@ -357,7 +376,7 @@ public class Navigation {
       Driver.turnBy(difference);
     }
   }
-  
+
   /**
    * This method will lower the front light sensor start a new thread to read the 
    * colour value of the ring and attempt to detect the colour.

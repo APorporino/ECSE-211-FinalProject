@@ -19,7 +19,7 @@ public class Resources {
   /**
    * List of coordinates for 4 x 4 grid Map1.
    */
-  public static final int[][] MAP0 = {{1,3},{2,3}, {2,2}, {1,1} };
+  public static final int[][] MAP0 = {{3,1},{7,3},{7,1},{1,3}};
 
   /**
    * List of coordinates for 8 x 8 grid Map1.
@@ -116,7 +116,7 @@ public class Resources {
   /**
    * The tile size in centimeters. Note that 30.48 cm = 1 ft.
    */
-  public static final double LOC_BACKUP_DISTANCE = TILE_SIZE / 3;
+  public static double LOC_BACKUP_DISTANCE = TILE_SIZE / 2;
 
   /**
    * The tile size in centimeters. Note that 30.48 cm = 1 ft.

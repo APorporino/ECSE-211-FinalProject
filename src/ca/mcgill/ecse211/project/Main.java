@@ -9,6 +9,11 @@ import static ca.mcgill.ecse211.project.Resources.SENSOR_TO_CENTER;
 import static ca.mcgill.ecse211.project.Resources.TEXT_LCD;
 import static ca.mcgill.ecse211.project.Resources.TILE_SIZE;
 import static ca.mcgill.ecse211.project.Resources.WAIT_TIME;
+import static ca.mcgill.ecse211.project.Resources.MAP0;
+import static ca.mcgill.ecse211.project.Resources.MAP1;
+import static ca.mcgill.ecse211.project.Resources.MAP2;
+import static ca.mcgill.ecse211.project.Resources.MAP3;
+import static ca.mcgill.ecse211.project.Resources.MAP4;
 import static ca.mcgill.ecse211.project.Resources.lightLocalizer;
 import static ca.mcgill.ecse211.project.Resources.odo;
 import static ca.mcgill.ecse211.project.Resources.usLocalizer;
@@ -34,7 +39,7 @@ public class Main {
       TEXT_LCD.drawString("Localizing to 1,1", 0, 1);
       localizeToStartingPosition();
       new Thread(odo).start();
-      Navigation.drive(MAP1);
+      Navigation.drive(MAP0);
     } else if (buttonChoice == Button.ID_LEFT) { 
       detectColours();
     }
@@ -101,19 +106,6 @@ public class Main {
     if (usLocalizer.currentDistance <= TILE_SIZE) { 
       Driver.turnBy(FULL_SPIN_DEG / 4);   //face the 0 degree direction
     }
-  }
-
-  /**
-   * This method will return the minimum distance to point (1,1) given starting positions. 
-   * @param x Starting x distance from wall
-   * @param y Starting y distance from wall
-   * @return Minimum distance to point (1,1)
-   */
-  public static double calculateDistanceFromPosition(int x, int y) {
-    double base = TILE_SIZE - x;   
-    double height = TILE_SIZE - y;
-    double hypotenus = Math.pow((Math.pow(base, 2) + Math.pow(height, 2)), .5);
-    return hypotenus - SENSOR_TO_CENTER;
   }
 
   /**
