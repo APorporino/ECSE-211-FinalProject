@@ -35,7 +35,6 @@ public class Main {
     buttonChoice = chooseLocalize();
     if (buttonChoice == Button.ID_RIGHT) {
       //Assuming we start somewhere on 45 degree line in the first square
-      new Thread(new Display()).start();
       TEXT_LCD.clear();
       TEXT_LCD.drawString("Localizing to 1,1", 0, 1);
       localizeToStartingPosition();
