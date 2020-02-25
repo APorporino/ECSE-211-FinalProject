@@ -52,17 +52,6 @@ public class Resources {
    */
   public static final int FULL_SPIN_DEG = 360;
   
-
-  /**
-   * The value used as max reading of US sensor.
-   */
-  public static final int FILTER_MAX = 255;
-  
-  /**
-   * Period for ultrasonic reading.
-   */
-  public static final long US_PERIOD = 300;
-  
   /**
    * Minimum value to reset the light localizer left and right data.
    */
@@ -107,6 +96,11 @@ public class Resources {
    * Sleep time of 3 seconds to pause before functionality.
    */
   public static final int PAUSE_TIME = 3000;
+  
+  /**
+   * Sleep time for display.
+   */
+  public static final long SLEEP_TIME = 200;
 
   /**
    * The tile size in centimeters. Note that 30.48 cm = 1 ft.
@@ -122,11 +116,6 @@ public class Resources {
    * The tile size in centimeters. Note that 30.48 cm = 1 ft.
    */
   public static final double BOARD_SIZE = 4 * 30.48;
-
-  /**
-   * Sleep time for display.
-   */
-  public static final long SLEEP_TIME = 200;
   
   /**
    * This will determine number of readings the colour detector should get.
@@ -201,6 +190,16 @@ public class Resources {
    * The display period.
    */
   public static final long DISPLAY_PERIOD = 30;
+  
+  /**
+   * Period for ultrasonic reading.
+   */
+  public static final long US_PERIOD = 300;
+
+  /**
+   * The value used as max reading of US sensor.
+   */
+  public static final int FILTER_MAX = 255;
 
   /**
    * The ultrasonic sensor.

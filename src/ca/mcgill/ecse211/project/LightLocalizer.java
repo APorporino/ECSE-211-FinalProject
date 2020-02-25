@@ -3,12 +3,20 @@ package ca.mcgill.ecse211.project;
 //static import to avoid duplicating variables and make the code easier to read
 import static ca.mcgill.ecse211.project.Main.sleepFor;
 import static ca.mcgill.ecse211.project.Resources.FRONT_COL_SENSOR;
+import static ca.mcgill.ecse211.project.Resources.FULL_SPIN_DEG;
 import static ca.mcgill.ecse211.project.Resources.LEFT_COL_SENSOR;
 import static ca.mcgill.ecse211.project.Resources.LIGHTLOCALIZER_PERIOD;
+import static ca.mcgill.ecse211.project.Resources.LIGHT_TO_CENTER;
 import static ca.mcgill.ecse211.project.Resources.LINE_DETECTION_SPEED;
 import static ca.mcgill.ecse211.project.Resources.LINE_THRESHOLD;
+import static ca.mcgill.ecse211.project.Resources.LOC_BACKUP_DISTANCE;
+import static ca.mcgill.ecse211.project.Resources.MIN_LIGHT_DATA;
+import static ca.mcgill.ecse211.project.Resources.ONE_LIGHT_ROTATION;
 import static ca.mcgill.ecse211.project.Resources.RIGHT_COL_SENSOR;
+import static ca.mcgill.ecse211.project.Resources.TILE_SIZE;
 import static ca.mcgill.ecse211.project.Resources.leftMotor;
+import static ca.mcgill.ecse211.project.Resources.lightLocalizer;
+import static ca.mcgill.ecse211.project.Resources.odo;
 import static ca.mcgill.ecse211.project.Resources.rightMotor;
 
 import lejos.robotics.SampleProvider;
@@ -164,5 +172,144 @@ public class LightLocalizer implements Runnable {
       }
     }
     Driver.setSpeeds(LINE_DETECTION_SPEED,LINE_DETECTION_SPEED);
+  }
+  
+  /**
+   * This method will use the two side light sensors to adjust to robots position 
+   * closer to the waypoint.
+   * @param x x position
+   * @param y y position
+   */
+  public static void localizeToPoint(int x,int y) {
+
+    //otherwise fix distance using light localization
+    Navigation.turnTo(0);
+    Thread lightThread = new Thread(lightLocalizer);
+    lightThread.start();
+
+    if ((LightLocalizer.colourIDLeft < LINE_THRESHOLD) 
+        & (LightLocalizer.colourIDRight < LINE_THRESHOLD)) {
+      bothSensorsOnLine();
+    } else if (LightLocalizer.colourIDLeft < LINE_THRESHOLD) {
+      leftSensorOnLine();
+    } else if (LightLocalizer.colourIDRight < LINE_THRESHOLD) {
+      rightSensorOnLine();
+    } else {
+      noSensorOnLine();
+    }
+
+    //reset the odometers to a more accurate values
+    odo.setX(x * TILE_SIZE);
+    odo.setY(y * TILE_SIZE);
+    odo.setTheta(90);
+
+    lightThread.interrupt();
+  }
+
+  /**
+   * This method will localize the robot to waypoint knowing that 
+   * only the left light sensors is currently touching a line.
+   */
+  public static void leftSensorOnLine() {
+    rightMotor.rotate(-ONE_LIGHT_ROTATION);     //make center of rotation on y axis
+    Driver.turnBy(-FULL_SPIN_DEG / 4);                          //turn back to zero degrees
+    LightLocalizer.minLeft = MIN_LIGHT_DATA;        //reset the minimum to high value
+    LightLocalizer.minRight = MIN_LIGHT_DATA;
+
+    //adjust to make both sensors on the x axis line.
+    Driver.moveStraightFor(-LOC_BACKUP_DISTANCE);       //backup
+    if ((LightLocalizer.minLeft < LINE_THRESHOLD) & (LightLocalizer.minRight < LINE_THRESHOLD)) {
+      //we passed the line
+      LightLocalizer.lineAdjustment();
+    } else {
+      //the line is in front of us
+      Driver.moveStraightFor(LOC_BACKUP_DISTANCE);
+      LightLocalizer.lineAdjustment();
+    }
+    Driver.moveStraightFor(LIGHT_TO_CENTER);
+  }
+
+  /**
+   * This method will localize the robot to waypoint knowing that only the 
+   * right light sensors is currently touching a line.
+   */
+  public static void rightSensorOnLine() {
+    leftMotor.rotate(-ONE_LIGHT_ROTATION);          //make center of rotation on y axis
+    Driver.turnBy(FULL_SPIN_DEG / 4);                             //turn back to zero degrees
+    LightLocalizer.minLeft = MIN_LIGHT_DATA;
+    LightLocalizer.minRight = MIN_LIGHT_DATA;
+
+    //adjust to make both sensors on the x axis line.
+    Driver.moveStraightFor(-LOC_BACKUP_DISTANCE);
+    if ((LightLocalizer.minLeft < LINE_THRESHOLD) & (LightLocalizer.minRight < LINE_THRESHOLD)) {
+      //we passed the line
+      LightLocalizer.lineAdjustment();
+    } else {
+      //the line is in front of us
+      Driver.moveStraightFor(LOC_BACKUP_DISTANCE);
+      LightLocalizer.lineAdjustment();
+    }
+    Driver.moveStraightFor(LIGHT_TO_CENTER);
+  }
+
+  /**
+   * This method will localize the robot to waypoint knowing that
+   *  both light sensors are currently touching a line.
+   */
+  public static void bothSensorsOnLine() {
+    Driver.moveStraightFor(LIGHT_TO_CENTER);
+    Driver.turnBy(FULL_SPIN_DEG / 4);
+    LightLocalizer.minLeft = MIN_LIGHT_DATA;
+    LightLocalizer.minRight = MIN_LIGHT_DATA;
+
+    //adjust to make both sensors on the x axis line.
+    Driver.moveStraightFor(-LOC_BACKUP_DISTANCE);
+    if ((LightLocalizer.minLeft < LINE_THRESHOLD) & (LightLocalizer.minRight < LINE_THRESHOLD)) {
+      //we passed the line
+      LightLocalizer.lineAdjustment();
+    } else {
+      //the line is in front of us
+      Driver.moveStraightFor(LOC_BACKUP_DISTANCE);
+      LightLocalizer.lineAdjustment();
+    }
+    Driver.moveStraightFor(LIGHT_TO_CENTER);
+  }
+
+  /**
+   * This method will localize the robot to waypoint knowing that 
+   * the light sensors aren't currently touching a line.
+   */
+  public static void noSensorOnLine() {
+    //resets the min light data to high value
+    LightLocalizer.minLeft = MIN_LIGHT_DATA;
+    LightLocalizer.minRight = MIN_LIGHT_DATA;
+
+    //adjust to make both sensors on the y axis line.
+      Driver.moveStraightFor(-LOC_BACKUP_DISTANCE);
+      if ((LightLocalizer.minLeft < LINE_THRESHOLD) & (LightLocalizer.minRight < LINE_THRESHOLD)) {
+        //Now we know we passed the line
+        LightLocalizer.lineAdjustment();
+      } else {
+        //the line is in front of us
+        Driver.moveStraightFor(LOC_BACKUP_DISTANCE);
+        LightLocalizer.lineAdjustment();
+      }
+    Driver.moveStraightFor(LIGHT_TO_CENTER);
+
+    Driver.turnBy(FULL_SPIN_DEG / 4);
+    LightLocalizer.minLeft = MIN_LIGHT_DATA;
+    LightLocalizer.minRight = MIN_LIGHT_DATA;
+
+    //adjust to make both sensors on the x axis line.
+    Driver.moveStraightFor(-LOC_BACKUP_DISTANCE);
+    if ((LightLocalizer.minLeft < LINE_THRESHOLD) & (LightLocalizer.minRight < LINE_THRESHOLD)) {
+      //Now we know we passed the line
+      LightLocalizer.lineAdjustment();
+    } else {
+      //the line is in front of us
+      Driver.moveStraightFor(LOC_BACKUP_DISTANCE);
+      LightLocalizer.lineAdjustment();
+    }
+    Driver.moveStraightFor(LIGHT_TO_CENTER);
   }
 }
