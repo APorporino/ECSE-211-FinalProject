@@ -29,9 +29,24 @@ public class Resources {
   public static final int FORWARD_SPEED = 120;
   
   /**
+   * The speed at which the robot rotates in degrees per second.
+   */
+  public static final int ROTATE_SPEED = 60;
+  
+  /**
+   * The tile size in centimeters. Note that 30.48 cm = 1 ft.
+   */
+  public static final double TILE_SIZE = 30.48;
+  
+  /**
    * The colorID constant to distinguish the color. 
    */
   public static final int colorID_constant = 13;
+  
+  /**
+   * Odometer sampling period.
+   */
+  public static final long ODOMETER_PERIOD = 25;
   
   /**
    * The left motor.
