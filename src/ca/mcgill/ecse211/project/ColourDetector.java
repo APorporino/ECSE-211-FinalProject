@@ -1,15 +1,15 @@
 package ca.mcgill.ecse211.project;
 
 //static import to avoid duplicating variables and make the code easier to read
-import static ca.mcgill.ecse211.project.ColourResources.BLUE_MEAN;
-import static ca.mcgill.ecse211.project.ColourResources.GREEN_MEAN;
-import static ca.mcgill.ecse211.project.ColourResources.ORANGE_MEAN;
-import static ca.mcgill.ecse211.project.ColourResources.YELLOW_MEAN;
-import static ca.mcgill.ecse211.project.ColourResources.YELLOW_THRESH;
 import static ca.mcgill.ecse211.project.Main.sleepFor;
+import static ca.mcgill.ecse211.project.Resources.BLUE_MEAN;
 import static ca.mcgill.ecse211.project.Resources.COLOUR_PERIOD;
 import static ca.mcgill.ecse211.project.Resources.FRONT_COL_SENSOR;
+import static ca.mcgill.ecse211.project.Resources.GREEN_MEAN;
 import static ca.mcgill.ecse211.project.Resources.NUM_READINGS;
+import static ca.mcgill.ecse211.project.Resources.ORANGE_MEAN;
+import static ca.mcgill.ecse211.project.Resources.YELLOW_MEAN;
+import static ca.mcgill.ecse211.project.Resources.YELLOW_THRESH;
 
 /**
  * This class will be used to control colour detection and determine the colour 
@@ -120,7 +120,6 @@ public class ColourDetector implements Runnable {
     return normalizedColours;
   }
 
-  // TODO don't understand the warning
   /**
    * This method returns the euclidean distance of 2 points of 3 dimensions.
    * @param x1 first x pos
