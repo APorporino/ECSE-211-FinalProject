@@ -8,7 +8,7 @@ package ca.mcgill.ecse211.project;
 public class Tow {
   
   /**
-   * This method will attach our robot to the stranded vehicle
+   * This method will attach our robot to the stranded vehicle.
    */
   public static void attachToVehicle() {
     

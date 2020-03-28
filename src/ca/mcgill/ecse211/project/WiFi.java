@@ -169,7 +169,7 @@ public class WiFi {
   
   
   /**
-   * This method will receive all the game time parameters and store them in local variables
+   * This method will receive all the game time parameters and store them in local variables.
    */
   public static void receiveParamters() {
     

@@ -1,7 +1,13 @@
 package ca.mcgill.ecse211.project;
 
+//static import to avoid duplicating variables and make the code easier to read
 import static ca.mcgill.ecse211.project.Main.sleepFor;
-import static ca.mcgill.ecse211.project.Resources.*;
+import static ca.mcgill.ecse211.project.Resources.BASE_WIDTH;
+import static ca.mcgill.ecse211.project.Resources.ODOMETER_PERIOD;
+import static ca.mcgill.ecse211.project.Resources.TILE_SIZE;
+import static ca.mcgill.ecse211.project.Resources.WHEEL_RAD;
+import static ca.mcgill.ecse211.project.Resources.leftMotor;
+import static ca.mcgill.ecse211.project.Resources.rightMotor;
 
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;

@@ -10,7 +10,7 @@ import static ca.mcgill.ecse211.project.Resources.usLocalizer;
  * This class is used to display content to the LCD screen.
  */
 public class Display implements Runnable {
-  
+
   /**
    * This thread will continuously display any information needed for debugging.
    */
@@ -26,7 +26,7 @@ public class Display implements Runnable {
       TEXT_LCD.drawString("RIGHT ID: " + LightLocalizer.colourIDRight,0,2);
       TEXT_LCD.drawString("US Distance: " + usLocalizer.readUsDistance(), 0, 5);
       TEXT_LCD.drawString("Min Distance: " + usLocalizer.minDistance, 0, 6);
-      
+
       updateDuration = System.currentTimeMillis() - updateStart;
       if (updateDuration < DISPLAY_PERIOD) {
         sleepFor(DISPLAY_PERIOD - updateDuration);

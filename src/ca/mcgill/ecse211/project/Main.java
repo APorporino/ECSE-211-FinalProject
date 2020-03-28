@@ -4,7 +4,6 @@ package ca.mcgill.ecse211.project;
 import static ca.mcgill.ecse211.project.Resources.BACKUP_DISTANCE;
 import static ca.mcgill.ecse211.project.Resources.FULL_SPIN_DEG;
 import static ca.mcgill.ecse211.project.Resources.LIGHT_TO_CENTER;
-import static ca.mcgill.ecse211.project.Resources.SENSOR_TO_CENTER;
 import static ca.mcgill.ecse211.project.Resources.TEXT_LCD;
 import static ca.mcgill.ecse211.project.Resources.TILE_SIZE;
 import static ca.mcgill.ecse211.project.Resources.WAIT_TIME;
@@ -12,7 +11,6 @@ import static ca.mcgill.ecse211.project.Resources.leftMotor;
 import static ca.mcgill.ecse211.project.Resources.lightLocalizer;
 import static ca.mcgill.ecse211.project.Resources.navigation;
 import static ca.mcgill.ecse211.project.Resources.odo;
-import static ca.mcgill.ecse211.project.Resources.*;
 import static ca.mcgill.ecse211.project.Resources.rightMotor;
 import static ca.mcgill.ecse211.project.Resources.usLocalizer;
 
@@ -67,15 +65,15 @@ public class Main {
     Thread lightLocThread = new Thread(lightLocalizer);
     lightLocThread.start();
     LightLocalizer.lineAdjustment();
-    Driver.moveStraightFor(LIGHT_TO_CENTER);
-    Driver.turnBy(FULL_SPIN_DEG / 4);
+    Navigation.moveStraightFor(LIGHT_TO_CENTER);
+    Navigation.turnBy(FULL_SPIN_DEG / 4);
     LightLocalizer.lineAdjustment();
-    Driver.moveStraightFor(LIGHT_TO_CENTER);
-    Driver.turnBy(-FULL_SPIN_DEG / 4);
+    Navigation.moveStraightFor(LIGHT_TO_CENTER);
+    Navigation.turnBy(-FULL_SPIN_DEG / 4);
 
-    Driver.moveStraightFor(BACKUP_DISTANCE);
+    Navigation.moveStraightFor(BACKUP_DISTANCE);
     LightLocalizer.lineAdjustment();
-    Driver.moveStraightFor(LIGHT_TO_CENTER);
+    Navigation.moveStraightFor(LIGHT_TO_CENTER);
     lightLocThread.interrupt();
   }
 
@@ -88,12 +86,12 @@ public class Main {
     usLocalizer.minDistance = 1500;
 
     //make the robot rotate 360 degrees once. Thread
-    Driver.rotate().start();
+    Navigation.rotate().start();
     //continuously locate the current position of robot and store minimum position.
     sleepFor(WAIT_TIME);    //Must sleep to give it time to do a full circle
 
     //Now it will position itself at the minimum distance
-    Thread rotateThread  = Driver.rotate();
+    Thread rotateThread  = Navigation.rotate();
     rotateThread.start();
     while (true) {
       if (usLocalizer.currentDistance <= usLocalizer.minDistance) {
@@ -102,10 +100,10 @@ public class Main {
       }
     }
     //We are now pointing at the closest wall.
-    Driver.turnBy(FULL_SPIN_DEG / 4);
+    Navigation.turnBy(FULL_SPIN_DEG / 4);
     // still facing the wall
     if (usLocalizer.currentDistance <= TILE_SIZE) { 
-      Driver.turnBy(FULL_SPIN_DEG / 4);   //face the 0 degree direction
+      Navigation.turnBy(FULL_SPIN_DEG / 4);   //face the 0 degree direction
     }
   }
 

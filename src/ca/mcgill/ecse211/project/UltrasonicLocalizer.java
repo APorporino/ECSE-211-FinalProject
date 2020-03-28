@@ -15,9 +15,7 @@ import static ca.mcgill.ecse211.project.Resources.usSensor;
  * @author Team06
  *
  */
-public class UltrasonicLocalizer implements Runnable{
-
-
+public class UltrasonicLocalizer implements Runnable {
 
   /**
    * The distance remembered by the {@code filter()} method.
@@ -93,10 +91,10 @@ public class UltrasonicLocalizer implements Runnable{
 
     sleepFor(PAUSE_TIME);
     //get accurate x position
-    Driver.turnBy(FULL_SPIN_DEG / 2);
+    Navigation.turnBy(FULL_SPIN_DEG / 2);
     double yPos = getAccurateReading();
     //get accurate y position
-    Driver.turnBy(FULL_SPIN_DEG / 4);
+    Navigation.turnBy(FULL_SPIN_DEG / 4);
     double xPos = getAccurateReading();
 
     //reset odometer values to known x, y and theta values.
@@ -117,7 +115,7 @@ public class UltrasonicLocalizer implements Runnable{
    * This method will take 20 readings from ultrasonic sensor and return the average reading.
    */
   public double getAccurateReading() {
-    double readings[] = new double[20];
+    double[] readings = new double[20];
     double sum = 0;
     double average;
     for (int i = 0; i < 20; i++) {
