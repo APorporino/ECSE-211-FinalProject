@@ -125,7 +125,6 @@ public class UltrasonicLocalizer implements Runnable{
       sum += readings[i];
     }
     average = sum / 20;
-
     return average + SENSOR_TO_CENTER;
   }
   
@@ -152,6 +151,5 @@ public class UltrasonicLocalizer implements Runnable{
     }
     return distance;
   }
-
 
 }

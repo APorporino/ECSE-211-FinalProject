@@ -4,18 +4,16 @@ package ca.mcgill.ecse211.project;
 import static ca.mcgill.ecse211.project.Resources.BACKUP_DISTANCE;
 import static ca.mcgill.ecse211.project.Resources.FULL_SPIN_DEG;
 import static ca.mcgill.ecse211.project.Resources.LIGHT_TO_CENTER;
-import static ca.mcgill.ecse211.project.Resources.MAP1;
 import static ca.mcgill.ecse211.project.Resources.SENSOR_TO_CENTER;
 import static ca.mcgill.ecse211.project.Resources.TEXT_LCD;
 import static ca.mcgill.ecse211.project.Resources.TILE_SIZE;
 import static ca.mcgill.ecse211.project.Resources.WAIT_TIME;
-import static ca.mcgill.ecse211.project.Resources.MAP0;
-import static ca.mcgill.ecse211.project.Resources.MAP1;
-import static ca.mcgill.ecse211.project.Resources.MAP2;
-import static ca.mcgill.ecse211.project.Resources.MAP3;
-import static ca.mcgill.ecse211.project.Resources.MAP4;
+import static ca.mcgill.ecse211.project.Resources.leftMotor;
 import static ca.mcgill.ecse211.project.Resources.lightLocalizer;
+import static ca.mcgill.ecse211.project.Resources.navigation;
 import static ca.mcgill.ecse211.project.Resources.odo;
+import static ca.mcgill.ecse211.project.Resources.*;
+import static ca.mcgill.ecse211.project.Resources.rightMotor;
 import static ca.mcgill.ecse211.project.Resources.usLocalizer;
 
 import lejos.hardware.Button;
@@ -31,6 +29,9 @@ public class Main {
    * @param args not used
    */
   public static void main(String[] args) {
+    
+    navigation = new Navigation(odo, leftMotor, rightMotor);
+
     int buttonChoice;
     buttonChoice = chooseLocalize();
     if (buttonChoice == Button.ID_RIGHT) {
@@ -39,7 +40,7 @@ public class Main {
       TEXT_LCD.drawString("Localizing to 1,1", 0, 1);
       localizeToStartingPosition();
       new Thread(odo).start();
-      Navigation.drive(MAP4);
+      new Thread(navigation).start();
     } else if (buttonChoice == Button.ID_LEFT) { 
       detectColours();
     }
