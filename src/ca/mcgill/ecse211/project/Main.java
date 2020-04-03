@@ -59,7 +59,7 @@ public class Main {
         //top left corner
         odo.setXyt(1, 8, 90);
     }
-    //beep 3 times
+    //beep 3 times to signal localizing is done
     Sound.beep();
     Sound.twoBeeps();
 
@@ -76,15 +76,19 @@ public class Main {
     }
 
     Navigation.moveStraightFor(Resources.TUNNEL_DISTANCE);
+    
+    //beep 3 times to signal we have reached the island
+    Sound.beep();
+    Sound.twoBeeps();
 
 
     //Move to search zone while avoiding obstacles  
-    //Using travelTo method to navigate to this point will incroporate obstacle avoidance
+    //Using travelTo method to navigate to this point will incorporate obstacle avoidance
     Navigation.travelTo(Resources.zone.ll.x, Resources.zone.ll.y);
     
 
     //HERE IS WHERE WE WILL START SEARCHING AND SCANNING
-    //NEW DESIGM TEAM SHOULD CONSULT THE SOFTWARE DOCUMENT FOR A BASIC IDEA
+    //NEW DESIGN TEAM SHOULD CONSULT THE SOFTWARE DOCUMENT FOR A BASIC IDEA
 
     //hitting escape button will stop the program 
     while (Button.waitForAnyPress() != Button.ID_ESCAPE) {
