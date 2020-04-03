@@ -5,10 +5,11 @@ package ca.mcgill.ecse211.project;
  * @author Team06
  *
  */
-public class ObstacleAvoidance implements Runnable {
+public class SearchAndScan implements Runnable {
 
   /**
-   * This method will run the thread to constantly avoid obstacles.
+   * This method will seaerch for the stranded vehicle and implement obstacle avoidance as well.
+   * 
    */
   @Override
   public void run() {
@@ -19,7 +20,7 @@ public class ObstacleAvoidance implements Runnable {
   /**
    * Constructor.
    */
-  public ObstacleAvoidance() {
+  public SearchAndScan() {
     
   }
   

@@ -10,7 +10,7 @@ import static ca.mcgill.ecse211.project.Resources.ROTATION_SPEED;
 import static ca.mcgill.ecse211.project.Resources.TEXT_LCD;
 import static ca.mcgill.ecse211.project.Resources.TILE_SIZE;
 import static ca.mcgill.ecse211.project.Resources.WHEEL_RAD;
-import static ca.mcgill.ecse211.project.Resources.colorDetector;
+import static ca.mcgill.ecse211.project.Resources.odo;
 import static ca.mcgill.ecse211.project.Resources.leftMotor;
 import static ca.mcgill.ecse211.project.Resources.rightMotor;
 import ca.mcgill.ecse211.project.ColourDetector.Colour;
@@ -21,40 +21,12 @@ import lejos.hardware.motor.EV3LargeRegulatedMotor;
  * @author Team06
  *
  */
-public class Navigation implements Runnable {
-
-  public static int numberRingsDetected = 0;
-  public static Colour[] colours = new Colour[5];
-
-  
-  private static EV3LargeRegulatedMotor leftMotor;
-  private static EV3LargeRegulatedMotor rightMotor; 
-  private static Odometer odo;
+public class Navigation {
   
   /**
    * Constructor.
-   * 
-   * @param odo odometer
-   * @param leftMotor left motor of the robot
-   * @param rightMotor right motor of the robot
    */
-  public Navigation(Odometer odo, EV3LargeRegulatedMotor leftMotor, 
-      EV3LargeRegulatedMotor rightMotor) {
-    Navigation.odo = Odometer.getOdometer();
-    Navigation.leftMotor = leftMotor;
-    Navigation.rightMotor = rightMotor;
-  }
-
-  /**
-   * Maps of the navigation.
-   */
-  // TODO: this need to be integrated with the array representation of the map
-  public void run() {
-    travelTo(2 * TILE_SIZE, 1 * TILE_SIZE);
-    travelTo(3 * TILE_SIZE, 2 * TILE_SIZE);
-    travelTo(3 * TILE_SIZE, 3 * TILE_SIZE);
-    travelTo(1 * TILE_SIZE, 3 * TILE_SIZE);
-    travelTo(2 * TILE_SIZE, 2 * TILE_SIZE);
+  public Navigation() {
   }
 
   /**
@@ -156,22 +128,6 @@ public class Navigation implements Runnable {
     rightMotor.setAcceleration(acceleration);
   }
   
-  /**
-   * This method will lower the front light sensor start a new thread to read the 
-   * colour value of the ring and attempt to detect the colour.
-   */
-  public static void detectRing() {
-    TEXT_LCD.clear();
-    TEXT_LCD.drawString("Object Detected", 0,1);
-
-    //Will get NUM_READINGS amount of readings from the colour detector and return the average.
-    double[] averageReadings = ColourDetector.getReadings();
-    colorDetector.updateRingColour(averageReadings[0], averageReadings[1],averageReadings[2]);
-    TEXT_LCD.drawString("COLOUR: " + colorDetector.ringColour, 0, 2);
-    sleepFor(5000);
-    colours[numberRingsDetected] = colorDetector.ringColour;
-    numberRingsDetected++;
-  }
   
   /**
    * Returns a thread that will rotate the robot once.

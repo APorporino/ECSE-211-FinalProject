@@ -44,7 +44,7 @@ public class ColourDetector implements Runnable {
   /**
    * Variable used to determine the colour detected by the colour detector.
    */
-  public  Colour ringColour;
+  public  Colour objectColour;
 
   /**
    * This run method continuously receives data RGB values from the front
@@ -145,8 +145,8 @@ public class ColourDetector implements Runnable {
    * @param colourBlue blue colour variable
    * @return COLOUR representing the colour detected.
    */
-  public  Colour updateRingColour(double colourRed, double colourGreen, double colourBlue) {
-    this.ringColour = Colour.NONE;
+  public  Colour updateColour(double colourRed, double colourGreen, double colourBlue) {
+    this.objectColour = Colour.NONE;
     double minDistance;
     double[] normalizedColours = normailze(colourRed,colourGreen, colourBlue);
 
@@ -155,7 +155,7 @@ public class ColourDetector implements Runnable {
         normalizedColours[1], BLUE_MEAN[1],normalizedColours[2], BLUE_MEAN[2]);
 
     minDistance = distanceFromBlue;
-    this.ringColour = Colour.BLUE;
+    this.objectColour = Colour.BLUE;
 
     //green
     double distanceFromGreen = euclideanDistance(normalizedColours[0], GREEN_MEAN[0],
@@ -163,7 +163,7 @@ public class ColourDetector implements Runnable {
 
     if (distanceFromGreen < minDistance) {
       minDistance = distanceFromGreen;
-      this.ringColour = Colour.GREEN;
+      this.objectColour = Colour.GREEN;
     }
 
     //yellow
@@ -172,7 +172,7 @@ public class ColourDetector implements Runnable {
 
     if ((distanceFromYellow < minDistance) & (distanceFromYellow < YELLOW_THRESH)) {
       minDistance = distanceFromYellow;
-      this.ringColour = Colour.YELLOW;
+      this.objectColour = Colour.YELLOW;
     }
 
     //orange
@@ -181,8 +181,8 @@ public class ColourDetector implements Runnable {
 
     if (distanceFromOrange < minDistance) {
       minDistance = distanceFromOrange;
-      this.ringColour = Colour.ORANGE;
+      this.objectColour = Colour.ORANGE;
     }
-    return this.ringColour;
+    return this.objectColour;
   }
 }
