@@ -2,18 +2,29 @@ package ca.mcgill.ecse211.project;
 
 //static import to avoid duplicating variables and make the code easier to read
 import static ca.mcgill.ecse211.project.Main.sleepFor;
+import static ca.mcgill.ecse211.project.Resources.APPROACHING_SPEED;
 import static ca.mcgill.ecse211.project.Resources.BASE_WIDTH;
 import static ca.mcgill.ecse211.project.Resources.FORWARD_SPEED;
 import static ca.mcgill.ecse211.project.Resources.FULL_SPIN_DEG;
 import static ca.mcgill.ecse211.project.Resources.LINE_DETECTION_SPEED;
+import static ca.mcgill.ecse211.project.Resources.MOTOR_DIFF;
+import static ca.mcgill.ecse211.project.Resources.MOTOR_HIGH;
+import static ca.mcgill.ecse211.project.Resources.OBJECT_CLOSE;
+import static ca.mcgill.ecse211.project.Resources.OBJECT_THRESHOLD;
+import static ca.mcgill.ecse211.project.Resources.SLEEP_TIME;
 import static ca.mcgill.ecse211.project.Resources.ROTATION_SPEED;
 import static ca.mcgill.ecse211.project.Resources.TEXT_LCD;
 import static ca.mcgill.ecse211.project.Resources.TILE_SIZE;
+import static ca.mcgill.ecse211.project.Resources.WALL_DIST;
+import static ca.mcgill.ecse211.project.Resources.WALL_DIST_ERR_THRESH;
 import static ca.mcgill.ecse211.project.Resources.WHEEL_RAD;
 import static ca.mcgill.ecse211.project.Resources.odo;
 import static ca.mcgill.ecse211.project.Resources.leftMotor;
 import static ca.mcgill.ecse211.project.Resources.rightMotor;
+import static ca.mcgill.ecse211.project.Resources.topMotor;
+import static ca.mcgill.ecse211.project.Resources.usLocalizer;
 import ca.mcgill.ecse211.project.ColourDetector.Colour;
+import lejos.hardware.Sound;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 
 /**
@@ -28,6 +39,49 @@ public class Navigation {
    */
   public Navigation() {
   }
+  
+  /**
+   * This method returns the euclidian distance between two points in cm.
+   * @param x1 first x pos 
+   * @param y1 first y pos
+   * @param x2 second x pos
+   * @param y2 second y pos
+   * @return Euclidian distance in cm.
+   */
+  public static double euclidDistance(double x1, double y1, double x2, double y2) {
+    double sum = Math.pow((x1 - x2),2) + Math.pow((y1 - y2),2);
+    return Math.pow(sum, .5);
+  }
+  
+  /**
+   * Process a movement based on the US distance passed in (BANG-BANG style).
+   * 
+   * @param distance the distance in cm
+   * @return 
+   */
+  public static void bangBangController(int distance) {
+      if (Math.abs(distance - WALL_DIST) < WALL_DIST_ERR_THRESH){
+        leftMotor.setSpeed(MOTOR_HIGH);
+        rightMotor.setSpeed(MOTOR_HIGH);
+        leftMotor.forward();
+        rightMotor.forward();
+       
+      }
+      else if (distance - WALL_DIST < -15) {
+        //way too close to the wall so go backwards
+        leftMotor.setSpeed(2*MOTOR_HIGH);
+        rightMotor.setSpeed(2*MOTOR_HIGH);
+        leftMotor.backward();
+        rightMotor.backward();
+      }
+      else if ((distance - WALL_DIST) < 0) {
+        //Too close to wall so speed up left motor
+        leftMotor.setSpeed(MOTOR_HIGH + 3*MOTOR_DIFF);
+        rightMotor.setSpeed(MOTOR_HIGH - 3*MOTOR_DIFF);
+        leftMotor.forward();
+        rightMotor.forward();
+      }
+  }
 
   /**
    * This method causes the robot to travel to the  field location (x,y), specified in tile points.
@@ -37,8 +91,9 @@ public class Navigation {
    * @param x x position 
    * @param y y position
    */
-  // TODO: need to react if an obstacle is nearby
   public static void travelTo(double x, double y) {
+    double[] odoValuesBefore = odo.getXyt();
+    
     double dx = x - odo.getXyt()[0];
     double dy = y - odo.getXyt()[1];
     double dt = Math.atan2(dx, dy);
@@ -46,11 +101,25 @@ public class Navigation {
     turnTo(dt);
 
     // Minimum distance that the robot will travel, always the hypotenuse of the triangle.
-    double dist = Math.hypot(dx, dy);
+    double hypotenus = Math.hypot(dx, dy);
 
     setSpeed(FORWARD_SPEED);
-    leftMotor.rotate(convertDistance(dist), true);
-    rightMotor.rotate(convertDistance(dist), false);
+    leftMotor.forward();
+    rightMotor.forward();
+   // leftMotor.rotate(convertDistance(dist), true);
+   // rightMotor.rotate(convertDistance(dist), false);
+    boolean trigger = true;
+
+//    //This section of code will make sure the robot avoids obstacles
+    while(trigger) {
+      double distanceTravelled = euclidDistance(odoValuesBefore[0], odoValuesBefore[1], 
+          odo.getXyt()[0], odo.getXyt()[1]);
+      if (distanceTravelled >= hypotenus) {
+        trigger = false;
+      }
+      bangBangController(usLocalizer.currentDistance);
+      Main.sleepFor(SLEEP_TIME );
+    }
     stopMotors();
   }
 

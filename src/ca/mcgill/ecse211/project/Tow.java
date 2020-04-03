@@ -17,6 +17,12 @@ public class Tow {
      * Basic idea is to use the top motor to drop the hook down.
      * Once attached, bring the hook back up
      */
+    topMotor.rotate(110);
+    
+    //New design team must see what other actions are required here
+    
+    topMotor.rotate(-110);
+   
   }
 
 }

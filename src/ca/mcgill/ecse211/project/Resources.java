@@ -180,13 +180,39 @@ public class Resources {
   /**
    * This constant will be used to determine if the robot should slow down if it sees a ring.
    */
-  public static final int RING_THRESHOLD = 9;
+  public static final int OBJECT_THRESHOLD = 9;
   
   /**
    * This constant will be used to determine when the robot should lower the 
    * front light sensor to detect the ring colour.
    */
-  public static final int RING_CLOSE = 4;
+  public static final int OBJECT_CLOSE = 4;
+  
+  /**
+   * Ideal distance between the sensor and the wall (cm).
+   */
+  public static final int WALL_DIST = 35;
+  
+  /**
+   * Width of the maximum tolerated deviation from the ideal {@code WALL_DIST}, also known as the
+   * dead band. This is measured in cm.
+   */
+  public static final int WALL_DIST_ERR_THRESH = 3;
+  
+  /**
+   * Speed of slower rotating wheel (deg/sec).
+   */
+  public static final int MOTOR_LOW = 100;
+  
+  /**
+   * Speed of the faster rotating wheel (deg/sec).
+   */
+  public static final int MOTOR_HIGH = 300;
+  
+  /**
+   * Difference of motor speed constant for bang band controller
+   */
+  public static final int MOTOR_DIFF = 100;
   
   /**
    * This constant will be used to set the speed at which the robot 

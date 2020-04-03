@@ -8,13 +8,13 @@ package ca.mcgill.ecse211.project;
 public class SearchAndScan implements Runnable {
 
   /**
-   * This method will seaerch for the stranded vehicle and implement obstacle avoidance as well.
+   * This method will search for the stranded vehicle once in the search zonel.
    * 
    */
   @Override
   public void run() {
     
-    
+    //Please consult software document for ideas
   }
   
   /**

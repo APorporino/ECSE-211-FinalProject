@@ -78,8 +78,13 @@ public class Main {
     Navigation.moveStraightFor(Resources.TUNNEL_DISTANCE);
 
 
-    //HERE IS WHERE WE WILL START SEARCHING AND SCANNING
+    //Move to search zone while avoiding obstacles  
+    //Using travelTo method to navigate to this point will incroporate obstacle avoidance
+    Navigation.travelTo(Resources.zone.ll.x, Resources.zone.ll.y);
+    
 
+    //HERE IS WHERE WE WILL START SEARCHING AND SCANNING
+    //NEW DESIGM TEAM SHOULD CONSULT THE SOFTWARE DOCUMENT FOR A BASIC IDEA
 
     //hitting escape button will stop the program 
     while (Button.waitForAnyPress() != Button.ID_ESCAPE) {
