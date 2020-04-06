@@ -31,23 +31,35 @@ public class Main {
    */
   public static void main(String[] args) {
 
-    //First step is to get WIFI parameters. Now the variables in resources are populated
-    Resources.receiveWifiParameters();
+    //First step is to get WIFI parameters. 
+    //This will start a thread to receive the wifi paramters
+    Thread wifiThread = new Thread(new WiFi());
+    wifiThread.start();
 
+    //Concurrently with receiving the paramters we will localize to not waste any time
+    //Assuming we start somewhere on 45 degree line in the first square
+    TEXT_LCD.clear();
+    TEXT_LCD.drawString("Localizing to 1,1", 0, 1);
+    localizeToStartingPosition();
+    new Thread(odo).start();
+    
+    //beep 3 times to signal we are done localizing
+    Sound.beep();
+    Sound.twoBeeps();
+    
+    //Here we must wait until the wifi thread is finished and we have received all paramters
+    while (Resources.wifiParameters == null) {
+    }// do nothing
+    //Now the variables in resources are populated
+    
+    
     //fill the COLOUR_INDEPENDENT fields with appropriate data
     if (Resources.getWP("RedTeam") == 6) {
       Resources.weAreRed();
     }else {
       Resources.weAreGreen();
     }
-
-    //Assuming we start somewhere on 45 degree line in the first square
-    TEXT_LCD.clear();
-    TEXT_LCD.drawString("Localizing to 1,1", 0, 1);
-    localizeToStartingPosition();
-    new Thread(odo).start();
-
-
+    
     switch(Resources.corner) {
       case(1):
         //bottom right corner
@@ -59,19 +71,18 @@ public class Main {
         //top left corner
         odo.setXyt(1, 8, 90);
     }
-    //beep 3 times to signal localizing is done
-    Sound.beep();
-    Sound.twoBeeps();
 
     //Now we can begin travelling to the entrance of bridge. We have to be careful not to hit the bridge
     Navigation.travelTo(Resources.tn.ll.x - 1, Resources.tn.ll.y -1);
 
+    //localize before crossing bridge
     LightLocalizer.localizeToPoint((int) Resources.tn.ll.x - 1, (int) Resources.tn.ll.y -1);
 
-    if (Resources.getWP("RedTeam") == 6) {
+    //we must move to be precisely at the entrance of the tunnel 
+    if (Resources.tn.ll.x != Resources.tn.ur.x) { //if tunnel is horizontal
       Navigation.moveStraightFor(1.5*TILE_SIZE);
       Navigation.turnBy(90);
-    }else {
+    }else { //tunnel is vertical
       Navigation.moveStraightFor(.5*TILE_SIZE);
     }
 
@@ -84,7 +95,9 @@ public class Main {
 
     //Move to search zone while avoiding obstacles  
     //Using travelTo method to navigate to this point will incorporate obstacle avoidance
-    Navigation.travelTo(Resources.zone.ll.x, Resources.zone.ll.y);
+    while (notInSearchZone()) {
+      Navigation.travelTo(Resources.zone.ll.x, Resources.zone.ll.y);
+    }
     
 
     //HERE IS WHERE WE WILL START SEARCHING AND SCANNING
@@ -95,6 +108,19 @@ public class Main {
     } // do nothing
 
     System.exit(0);
+  }
+
+  /**
+   * This method returns true if the robot is not in the search zone and false if it is.
+   * @return
+   */
+  private static boolean notInSearchZone() {
+    if (odo.getXyt()[0] <=  Resources.sz.ur.x && odo.getXyt()[0] > Resources.sz.ll.x) {
+      if (odo.getXyt()[1] <=  Resources.sz.ur.y && odo.getXyt()[1] > Resources.sz.ll.y) {
+        return false;
+      }
+    }
+    return true;
   }
 
   /**
