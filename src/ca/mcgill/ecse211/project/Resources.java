@@ -200,6 +200,11 @@ public class Resources {
   public static final int WALL_DIST_ERR_THRESH = 3;
   
   /**
+   * This variable is used to determine if the robot is way too close to a wall in the bang bang controller method.
+   */
+  public static final int WALL_TOO_CLOSE = 15;
+  
+  /**
    * Speed of slower rotating wheel (deg/sec).
    */
   public static final int MOTOR_LOW = 100;

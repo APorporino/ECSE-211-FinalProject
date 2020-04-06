@@ -33,13 +33,13 @@ import lejos.hardware.motor.EV3LargeRegulatedMotor;
  *
  */
 public class Navigation {
-  
+
   /**
    * Constructor.
    */
   public Navigation() {
   }
-  
+
   /**
    * This method returns the euclidian distance between two points in cm.
    * @param x1 first x pos 
@@ -52,7 +52,7 @@ public class Navigation {
     double sum = Math.pow((x1 - x2),2) + Math.pow((y1 - y2),2);
     return Math.pow(sum, .5);
   }
-  
+
   /**
    * Process a movement based on the US distance passed in (BANG-BANG style).
    * 
@@ -60,27 +60,27 @@ public class Navigation {
    * @return 
    */
   public static void bangBangController(int distance) {
-      if (Math.abs(distance - WALL_DIST) < WALL_DIST_ERR_THRESH){
-        leftMotor.setSpeed(MOTOR_HIGH);
-        rightMotor.setSpeed(MOTOR_HIGH);
-        leftMotor.forward();
-        rightMotor.forward();
-       
-      }
-      else if (distance - WALL_DIST < -15) {
-        //way too close to the wall so go backwards
-        leftMotor.setSpeed(2*MOTOR_HIGH);
-        rightMotor.setSpeed(2*MOTOR_HIGH);
-        leftMotor.backward();
-        rightMotor.backward();
-      }
-      else if ((distance - WALL_DIST) < 0) {
-        //Too close to wall so speed up left motor
-        leftMotor.setSpeed(MOTOR_HIGH + 3*MOTOR_DIFF);
-        rightMotor.setSpeed(MOTOR_HIGH - 3*MOTOR_DIFF);
-        leftMotor.forward();
-        rightMotor.forward();
-      }
+    if (Math.abs(distance - WALL_DIST) < WALL_DIST_ERR_THRESH){
+      leftMotor.setSpeed(MOTOR_HIGH);
+      rightMotor.setSpeed(MOTOR_HIGH);
+      leftMotor.forward();
+      rightMotor.forward();
+
+    }
+    else if (distance - WALL_DIST < -Resources.WALL_TOO_CLOSE) {
+      //way too close to the wall so go backwards
+      leftMotor.setSpeed(2*MOTOR_HIGH);
+      rightMotor.setSpeed(2*MOTOR_HIGH);
+      leftMotor.backward();
+      rightMotor.backward();
+    }
+    else if ((distance - WALL_DIST) < 0) {
+      //Too close to wall so speed up left motor
+      leftMotor.setSpeed(MOTOR_HIGH + MOTOR_DIFF);
+      rightMotor.setSpeed(MOTOR_HIGH - MOTOR_DIFF);
+      leftMotor.forward();
+      rightMotor.forward();
+    }
   }
 
   /**
@@ -93,7 +93,7 @@ public class Navigation {
    */
   public static void travelTo(double x, double y) {
     double[] odoValuesBefore = odo.getXyt();
-    
+
     double dx = x - odo.getXyt()[0];
     double dy = y - odo.getXyt()[1];
     double dt = Math.atan2(dx, dy);
@@ -106,17 +106,13 @@ public class Navigation {
     setSpeed(FORWARD_SPEED);
     leftMotor.forward();
     rightMotor.forward();
-   // leftMotor.rotate(convertDistance(dist), true);
-   // rightMotor.rotate(convertDistance(dist), false);
-    boolean trigger = true;
-
-//    //This section of code will make sure the robot avoids obstacles
-    while(trigger) {
-      double distanceTravelled = euclidDistance(odoValuesBefore[0], odoValuesBefore[1], 
+    // leftMotor.rotate(convertDistance(dist), true);
+    // rightMotor.rotate(convertDistance(dist), false);
+    double distanceTravelled = 0;
+    //    //This section of code will make sure the robot avoids obstacles
+    while(distanceTravelled < hypotenus) {
+      distanceTravelled = euclidDistance(odoValuesBefore[0], odoValuesBefore[1], 
           odo.getXyt()[0], odo.getXyt()[1]);
-      if (distanceTravelled >= hypotenus) {
-        trigger = false;
-      }
       bangBangController(usLocalizer.currentDistance);
       Main.sleepFor(SLEEP_TIME );
     }
@@ -196,8 +192,8 @@ public class Navigation {
     leftMotor.setAcceleration(acceleration);
     rightMotor.setAcceleration(acceleration);
   }
-  
-  
+
+
   /**
    * Returns a thread that will rotate the robot once.
    * @return Thread that rotates the robot once.
@@ -288,6 +284,6 @@ public class Navigation {
   public static int convertAngle(double angle) {
     return convertDistance(Math.PI * BASE_WIDTH * angle / FULL_SPIN_DEG);
   }
-  
-  
+
+
 }
