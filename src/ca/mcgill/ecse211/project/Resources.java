@@ -14,13 +14,17 @@ import java.math.BigDecimal;
 import java.util.Map;
 
 /**
+ * This class is used to define static resources in one place for easy access and to avoid cluttering
+ * the rest of the codebase including the resources used with the algorithms, color detection and 
+ * the parameters used through Wi-Fi during the competition day. All resources can be imported at once.
+ * 
+ * Meanwhile, this class contains method to receive parameter through WI-FI during the competition day.
+ * 
  * Integrate this carefully with your existing Resources class (See below for where to add your
  * code from your current Resources file). The order in which things are declared matters!
  * 
- * <p>When you're done, replace this javadoc comment with the one you have from your Resources
- * class.
- * 
  * @author Younes Boubekeur
+ * @author team 06
  */
 public class Resources {
   

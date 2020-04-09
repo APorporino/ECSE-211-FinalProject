@@ -16,6 +16,12 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * The singleton odometer class keeps track of the robot's (x, y, theta) position.
  * 
+ * It uses the tacho count from the motors to calculate the position of the robot using the number of 
+ * turns the wheels have and calculate the distance with radius.
+ * 
+ * The position and orientation of the robot determined by Odometer will be used in other classes to 
+ * achieve the final goal of the project.
+ * 
  * @author TA
  * @author team 06
  */

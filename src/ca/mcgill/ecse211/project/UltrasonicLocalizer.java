@@ -11,8 +11,12 @@ import static ca.mcgill.ecse211.project.Resources.odo;
 import static ca.mcgill.ecse211.project.Resources.usSensor;
 
 /**
- * This class will be used to localize the robot.
- * @author Team06
+ * This class will be used to localize the robot using the ultrasonic sensor. 
+ * 
+ * The ultrasonic sensor will keep track of the minimum distances detected to locate the robot,
+ * then using the method localizeToPoint() to get closer to a specific grid point.
+ * 
+ * @author team 06
  *
  */
 public class UltrasonicLocalizer implements Runnable {
@@ -52,8 +56,6 @@ public class UltrasonicLocalizer implements Runnable {
     }
     return ultraLoc;
   }
-
-
 
   /**
    * Will continuously take readings and keep track of the min distance found.

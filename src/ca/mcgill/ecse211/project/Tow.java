@@ -4,7 +4,11 @@ import static ca.mcgill.ecse211.project.Resources.topMotor;
 
 /**
  * This class will control the mechanism used to attach to the stranded vehicle.
- * @author Team06
+ * 
+ * The basic idea is to lower the hook with the motor after localizing the cart to be rescued.
+ * With the cart attached with the hook, the cart will be lifted up for further actions.
+ * 
+ * @author team 06
  *
  */
 public class Tow {
