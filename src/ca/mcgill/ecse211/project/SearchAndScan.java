@@ -5,21 +5,30 @@ package ca.mcgill.ecse211.project;
  * 
  * The ultrasonic sensor will read the distance between the robot and objects to detect if there is an object
  * on the path of the robot.
+ * 
+ * PLEASE CONSULT THE SOFTWARE DOCUMENT FOR MORE DETAILED INFO
  *  
  * @author team 06
  *
  */
-public class SearchAndScan implements Runnable {
+public class SearchAndScan   {
+
 
   /**
    * This method will search for the stranded vehicle once in the search zone.
    * 
    */
-  @Override
-  public void run() {
+  public void findVehicle() {
     
-    //Please consult software document for ideas
   }
+  
+  /**
+   * This method will be used to find the colour patch on the stranded kart
+   */
+  public void findColourPatch() {
+    
+  }
+  
   
   /**
    * Constructor.

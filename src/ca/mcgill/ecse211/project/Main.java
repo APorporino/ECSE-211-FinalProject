@@ -19,6 +19,9 @@ import lejos.hardware.Sound;
 
 /**
  * The main driver class for the lab.
+ * Running main() will currently make the robot reach the search zone, it should however 
+ * complete the project.
+ * This class contains methods to localize the robot to the starting grid position as well.
  * 
  */
 public class Main {
