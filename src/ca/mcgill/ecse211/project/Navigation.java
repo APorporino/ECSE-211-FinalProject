@@ -29,6 +29,8 @@ import lejos.hardware.motor.EV3LargeRegulatedMotor;
 
 /**
  * This class will be used to navigate the robot to certain positions.
+ * It contains all functionality dealing with moving the robot.
+ * It also implements obstacle avoidance.
  * @author Team06
  *
  */
@@ -85,9 +87,8 @@ public class Navigation {
 
   /**
    * This method causes the robot to travel to the  field location (x,y), specified in tile points.
-   * This method should continuously call turnTo(double theta), set the motor speed to forward.
-   * This will make sure that your heading is updated until you reach your exact goal. 
-   * This method will use the odometer.
+   *  It also ensures it does not hit an object.
+   *  If an obstacle is avoided, the final position will not be (x,y)
    * @param x x position 
    * @param y y position
    */
@@ -106,8 +107,7 @@ public class Navigation {
     setSpeed(FORWARD_SPEED);
     leftMotor.forward();
     rightMotor.forward();
-    // leftMotor.rotate(convertDistance(dist), true);
-    // rightMotor.rotate(convertDistance(dist), false);
+  
     double distanceTravelled = 0;
     //    //This section of code will make sure the robot avoids obstacles
     while(distanceTravelled < hypotenus) {
@@ -153,7 +153,6 @@ public class Navigation {
 
   /**
    * Stops both motors.
-   * Code from lab 2 Odometer, SquareDriver.java class.
    */
   public static void stopMotors() {
     leftMotor.stop();
@@ -162,7 +161,6 @@ public class Navigation {
 
   /**
    * Sets the speed of both motors to the same values.
-   * Code from lab 2 Odometer, SquareDriver.java class.
    * 
    * @param speed the speed in degrees per second
    */
@@ -172,7 +170,6 @@ public class Navigation {
 
   /**
    * Sets the speed of both motors to different values.
-   * Code from lab 2 Odometer, SquareDriver.java class.
    * 
    * @param leftSpeed the speed of the left motor in degrees per second
    * @param rightSpeed the speed of the right motor in degrees per second
@@ -184,7 +181,6 @@ public class Navigation {
 
   /**
    * Sets the acceleration of both motors.
-   * Code from lab 2 Odometer, SquareDriver.java class.
    * 
    * @param acceleration the acceleration in degrees per second squared
    */

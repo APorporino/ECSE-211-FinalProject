@@ -19,12 +19,13 @@ import lejos.hardware.Sound;
 
 /**
  * The main driver class for the lab.
+ * 
  */
 public class Main {
 
   /**
    * The main entry point. 
-   * Running main will make the robot reach across the bridge, ready searching and scanning.
+   * Running main will make the robot reach the search zone.
    * IMPORTANT: THIS CODE HAS NOT BEEN RUN ON THE ROBOT AND MUST BE REVIEWED.
    * 
    * @param args not used
@@ -124,7 +125,7 @@ public class Main {
   }
 
   /**
-   * This method will localize the robot to position 1,1.
+   * This method will localize the robot to position starting position.
    */
   public static void localizeToStartingPosition() {
 

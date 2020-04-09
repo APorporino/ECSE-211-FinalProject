@@ -12,13 +12,13 @@ import static ca.mcgill.ecse211.project.Resources.YELLOW_MEAN;
 import static ca.mcgill.ecse211.project.Resources.YELLOW_THRESH;
 
 /**
- * This class will be used to control colour detection and determine the colour 
- * of a ring given a sample.
+ * This class will be used to control colour detection and determine the colour of any given a sample.
+ * It implemenst a run method which continuously reads colour data from the front light sensor.
+ * 
  * @author Team06
  */
 public class ColourDetector implements Runnable {
 
-  //local variables for 
   public  float colourRed;
   public  float colourGreen;
   public  float colourBlue;
@@ -138,8 +138,8 @@ public class ColourDetector implements Runnable {
   }
 
   /**
-   * This method will update the ring colour variable given a sample by first normalizing t
-   * he sample and then comparing euclidean distances.
+   * This method will update the colour variable given a sample by first normalizing 
+   * the sample and then comparing euclidean distances.
    * @param colourRed red colour variable
    * @param colourGreen green colour variable
    * @param colourBlue blue colour variable

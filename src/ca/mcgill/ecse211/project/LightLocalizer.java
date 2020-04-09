@@ -23,14 +23,24 @@ import lejos.robotics.SampleProvider;
 
 /**
  * This class is used to control and receive readings from multiple light sensors.
+ * It will also be used for waypoint light localization.
+ * 
  * @author Team06
  *
  */
 public class LightLocalizer implements Runnable {
 
-  // class variables used to store the color values from the light sensor
+  /**
+   * Store colour of left light sensor
+   */
   public static float colourIDLeft;
+  /**
+   * Store colour of left right sensor
+   */
   public static float colourIDRight;
+  /**
+   * Store colour of left front sensor
+   */
   public static float colourIDFront;
 
   /**
@@ -61,7 +71,8 @@ public class LightLocalizer implements Runnable {
   static float[] colourDataFront = new float[colourValueFront.sampleSize()];
 
   /**
-   * This method is used to continuously read data from the left and right light sensors..
+   * This method is used to continuously read data from the left and right light sensors.
+   * It will also update the min value if it detects a value less than the current min.
    */
   public void run() {
 

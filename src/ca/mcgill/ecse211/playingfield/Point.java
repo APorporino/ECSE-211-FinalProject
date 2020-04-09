@@ -1,6 +1,6 @@
 package ca.mcgill.ecse211.playingfield;
 
-/**s
+/**
  * Represents a coordinate point on the competition map grid.
  * 
  * @author Younes Boubekeur
